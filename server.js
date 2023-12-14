@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const cookieSession = require("cookie-session");
+const dbConfig = require("./config/db.config.js");
 
 const app = express();
 
@@ -27,54 +28,40 @@ app.use(
 const db = require("./models");
 const Role = db.role;
 
-db.mongoose
-    .connect(`mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    })
-    .then(() => {
+const setup = async () => {
+    try {
+        await db.mongoose.connect(`mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        });
         console.log("Successfully connect to MongoDB.");
         initial();
-    })
-    .catch(err => {
-        console.error("Connection error", err);
-        process.exit();
-    });
+    } catch (e) {
+        console.log(`error`)
+        console.log(e)
+    }
+}
 
-function initial() {
-    Role.estimatedDocumentCount((err, count) => {
-        if (!err && count === 0) {
-            new Role({
-                name: "user"
-            }).save(err => {
-                if (err) {
-                    console.log("error", err);
-                }
+setup()
 
-                console.log("added 'user' to roles collection");
-            });
+async function initial() {
+    const count = await Role.estimatedDocumentCount();
+    if (count === 0) {
+        const user = new Role({
+            name: "user"
+        })
+        await user.save();
 
-            new Role({
-                name: "agent"
-            }).save(err => {
-                if (err) {
-                    console.log("error", err);
-                }
+        const agent = new Role({
+            name: "agent"
+        });
+        await agent.save();
 
-                console.log("added 'agent' to roles collection");
-            });
-
-            new Role({
-                name: "admin"
-            }).save(err => {
-                if (err) {
-                    console.log("error", err);
-                }
-
-                console.log("added 'admin' to roles collection");
-            });
-        }
-    });
+        const admin = new Role({
+            name: "admin"
+        });
+        await admin.save();
+    }
 }
 
 // simple route
