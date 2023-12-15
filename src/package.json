@@ -4,7 +4,10 @@
   "description": "ticket backend project",
   "main": "server.js",
   "scripts": {
-    "test": "jest"
+    "pm2": "pm2 start processes.json --no-daemon",
+    "start": "node ./bin/www",
+    "test": "jest",
+    "migrate": "node ./bin/migrate.js"
   },
   "keywords": [
     "node.js",
@@ -15,11 +18,15 @@
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "cookie-parser": "~1.4.4",
     "cookie-session": "^2.0.0",
     "cors": "^2.8.5",
+    "debug": "~2.6.9",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.0.3"
+    "sequelize": "^6.35.2",
+    "morgan": "~1.9.1",
+    "mongoose": "^7.6.7"
   },
   "devDependencies": {
     "jest": "^29.7.0"
