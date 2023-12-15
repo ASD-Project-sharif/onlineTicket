@@ -23,7 +23,5 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: yarn
       working-directory: ./src  # Assuming your package.json is in the 'src' directory
-    - run: node server.js
-      working-directory: ./src  # Adjust the path if necessary
     - run: npm test
       working-directory: ./src  # Adjust the path if necessary
