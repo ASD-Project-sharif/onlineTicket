@@ -14,18 +14,10 @@ jobs:
     strategy:
       matrix:
         node-version: [14.x, 16.x, 18.x]
+        mongodb-version: ['6.0']
+
 
     services:
-      mongo:
-        image: mongo
-        options: >-
-          --health-cmd "mongo --eval 'db.runCommand({ ping: 1 })'"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 27017:27017
-
       redis:
         image: redis
         options: >-
@@ -43,12 +35,10 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Wait for MongoDB and Redis to be ready
-      run: |
-        wget -O wait-for-it.sh https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh
-        chmod +x wait-for-it.sh
-        ./wait-for-it.sh -t 0 mongo-container:27017 -- echo "MongoDB is up"
-        ./wait-for-it.sh -t 0 redis-container:6379 -- echo "Redis is up"
+    - name: Start MongoDB
+      uses: supercharge/mongodb-github-action@1.10.0
+      with:
+        mongodb-version: ${{ matrix.mongodb-version }}
 
     - run: yarn
       working-directory: ./src
