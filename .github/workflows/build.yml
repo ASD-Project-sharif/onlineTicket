@@ -41,6 +41,16 @@ jobs:
           script: |
             rm -f /root/backend/docker-compose.yml
             rm -f /root/backend/.env
+      - name: Remove old docker-compose and .env files
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          command_timeout: 1m
+          script: |
+            ls
       - name: Copy docker-compose via ssh
         uses: appleboy/scp-action@master
         with:
