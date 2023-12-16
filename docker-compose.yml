@@ -1,0 +1,46 @@
+version: '3.7'
+
+services:
+
+  mongodb:
+    image: mongo:latest
+    container_name: asd-project-backend-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_DB: ${MONGO_DB}
+    ports:
+      - "${MONGO_PORT}:${MONGO_PORT}"
+    volumes:
+      - /mongo-data:/data/db
+
+  redis:
+    restart: unless-stopped
+    image: redis:latest
+    container_name: asd-project-backend-redis
+    command:
+      - /bin/sh
+      - -c
+      - redis-server --requirepass "${REDIS_PASSWORD}"
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+
+  onlineTicket:
+    depends_on:
+      - redis
+      - mongodb
+    restart: always
+    image: ${IMAGE}:${TAG}
+    container_name: asd-project-backend-app
+    environment:
+      DATABASE_NAME: ${MONGO_DB}
+      DATABASE_USER: ${MONGO_INITDB_ROOT_USERNAME}
+      DATABASE_PASS: ${MONGO_INITDB_ROOT_PASSWORD}
+      DATABASE_HOST: mongo
+      DATABASE_PORT: ${MONGO_PORT}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      DEBUG: ${DEBUG}
+      SECRET_KEY: ${SECRET_KEY}
+    ports:
+      - "${SERVICE_PORT}:${SERVICE_PORT}"
