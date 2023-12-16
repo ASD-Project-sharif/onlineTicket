@@ -76,7 +76,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          command_timeout: 5m
+          command_timeout: 2m
           envs: REGISTRY_PASSWORD,REGISTRY_USER
           script: |
             cd /root/backend/
