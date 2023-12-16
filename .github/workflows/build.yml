@@ -5,10 +5,9 @@ on:
     branches: [ "main" ]
 
 jobs:
-
- test:
+  test:
    uses: ./.github/workflows/test.yml
-
+  
   build:
    needs: test
     runs-on: ubuntu-22.04
@@ -24,7 +23,7 @@ jobs:
           REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
           REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
           IMAGE: ${{ vars.IMAGE }}
-
+  
   deploy:
     needs: build
     runs-on: ubuntu-22.04
