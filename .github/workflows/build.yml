@@ -56,6 +56,15 @@ jobs:
           echo "REDIS_PORT=${{ vars.REDIS_PORT }}" >> .env
           echo "IMAGE=${{ vars.IMAGE }}" >> .env
           echo "TAG=${{ steps.vars.outputs.sha_short }}" >> .env
+      - name: copy file via ssh password
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.PORT }}
+          source: ".env"
+          target: "/root/backend"
       - name: Copy .env via ssh
         uses: appleboy/scp-action@v0.1.4
         with:
