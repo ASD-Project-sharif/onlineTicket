@@ -39,28 +39,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           command_timeout: 1m
           script: |
-            rm -f /root/backend/docker-compose.yml
             rm -f /root/backend/.env
-      - name: Remove old docker-compose and .env files
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          command_timeout: 1m
-          script: |
-            cd backend/
-            git pull origin main
-      - name: Copy docker-compose via ssh
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          source: "docker-compose.yml"
-          target: "/root/backend"
       - name: Set outputs
         id: vars
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
