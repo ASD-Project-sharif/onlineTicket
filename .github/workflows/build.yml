@@ -37,7 +37,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           port: ${{ secrets.SSH_PORT }}
-          command_timeout: 1m
+          command_timeout: 2m
           script: |
             rm -f /root/backend/.env
             rm -f /root/backend/docker-compose.yml
