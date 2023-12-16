@@ -5,11 +5,11 @@ on:
     branches: [ "main" ]
 
 jobs:
-  #test:
-  # uses: ./.github/workflows/test.yml
+  test:
+   uses: ./.github/workflows/test.yml
   
   build:
-   #needs: test
+   needs: test
    runs-on: ubuntu-22.04
    steps:
     - name: Checkout code
@@ -33,14 +33,23 @@ jobs:
       - name: Remove old docker-compose and .env files
         uses: appleboy/ssh-action@master
         with:
-          host: 185.164.73.22
-          username: root
-          password: asd-project
-          port: 22
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
           command_timeout: 1m
           script: |
-            rm -f /home/h.aghaei/backend/.env
-            rm -f /home/h.aghaei/backend/docker-compose.yml
+            rm -f /root/backend/.env
+            rm -f /root/backend/docker-compose.yml
+      - name: Copy docker-compose file via ssh password
+        uses: appleboy/scp-action@v0.1.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "docker-compose.yml"
+          target: "/root/backend"
       - name: Set outputs
         id: vars
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
@@ -57,14 +66,14 @@ jobs:
           echo "REDIS_PORT=${{ vars.REDIS_PORT }}" >> .env
           echo "IMAGE=${{ vars.IMAGE }}" >> .env
           echo "TAG=${{ steps.vars.outputs.sha_short }}" >> .env
-      - name: copy file via ssh password
+      - name: Copy .env file via ssh password
         uses: appleboy/scp-action@v0.1.3
         with:
-          host: 185.164.73.22
-          username: root
-          password: asd-project
-          port: 22
-          source: "docker-compose.yml"
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          source: ".env"
           target: "/root/backend"
       - name: Run docker-compose up
         uses: appleboy/ssh-action@master
@@ -74,9 +83,9 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          password: ${{ secrets.SSH_PASSWORD }}
           port: ${{ secrets.SSH_PORT }}
-          command_timeout: 2m
+          command_timeout: 5m
           envs: REGISTRY_PASSWORD,REGISTRY_USER
           script: |
             cd /root/backend/
