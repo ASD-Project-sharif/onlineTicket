@@ -64,7 +64,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           source: ".env"
-          target: "/root/backend"
+          target: "/tmp"
       - name: Run docker compose up
         uses: appleboy/ssh-action@master
         env:
