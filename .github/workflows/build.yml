@@ -1,0 +1,97 @@
+name: Test, Build, And Deploy
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+
+ test:
+   uses: ./.github/workflows/test.yml
+
+  build:
+   needs: test
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Run the Build script
+        run: |
+          docker build -t "$IMAGE:${GITHUB_SHA:0:7}" -f Dockerfile .
+          echo "$REGISTRY_PASSWORD" | docker login --password-stdin -u $REGISTRY_USER
+          docker push "$IMAGE:${GITHUB_SHA:0:7}"
+        env:
+          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
+          IMAGE: ${{ vars.IMAGE }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Remove old docker-compose and .env files
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          command_timeout: 5m
+          script: |
+            rm -f /root/backend/docker-compose.yml
+            rm -f /root/backend/.env
+      - name: Copy docker-compose via ssh
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "docker-compose.yml"
+          target: "/root/backend"
+      - name: Set outputs
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: Create .env file
+        run: |
+          touch .env
+          echo "MONGO_DB=${{ vars.MONGO_DB }}" >> .env
+          echo "MONGO_INITDB_ROOT_USERNAME=${{ vars.MONGO_INITDB_ROOT_USERNAME }}" >> .env
+          echo "MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}" >> .env
+          echo "MONGO_PORT=${{ vars.MONGO_PORT }}" >> .env
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+          echo "SERVICE_PORT=${{ vars.SERVICE_PORT }}" >> .env
+          echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> .env
+          echo "REDIS_PORT=${{ vars.REDIS_PORT }}" >> .env
+          echo "IMAGE=${{ vars.IMAGE }}" >> .env
+          echo "TAG=${{ steps.vars.outputs.sha_short }}" >> .env
+      - name: Copy .env via ssh
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: ".env"
+          target: "/root/backend"
+      - name: Run docker compose up
+        uses: appleboy/ssh-action@master
+        env:
+          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          command_timeout: 5m
+          envs: REGISTRY_PASSWORD,REGISTRY_USER
+          script: |
+            cd /root/backend/
+            echo "$REGISTRY_PASSWORD" | docker login --password-stdin -u $REGISTRY_USER
+            docker-compose down --remove-orphans
+            docker-compose pull
+            docker-compose up -d --force-recreate
+            exit
