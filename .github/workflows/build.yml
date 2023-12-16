@@ -57,7 +57,7 @@ jobs:
           echo "IMAGE=${{ vars.IMAGE }}" >> .env
           echo "TAG=${{ steps.vars.outputs.sha_short }}" >> .env
       - name: Copy .env via ssh
-        uses: appleboy/scp-action@master
+        uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
@@ -65,7 +65,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           source: ".env"
           target: "/tmp"
-      - name: Run docker compose up
+      - name: Run docker-compose up
         uses: appleboy/ssh-action@master
         env:
           REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
