@@ -39,7 +39,8 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           command_timeout: 1m
           script: |
-            rm -f /root/backend/.env
+            rm -f /home/h.aghaei/backend/.env
+            rm -f /home/h.aghaei/backend/docker-compose.yml
       - name: Set outputs
         id: vars
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
@@ -63,9 +64,8 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
-        #  command_timeout: 5m
-          source: ".env"
-          target: "/root/backend"
+          source: "."
+          target: "/home/h.aghaei/backend/"
       - name: Run docker-compose up
         uses: appleboy/ssh-action@master
         env:
