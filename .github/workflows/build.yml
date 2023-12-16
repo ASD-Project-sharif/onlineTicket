@@ -10,19 +10,19 @@ jobs:
   
   build:
    needs: test
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Run the Build script
-        run: |
-          docker build -t "$IMAGE:${GITHUB_SHA:0:7}" -f Dockerfile .
-          echo "$REGISTRY_PASSWORD" | docker login --password-stdin -u $REGISTRY_USER
-          docker push "$IMAGE:${GITHUB_SHA:0:7}"
-        env:
-          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
-          IMAGE: ${{ vars.IMAGE }}
+   runs-on: ubuntu-22.04
+   steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Run the Build script
+      run: |
+        docker build -t "$IMAGE:${GITHUB_SHA:0:7}" -f Dockerfile .
+        echo "$REGISTRY_PASSWORD" | docker login --password-stdin -u $REGISTRY_USER
+        docker push "$IMAGE:${GITHUB_SHA:0:7}"
+      env:
+        REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+        REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
+        IMAGE: ${{ vars.IMAGE }}
   
   deploy:
     needs: build
