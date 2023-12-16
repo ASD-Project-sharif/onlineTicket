@@ -64,7 +64,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
         #  command_timeout: 5m
-          source: "env1"
+          source: ".env"
           target: "/root/backend"
       - name: Run docker-compose up
         uses: appleboy/ssh-action@master
