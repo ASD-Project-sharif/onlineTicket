@@ -61,7 +61,7 @@ jobs:
         with:
           host: 185.164.73.22
           username: root
-          password: eyu6T!e|IaUcq2d9
+          password: asd-project
           port: 22
           source: "docker-compose.yml"
           target: "/root/backend"
