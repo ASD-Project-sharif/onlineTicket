@@ -74,6 +74,8 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          action_timeout: 2m
+          timeout: 2m
           source: |
             docker-compose.yml
             .env
