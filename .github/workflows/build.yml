@@ -52,20 +52,15 @@ jobs:
           target: "/root/backend"
       - name: Run docker-compose up
         uses: appleboy/ssh-action@master
-        env:
-          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-          REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           command_timeout: 15m
-          envs: REGISTRY_PASSWORD,REGISTRY_USER
           script: |
             cd /root/backend/
             echo -e "nameserver 178.22.122.100\nnameserver 185.51.200.2\noptions edns0 trust-ad\nsearch ." | sudo tee /etc/resolv.conf
             docker-compose down --remove-orphans
             docker-compose pull
             docker-compose up -d --force-recreate
-            exit
