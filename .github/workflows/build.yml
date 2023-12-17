@@ -5,20 +5,20 @@ on:
     branches: [ "main" ]
 
 jobs:
-#  test:
- #  uses: ./.github/workflows/test.yml
+  test:
+   uses: ./.github/workflows/test.yml
   
   build:
-  # needs: test
+   needs: test
    runs-on: ubuntu-20.04
    steps:
     - name: Checkout code
       uses: actions/checkout@v3
     - name: Run the Build script
       run: |
-        docker build -t "$IMAGE:${GITHUB_SHA:0:7}" -f Dockerfile .
+        docker build -t "$IMAGE:latest" -f Dockerfile .
         echo "$REGISTRY_PASSWORD" | docker login --password-stdin -u $REGISTRY_USER
-        docker push "$IMAGE:${GITHUB_SHA:0:7}"
+        docker push "$IMAGE:latest"
       env:
         REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
         REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
