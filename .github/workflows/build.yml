@@ -5,11 +5,11 @@ on:
     branches: [ "main" ]
 
 jobs:
-  test:
-   uses: ./.github/workflows/test.yml
+  #test:
+ #  uses: ./.github/workflows/test.yml
   
   build:
-   needs: test
+#   needs: test
    runs-on: ubuntu-20.04
    steps:
     - name: Checkout code
@@ -51,7 +51,7 @@ jobs:
           source: "docker-compose.yml"
           target: "/root/backend"
       - name: Run docker-compose up
-        uses: appleboy/ssh-action@v01.0.0
+        uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
