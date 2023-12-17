@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
       - name: Remove old docker-compose and .env files
         uses: appleboy/ssh-action@master
         with:
@@ -51,7 +51,7 @@ jobs:
           source: "docker-compose.yml"
           target: "/root/backend"
       - name: Run docker-compose up
-        uses: appleboy/ssh-action@v0.1.6
+        uses: appleboy/ssh-action@v0.1.4
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
