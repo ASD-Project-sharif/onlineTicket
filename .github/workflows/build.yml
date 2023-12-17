@@ -5,11 +5,11 @@ on:
     branches: [ "main" ]
 
 jobs:
-  #test:
- #  uses: ./.github/workflows/test.yml
+  test:
+   uses: ./.github/workflows/test.yml
   
   build:
-#   needs: test
+   needs: test
    runs-on: ubuntu-20.04
    steps:
     - name: Checkout code
