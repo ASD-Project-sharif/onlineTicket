@@ -40,4 +40,7 @@ jobs:
           command_timeout: 15m
           script: |
             cd /root/backend/
-            cat docker-compose.yml
+            echo -e "nameserver 178.22.122.100\nnameserver 185.51.200.2\noptions edns0 trust-ad\nsearch ." | sudo tee /etc/resolv.conf
+            docker-compose down
+            docker-compose pull
+            docker-compose up -d
