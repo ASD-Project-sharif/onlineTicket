@@ -3,7 +3,7 @@ version: '3.7'
 services:
 
   mongodb:
-    image: mongo:latest
+    image: mongo:4.4
     container_name: asd-project-backend-mongodb
     restart: unless-stopped
     environment:
