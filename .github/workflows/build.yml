@@ -75,6 +75,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
+          command_timeout: 5m
       - name: Run docker-compose up
         uses: appleboy/ssh-action@master
         env:
