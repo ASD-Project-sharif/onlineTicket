@@ -51,7 +51,7 @@ jobs:
           source: "docker-compose.yml"
           target: "/root/backend"
       - name: Run docker-compose up
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
