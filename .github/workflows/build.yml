@@ -74,13 +74,12 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          action_timeout: 2m
+          action_timeout: 5m
           timeout: 2m
           source: |
             docker-compose.yml
             .env
           target: /root/backend
-          command_timeout: 5m
       - name: Run docker-compose up
         uses: appleboy/ssh-action@master
         env:
