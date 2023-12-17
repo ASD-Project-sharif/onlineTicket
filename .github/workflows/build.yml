@@ -78,7 +78,6 @@ jobs:
           timeout: 2m
           source: |
             docker-compose.yml
-            .env
           target: /root/backend
           command_timeout: 5m
       - name: Run docker-compose up
