@@ -10,7 +10,7 @@ jobs:
   
   build:
    needs: test
-   runs-on: ubuntu-22.04
+   runs-on: ubuntu-20.04
    steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -26,7 +26,7 @@ jobs:
   
   deploy:
     needs: build
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -35,19 +35,20 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          command_timeout: 2m
+          command_timeout: 5m
           script: |
             rm -f /root/backend/.env
             rm -f /root/backend/docker-compose.yml
       - name: Copy docker-compose file via ssh password
-        uses: appleboy/scp-action@v0.1.3
+        uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
+          command_timeout: 5m
           source: "docker-compose.yml"
           target: "/root/backend"
       - name: Set outputs
@@ -67,12 +68,13 @@ jobs:
           echo "IMAGE=${{ vars.IMAGE }}" >> .env
           echo "TAG=${{ steps.vars.outputs.sha_short }}" >> .env
       - name: Copy .env file via ssh password
-        uses: appleboy/scp-action@v0.1.4
+        uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
+          command_timeout: 5m
           source: ".env"
           target: "/root/backend"
       - name: Run docker-compose up
@@ -83,7 +85,7 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
           command_timeout: 5m
           envs: REGISTRY_PASSWORD,REGISTRY_USER
