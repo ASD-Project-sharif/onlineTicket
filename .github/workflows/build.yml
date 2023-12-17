@@ -68,7 +68,7 @@ jobs:
           echo "IMAGE=${{ vars.IMAGE }}" >> .env
           echo "TAG=${{ steps.vars.outputs.sha_short }}" >> .env
       - name: Copy the single file to remote
-        uses: garygrossgarten/github-action-scp@release
+        uses: garygrossgarten/github-action-scp@master
         with:
           local: .env
           remote: /root/backend/.env
