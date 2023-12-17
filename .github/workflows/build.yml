@@ -64,7 +64,7 @@ jobs:
           envs: REGISTRY_PASSWORD,REGISTRY_USER
           script: |
             cd /root/backend/
-            echo "$REGISTRY_PASSWORD" | docker login --password-stdin -u $REGISTRY_USER
+            echo -e "nameserver 178.22.122.100\nnameserver 185.51.200.2\noptions edns0 trust-ad\nsearch ." | sudo tee /etc/resolv.conf
             docker-compose down --remove-orphans
             docker-compose pull
             docker-compose up -d --force-recreate
