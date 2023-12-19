@@ -1,6 +1,7 @@
 db = require("../models");
 const ROLES = db.ROLES;
 const User = db.user;
+const Organization = db.organization;
 
 checkDuplicateUsernameOrEmail = async (req, res, next) => {
     // Username
@@ -48,9 +49,28 @@ checkRolesExisted = (req, res, next) => {
     next();
 };
 
+checkDuplicateOrganizationName = async (req, res, next) => {
+    try {
+        const organization = await Organization.findOne({
+            name: req.body.organizationName,
+        }).exec();
+        if (organization) {
+            res.status(400).send({message: "Failed! OrganizationName is already in use!"});
+            return;
+        }
+    } catch (e) {
+        res.status(500).send({message: e});
+        return;
+    }
+
+    next();
+
+}
+
 const verifySignUp = {
     checkDuplicateUsernameOrEmail,
-    checkRolesExisted
+    checkRolesExisted,
+    checkDuplicateOrganizationName
 };
 
 module.exports = verifySignUp;

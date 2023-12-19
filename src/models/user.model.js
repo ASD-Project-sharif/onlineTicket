@@ -10,7 +10,11 @@ const User = mongoose.model(
             {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "Role"
-            }
+            },
+        organization: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Organization"
+        },
 
     })
 );

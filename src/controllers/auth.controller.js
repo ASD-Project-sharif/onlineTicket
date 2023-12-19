@@ -2,6 +2,7 @@ const config = require("../config/auth.config");
 const db = require("../models");
 const User = db.user;
 const Role = db.role;
+const Organization = db.organization
 
 let jwt = require("jsonwebtoken");
 let bcrypt = require("bcryptjs");
@@ -26,6 +27,37 @@ exports.signup = async (req, res) => {
             user.save();
             res.send({message: "User was registered successfully!"});
         }
+    } catch (e) {
+        res.status(500).send({message: e});
+    }
+
+
+};
+
+exports.signupOrganization = async (req, res) => {
+    const organization = new Organization({
+        name: req.body.organizationName,
+        description: req.body.oranizationDescription,
+    });
+    await organization.save();
+
+    const organizationInfo = await Organization.findOne({
+        name: organization.name,
+    });
+
+    const organizationUser = new User({
+        username: req.body.username,
+        email: req.body.email,
+        password: bcrypt.hashSync(req.body.password, 8),
+        organization: organizationInfo._id
+    });
+
+    try {
+        await organizationUser.save();
+        const role = await Role.findOne({name: "admin"});
+        organizationUser.role = role._id;
+        organizationUser.save();
+        res.send({message: "Admin was registered successfully!"});
     } catch (e) {
         res.status(500).send({message: e});
     }
