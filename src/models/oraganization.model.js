@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const Organization = mongoose.model(
-    "User",
+    "Organization",
     new mongoose.Schema({
         name: String,
         description: String,
