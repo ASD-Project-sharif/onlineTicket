@@ -34,7 +34,7 @@ const Role = db.role;
 
 const setup = async () => {
     try {
-        await db.mongoose.connect(`mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`, {
+        await db.mongoose.connect(`mongodb://${process.env.DATABASE_HOST}:${process.env.DATABASE_PORT}/${process.env.DATABASE_NAME}`, {
             useNewUrlParser: true,
             useUnifiedTopology: true
         });
