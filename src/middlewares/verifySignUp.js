@@ -70,7 +70,7 @@ checkDuplicateOrganizationName = async (req, res, next) => {
 const verifySignUp = {
     checkDuplicateUsernameOrEmail,
     checkRolesExisted,
-    checkDuplicateOrganizationName
+    checkDuplicateOrganizationName,
 };
 
 module.exports = verifySignUp;

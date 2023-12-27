@@ -6,6 +6,10 @@ const Organization = mongoose.model(
         name: String,
         description: String,
         // logo: String,
+        admin: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        }
     })
 );
 
