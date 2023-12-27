@@ -1,4 +1,3 @@
-const config = require("../config/auth.config");
 const db = require("../models");
 const User = db.user;
 const Role = db.role;
@@ -91,7 +90,7 @@ signin = async (req, res) => {
         }
 
         const token = jwt.sign({id: user.id},
-            config.secret,
+            process.env.SECRET_KEY,
             {
                 algorithm: 'HS256',
                 allowInsecureKeySizes: true,
