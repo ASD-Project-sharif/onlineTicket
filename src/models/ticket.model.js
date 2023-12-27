@@ -28,6 +28,11 @@ const TicketSchema = new mongoose.Schema({
         enum: ["closed", "in_progress", "waiting_for_admin"],
         default: "waiting_for_admin"
     },
+    type: {
+        type: String,
+        enum: ["bug", "question", "suggestion"],
+        required: true
+    },
     created_at: {
         type: Date,
         default: Date.now,
