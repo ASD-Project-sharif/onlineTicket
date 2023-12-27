@@ -7,9 +7,10 @@ const Organization = db.organization
 let jwt = require("jsonwebtoken");
 let bcrypt = require("bcryptjs");
 
-exports.signup = async (req, res) => {
+signup = async (req, res) => {
     const user = new User({
         username: req.body.username,
+        name: req.body.name,
         email: req.body.email,
         password: bcrypt.hashSync(req.body.password, 8)
     });
@@ -34,7 +35,7 @@ exports.signup = async (req, res) => {
 
 };
 
-exports.signupOrganization = async (req, res) => {
+signupOrganization = async (req, res) => {
     const organization = new Organization({
         name: req.body.organizationName,
         description: req.body.oranizationDescription,
@@ -65,7 +66,7 @@ exports.signupOrganization = async (req, res) => {
 
 };
 
-exports.signin = async (req, res) => {
+signin = async (req, res) => {
     try {
         const user = await User.findOne({
             username: req.body.username
@@ -112,3 +113,11 @@ exports.signin = async (req, res) => {
     }
 
 };
+
+const AuthControllers = {
+    signup,
+    signupOrganization,
+    signin
+}
+
+module.exports = AuthControllers;

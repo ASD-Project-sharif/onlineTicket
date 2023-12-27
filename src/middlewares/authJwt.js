@@ -8,7 +8,7 @@ verifyToken = (req, res, next) => {
     let token = req.headers["x-access-token"];
 
     if (!token) {
-        return res.status(403).send({ message: "No token provided!" });
+        return res.status(403).send({message: "No token provided!"});
     }
 
     jwt.verify(token,
@@ -27,17 +27,17 @@ verifyToken = (req, res, next) => {
 isAdmin = (req, res, next) => {
     User.findById(req.userId).exec((err, user) => {
         if (err) {
-            res.status(500).send({ message: err });
+            res.status(500).send({message: err});
             return;
         }
 
         Role.find(
             {
-                _id: { $in: user.role }
+                _id: {$in: user.role}
             },
             (err, roles) => {
                 if (err) {
-                    res.status(500).send({ message: err });
+                    res.status(500).send({message: err});
                     return;
                 }
 
@@ -48,7 +48,7 @@ isAdmin = (req, res, next) => {
                     }
                 }
 
-                res.status(403).send({ message: "Require Admin Role!" });
+                res.status(403).send({message: "Require Admin Role!"});
             }
         );
     });
@@ -57,17 +57,17 @@ isAdmin = (req, res, next) => {
 isAgent = (req, res, next) => {
     User.findById(req.userId).exec((err, user) => {
         if (err) {
-            res.status(500).send({ message: err });
+            res.status(500).send({message: err});
             return;
         }
 
         Role.find(
             {
-                _id: { $in: user.roles }
+                _id: {$in: user.roles}
             },
             (err, roles) => {
                 if (err) {
-                    res.status(500).send({ message: err });
+                    res.status(500).send({message: err});
                     return;
                 }
 
@@ -78,7 +78,7 @@ isAgent = (req, res, next) => {
                     }
                 }
 
-                res.status(403).send({ message: "Require Agent Role!" });
+                res.status(403).send({message: "Require Agent Role!"});
             }
         );
     });
@@ -87,6 +87,7 @@ isAgent = (req, res, next) => {
 const authJwt = {
     verifyToken,
     isAdmin,
-    isAgent
+    isAgent,
+    // isFinalUser // todo: @mahdi
 };
 module.exports = authJwt;
