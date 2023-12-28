@@ -13,7 +13,8 @@ services:
     ports:
       - "${MONGO_PORT}:${MONGO_PORT}"
     volumes:
-      - /mongo-data:/data/db
+      - ./docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
 
   redis:
     restart: unless-stopped
@@ -37,7 +38,7 @@ services:
       DATABASE_NAME: ${MONGO_DB}
       DATABASE_USER: ${MONGO_INITDB_ROOT_USERNAME}
       DATABASE_PASS: ${MONGO_INITDB_ROOT_PASSWORD}
-      DATABASE_HOST: mongodb
+      DATABASE_HOST: ${MONGO_HOST}
       DATABASE_PORT: ${MONGO_PORT}
       REDIS_PASSWORD: ${REDIS_PASSWORD}
       DEBUG: ${DEBUG}
