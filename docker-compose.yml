@@ -12,6 +12,7 @@ services:
       MONGO_DB: ${MONGO_DB}
     ports:
       - "${MONGO_PORT}:${MONGO_PORT}"
+    command: ["--bind_ip", "0.0.0.0,::"]
     volumes:
       - /mongo-data:/data/db
       - ./docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro

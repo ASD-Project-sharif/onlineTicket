@@ -33,16 +33,16 @@ const Role = db.role;
 
 const setup = async () => {
     try {
-        const dbUrl =`mongodb://${process.env.DATABASE_USER}:${process.env.DATABASE_PASS}@${process.env.DATABASE_HOST}:${process.env.DATABASE_PORT}/${process.env.DATABASE_NAME}`
-        console.log(dbUrl)
+        const dbUrl =`mongodb://127.0.0.1:27017/ticketdb`;
         await db.mongoose.connect(dbUrl, {
             useNewUrlParser: true,
-            useUnifiedTopology: true
+            useUnifiedTopology: true,
         });
         console.log("Successfully connect to MongoDB.");
         initial();
     } catch (e) {
         console.log(`error`)
+        console.log(dbUrl)
         console.log(e)
     }
 }
