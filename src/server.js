@@ -31,25 +31,24 @@ app.use(
 const db = require("./models");
 const Role = db.role;
 
-const setup = async () => {
+const setupDatabase = async () => {
     try {
-        const dbUrl =`mongodb://127.0.0.1:27017/ticketdb`;
+        const dbUrl =`mongodb://${process.env.DATABASE_USER}:${process.env.DATABASE_PASS}@${process.env.DATABASE_HOST}:${process.env.DATABASE_PORT}/${process.env.DATABASE_NAME}}`;
         await db.mongoose.connect(dbUrl, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });
         console.log("Successfully connect to MongoDB.");
-        initial();
+        await createRolesIfNotExist();
     } catch (e) {
         console.log(`error`)
-        console.log(dbUrl)
         console.log(e)
     }
 }
 
-setup()
+setupDatabase()
 
-async function initial() {
+async function createRolesIfNotExist() {
     const count = await Role.estimatedDocumentCount();
     if (count === 0) {
         const user = new Role({
