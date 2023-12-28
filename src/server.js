@@ -4,15 +4,20 @@ const cookieSession = require("cookie-session");
 
 const app = express();
 
-var corsOptions = {
-    allowedHeaders: ["authorization", "Content-Type"], // you can change the headers
-    exposedHeaders: ["authorization"], // you can change the headers
-    origin: "*",
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    preflightContinue: false
+const corsOpts = {
+    origin: '*',
+
+    methods: [
+        'GET',
+        'POST',
+    ],
+
+    allowedHeaders: [
+        'Content-Type',
+    ],
 };
 
-app.use(cors(corsOptions));
+app.use(cors(corsOpts));
 
 // parse requests of content-type - application/json
 app.use(express.json());
