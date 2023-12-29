@@ -1,47 +1,39 @@
 const {findOneDocument} = require("../dataAccess/dataAccess");
 db = require("../models");
 
-checkDuplicateUsernameOrEmail = async (req, res, next) => {
-    // Username
-    try {
-        const user = await findOneDocument("User", {username: req.body.username})
-        if (user) {
-            res.status(400).send({message: "Failed! Username is already in use!"});
-            return;
-        }
-    } catch (e) {
-        res.status(500).send({message: e});
-        return;
-    }
 
-    // Email
-    try {
-        const user = await findOneDocument("User", {email: req.body.email})
-        if (user) {
-            res.status(400).send({message: "Failed! Email is already in use!"});
-            return;
-        }
-    } catch (e) {
-        res.status(500).send({message: e});
-        return;
-    }
-    next();
+const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
 };
 
-checkDuplicateOrganizationName = async (req, res, next) => {
-    try {
-        const organization = await findOneDocument("Organization", {name: req.body.organizationName})
-        if (organization) {
-            res.status(400).send({message: "Failed! OrganizationName is already in use!"});
-            return;
-        }
-    } catch (e) {
-        res.status(500).send({message: e});
+checkDuplicateUsernameOrEmail = async (req, res, next) => {
+    const userByUsername = await findOneDocument("User", {username: req.body.username})
+    if (userByUsername) {
+        res.status(400).send({message: "Failed! Username is already in use!"});
         return;
     }
 
-    next();
+    if (!isValidEmail(req.body.email)) {
+        res.status(400).send({message: "Bad Email Provided!"})
+        return;
+    }
 
+    const userByEmail = await findOneDocument("User", {email: req.body.email})
+    if (userByEmail) {
+        res.status(400).send({message: "Failed! Email is already in use!"});
+        return;
+    }
+    next();
+}
+
+checkDuplicateOrganizationName = async (req, res, next) => {
+    const organization = await findOneDocument("Organization", {name: req.body.organizationName})
+    if (organization) {
+        res.status(400).send({message: "Failed! OrganizationName is already in use!"});
+        return;
+    }
+    next();
 }
 
 const verifySignUp = {
