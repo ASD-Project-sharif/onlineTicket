@@ -35,6 +35,7 @@ addTicket = async (req, res) => {
         created_by: userId,
         assignee: organization.admin._id,
         organization: organizationId,
+        type: req.body.type
     });
 
     if (req.body.deadline) {
