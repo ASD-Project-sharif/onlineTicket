@@ -14,7 +14,7 @@ module.exports = function (app) {
         "/api/v1/ticket/add",
         [
             authJwt.verifyToken,
-            authJwt.isFinalUser
+            // authJwt.isFinalUser
         ],
         TicketControllers.addTicket
     );
