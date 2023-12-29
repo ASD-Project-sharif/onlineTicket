@@ -34,7 +34,7 @@ app.use(
 );
 
 const db = require("./models");
-const Role = db.role;
+const {createDocument, countDocuments} = require("./dataAccess/dataAccess");
 
 const setupDatabase = async () => {
     try {
@@ -44,7 +44,6 @@ const setupDatabase = async () => {
             useUnifiedTopology: true,
         });
         console.log("Successfully connect to MongoDB.");
-        await createRolesIfNotExist();
     } catch (e) {
         console.log(`error`)
         console.log(e)
@@ -52,26 +51,6 @@ const setupDatabase = async () => {
 }
 
 setupDatabase()
-
-async function createRolesIfNotExist() {
-    const count = await Role.estimatedDocumentCount();
-    if (count === 0) {
-        const user = new Role({
-            name: "user"
-        })
-        await user.save();
-
-        const agent = new Role({
-            name: "agent"
-        });
-        await agent.save();
-
-        const admin = new Role({
-            name: "admin"
-        });
-        await admin.save();
-    }
-}
 
 // simple route
 app.get("/", (req, res) => {

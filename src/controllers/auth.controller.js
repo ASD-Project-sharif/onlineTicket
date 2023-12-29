@@ -1,32 +1,20 @@
-const db = require("../models");
-const User = db.user;
-const Role = db.role;
-const Organization = db.organization
-
 let jwt = require("jsonwebtoken");
 let bcrypt = require("bcryptjs");
+const {findOneDocument, createDocument} = require("../dataAccess/dataAccess");
+const UserRole = require("../models/userRoles");
 
 signup = async (req, res) => {
-    const user = new User({
+    const user = {
         username: req.body.username,
         name: req.body.name,
         email: req.body.email,
-        password: bcrypt.hashSync(req.body.password, 8)
-    });
+        password: bcrypt.hashSync(req.body.password, 8),
+        role: UserRole.USER
+    };
 
     try {
-        await user.save();
-        if (req.body.role) {
-            const role = await Role.findOne({name: {$in: req.body.role}});
-            user.role = role._id;
-            await user.save();
-            res.send({message: "User was registered successfully!"});
-        } else {
-            const role = await Role.findOne({name: "user"});
-            user.role = role._id;
-            user.save();
-            res.send({message: "User was registered successfully!"});
-        }
+        await createDocument("User", user)
+        res.send({message: "User was registered successfully!"});
     } catch (e) {
         res.status(500).send({message: e});
     }
@@ -35,28 +23,21 @@ signup = async (req, res) => {
 };
 
 signupOrganization = async (req, res) => {
-    const organization = new Organization({
+    const organization = {
         name: req.body.organizationName,
-        description: req.body.oranizationDescription,
-    });
-    await organization.save();
-
-    const organizationInfo = await Organization.findOne({
-        name: organization.name,
-    });
-
-    const organizationUser = new User({
+        description: req.body.organizationDescription
+    }
+    const organizationInfo = await createDocument("Organization", organization)
+    const organizationUser = {
         username: req.body.username,
         email: req.body.email,
         password: bcrypt.hashSync(req.body.password, 8),
-        organization: organizationInfo._id
-    });
+        organization: organizationInfo._id,
+        role: UserRole.ADMIN
+    };
 
     try {
-        await organizationUser.save();
-        const role = await Role.findOne({name: "admin"});
-        organizationUser.role = role._id;
-        organizationUser.save();
+        await createDocument("User", organizationUser);
         res.send({message: "Admin was registered successfully!"});
     } catch (e) {
         res.status(500).send({message: e});
@@ -67,12 +48,7 @@ signupOrganization = async (req, res) => {
 
 signin = async (req, res) => {
     try {
-        const user = await User.findOne({
-            username: req.body.username
-        })
-            .populate("role", "-__v")
-            .exec();
-
+        const user = await findOneDocument("User", {username: req.body.username});
         if (!user) {
             return res.status(404).send({message: "User Not found."});
         }
@@ -97,7 +73,7 @@ signin = async (req, res) => {
                 expiresIn: 86400, // 24 hours
             });
 
-        let authority = "ROLE_" + user.role.name.toUpperCase();
+        let authority = "ROLE_" + user.role.toUpperCase();
 
         res.status(200).send({
             id: user._id,

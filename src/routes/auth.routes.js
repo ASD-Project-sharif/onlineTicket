@@ -14,7 +14,6 @@ module.exports = function(app) {
         "/api/v1/auth/signup/user",
         [
             verifySignUp.checkDuplicateUsernameOrEmail,
-            verifySignUp.checkRolesExisted
         ],
         AuthControllers.signup
     );
@@ -24,7 +23,6 @@ module.exports = function(app) {
         [
             verifySignUp.checkDuplicateOrganizationName,
             verifySignUp.checkDuplicateUsernameOrEmail,
-            verifySignUp.checkRolesExisted
         ],
         AuthControllers.signupOrganization
     );
