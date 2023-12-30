@@ -2,7 +2,7 @@ const {createDocument, findOneDocument} = require('../dataAccess/dataAccess');
 
 const AuthControllers = require("../controllers/auth.controller")
 const bcrypt = require("bcryptjs");
-const UserRole = require('../models/userRoles');
+const UserRole = require('../models/enums/userRoles.enum');
 
 
 jest.mock('../dataAccess/dataAccess');

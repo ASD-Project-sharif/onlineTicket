@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const TicketType = require("./enums/ticketType.enum");
+const TicketStatus = require("./enums/ticketStatus.enum");
 
 const TicketSchema = new mongoose.Schema({
     title: {
@@ -25,12 +27,12 @@ const TicketSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["closed", "in_progress", "waiting_for_admin"],
+        enum: Object.values(TicketStatus),
         default: "waiting_for_admin"
     },
     type: {
         type: String,
-        enum: ["bug", "question", "suggestion"],
+        enum: Object.values(TicketType),
         required: true
     },
     created_at: {

@@ -1,18 +1,23 @@
 const {findOneDocument, createDocument, mongooseClient} = require("../dataAccess/dataAccess");
-const UserRole = require("../models/userRoles");
-const {isPasswordDifficultEnough, arePasswordsEqual} = require("password.services")
-const {generateToken} = require("token.services")
+const UserRole = require("../models/enums/userRoles.enum");
+const {isPasswordDifficultEnough, arePasswordsEqual, getPasswordHash} = require("./password.services")
+const {generateToken} = require("./token.services")
 
 signup = async (req, res) => {
     if (!isPasswordDifficultEnough(req.body.password)) {
         res.status(400).send({message: "password is not difficult enough!"})
         return;
     }
+    if (req.body.password !== req.body.confirm) {
+        res.status(400).send({message: "passwords are different!"});
+        return;
+    }
+
     const user = {
         username: req.body.username,
         name: req.body.name,
         email: req.body.email,
-        password: bcrypt.hashSync(req.body.password, 8),
+        password: getPasswordHash(req.body.password),
         role: UserRole.USER
     };
     await createDocument("User", user)

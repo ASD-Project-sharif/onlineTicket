@@ -35,6 +35,11 @@ async function countDocuments(modelName) {
     return Model.estimatedDocumentCount();
 }
 
+async function countDocumentsByQuery(modelName, query) {
+    const Model = mongoose.model(modelName);
+    return Model.countDocuments(query);
+}
+
 async function findOneDocument(modelName, query) {
     const Model = mongoose.model(modelName);
     const document = await Model.findOne(query).exec();
@@ -49,5 +54,6 @@ module.exports = {
     updateDocumentById,
     deleteDocumentById,
     countDocuments,
-    findOneDocument
+    findOneDocument,
+    countDocumentsByQuery
 };
