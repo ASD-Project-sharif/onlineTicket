@@ -14,7 +14,8 @@ async function getAllDocuments(modelName) {
 
 async function getDocumentById(modelName, id) {
     const Model = mongoose.model(modelName);
-    return Model.findById(id);
+    const document = Model.findById(id);
+    return document;
 }
 
 async function updateDocumentById(modelName, id, data) {

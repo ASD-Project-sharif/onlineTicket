@@ -1,6 +1,7 @@
 const {isUserSuspended} = require("../repository/suspendedUser.repository");
-const {hasUserReachedToMaximumOpenTicket} = require("../repository/ticket.repository");
-const {getOrganizationAdminId, createNewTicket} = require("../repository/organization.repository");
+const {hasUserReachedToMaximumOpenTicket, createNewTicket} = require("../repository/ticket.repository");
+const {getOrganizationAdminId} = require("../repository/organization.repository");
+const {isNormalUser} = require("../repository/user.repository");
 const TicketType = require("../models/enums/ticketType.enum");
 
 
@@ -41,6 +42,12 @@ const canUserCreateNewTicket = async (req, res) => {
         return false;
     }
 
+    const isUserNormal = await isNormalUser(req.userId);
+    if (!isUserNormal) {
+        res.status(403).send({message: "Only normal users can create ticket"});
+        return false;
+    }
+
     const isUserSuspendedInThisOrganization = await isUserSuspended(req.userId, req.body.organizationId);
     if (isUserSuspendedInThisOrganization) {
         res.status(403).send({message: "You are Suspended!"});
@@ -78,6 +85,7 @@ createTicket = async (req, res) => {
         ticket.deadline = new Date(req.body.deadline);
     }
     await createNewTicket(ticket);
+    res.send({message: "Ticket added successfully!"});
 }
 
 

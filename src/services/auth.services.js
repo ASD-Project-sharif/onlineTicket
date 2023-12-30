@@ -1,4 +1,4 @@
-const {findOneDocument, createDocument} = require("../dataAccess/dataAccess");
+const {findOneDocument, createDocument, updateDocumentById} = require("../dataAccess/dataAccess");
 const UserRole = require("../models/enums/userRoles.enum");
 const {isPasswordDifficultEnough, arePasswordsEqual, getPasswordHash} = require("./password.services")
 const {generateToken} = require("./token.services")
@@ -42,12 +42,16 @@ signupOrganization = async (req, res) => {
         const organizationUser = {
             username: req.body.username,
             email: req.body.email,
-            password:getPasswordHash(req.body.password),
+            password: getPasswordHash(req.body.password),
             organization: organization._id,
             role: UserRole.ADMIN
         };
 
-        await createDocument("User", organizationUser);
+        const admin = await createDocument("User", organizationUser);
+
+        organization.admin = admin._id;
+        await updateDocumentById("Organization", organization._id, organization);
+
         await session.commitTransaction();
         res.send({message: "Admin was registered successfully!"});
     } catch (e) {
