@@ -11,7 +11,7 @@ const User = mongoose.model(
         role: {
             type: String,
             required: true,
-            enum: Object,
+            enum: Object.values(UserRole),
         },
         organization: {
             type: mongoose.Schema.Types.ObjectId,

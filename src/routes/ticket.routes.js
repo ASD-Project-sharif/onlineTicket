@@ -13,44 +13,43 @@ module.exports = function (app) {
     app.post(
         "/api/v1/ticket/add",
         [
-            authJwt.verifyToken,
-            // authJwt.isFinalUser
+            authJwt.verifyToken
         ],
         TicketControllers.addTicket
     );
 
-    app.post(
-        "/api/v1/ticket/edit/",
-        [
-            authJwt.verifyToken,
-            authJwt.isFinalUser
-        ],
-        TicketControllers.editTicket
-    );
-
-    app.get(
-        "/api/v1/ticket/get/:id",
-        [
-            authJwt.verifyToken
-        ],
-        TicketControllers.getTicket
-    );
-
-    app.get(
-        "/api/v1/ticket/get/",
-        [
-            authJwt.verifyToken,
-            authJwt.isFinalUser
-        ],
-        TicketControllers.getOrganiztionTickets
-    );
-
-    app.get(
-        "/api/v1/ticket/user/get",
-        [
-            authJwt.verifyToken,
-            authJwt.isFinalUser
-        ],
-        TicketControllers.getUserTickets
-    );
+    // app.post(
+    //     "/api/v1/ticket/edit/",
+    //     [
+    //         authJwt.verifyToken,
+    //         authJwt.isFinalUser
+    //     ],
+    //     TicketControllers.editTicket
+    // );
+    //
+    // app.get(
+    //     "/api/v1/ticket/get/:id",
+    //     [
+    //         authJwt.verifyToken
+    //     ],
+    //     TicketControllers.getTicket
+    // );
+    //
+    // app.get(
+    //     "/api/v1/ticket/get/",
+    //     [
+    //         authJwt.verifyToken,
+    //         authJwt.isFinalUser
+    //     ],
+    //     TicketControllers.getOrganiztionTickets
+    // );
+    //
+    // app.get(
+    //     "/api/v1/ticket/user/get",
+    //     [
+    //         authJwt.verifyToken,
+    //         authJwt.isFinalUser
+    //     ],
+    //     TicketControllers.getUserTickets
+    // );
 };

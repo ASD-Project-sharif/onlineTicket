@@ -1,7 +1,8 @@
-const {findOneDocument, createDocument, mongooseClient} = require("../dataAccess/dataAccess");
+const {findOneDocument, createDocument} = require("../dataAccess/dataAccess");
 const UserRole = require("../models/enums/userRoles.enum");
 const {isPasswordDifficultEnough, arePasswordsEqual, getPasswordHash} = require("./password.services")
 const {generateToken} = require("./token.services")
+const mongoose = require("mongoose");
 
 signup = async (req, res) => {
     if (!isPasswordDifficultEnough(req.body.password)) {
@@ -30,7 +31,7 @@ signupOrganization = async (req, res) => {
         return;
     }
 
-    const session = await mongooseClient.startSession();
+    const session = await mongoose.startSession();
     session.startTransaction();
     try {
         const organizationData = {
@@ -41,7 +42,7 @@ signupOrganization = async (req, res) => {
         const organizationUser = {
             username: req.body.username,
             email: req.body.email,
-            password: bcrypt.hashSync(req.body.password, 8),
+            password:getPasswordHash(req.body.password),
             organization: organization._id,
             role: UserRole.ADMIN
         };
