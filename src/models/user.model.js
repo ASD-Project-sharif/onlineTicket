@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const UserRole = require("./userRoles");
+const UserRole = require("./enums/userRoles.enum");
 
 const User = mongoose.model(
     "User",
@@ -11,7 +11,7 @@ const User = mongoose.model(
         role: {
             type: String,
             required: true,
-            enum: [UserRole.USER, UserRole.ADMIN, UserRole.AGENT],
+            enum: Object.values(UserRole),
         },
         organization: {
             type: mongoose.Schema.Types.ObjectId,

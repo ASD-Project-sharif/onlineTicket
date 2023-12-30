@@ -12,18 +12,23 @@ const isPasswordDifficultEnough = (password) => {
     return passwordSchema.validate(password, {list: true}).length === 0;
 }
 
-const arePasswordsEqual = (dbPassword, userInoutPassword) => {
+const arePasswordsEqual = (userInoutPassword, dbPassword) => {
     return bcrypt.compareSync(
         userInoutPassword,
         dbPassword
     );
 }
 
+const getPasswordHash = (password) => {
+    return bcrypt.hashSync(password, 8);
+}
 
-module.exports = [
+
+module.exports = {
     isPasswordDifficultEnough,
-    arePasswordsEqual
-]
+    arePasswordsEqual,
+    getPasswordHash
+}
 
 
 

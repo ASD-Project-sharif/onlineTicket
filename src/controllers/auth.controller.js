@@ -1,15 +1,15 @@
-const {AuthServices} = require("../services/auth.services")
+const AuthServices = require("../services/auth.services")
 
 signup = async (req, res) => {
-    AuthServices.signup(req);
+    await AuthServices.signup(req, res);
 };
 
 signupOrganization = async (req, res) => {
-    AuthServices.signupOrganization(req);
+    await AuthServices.signupOrganization(req, res);
 };
 
 signin = async (req, res) => {
-    AuthServices.signIn(req, res);
+    await AuthServices.signIn(req, res);
 };
 
 const AuthControllers = {

@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const db = require("../models");
+const UserRepository = require("../repository/user.repository")
 const User = db.user;
 const Role = db.role;
 
@@ -10,17 +11,19 @@ verifyToken = (req, res, next) => {
         return res.status(403).send({message: "No token provided!"});
     }
 
-    jwt.verify(token,
-        process.env.SECRET_KEY,
-        (err, decoded) => {
-            if (err) {
-                return res.status(401).send({
-                    message: "Unauthorized!",
-                });
-            }
-            req.userId = decoded.id;
-            next();
-        });
+    jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+        if (err) {
+            return res.status(401).send({message: "Unauthorized!"});
+        }
+
+        const user = User.findById(decoded.id).exec();
+        if (!user) {
+            return res.status(401).send({message: "Unauthorized!"});
+        }
+        req.userId = decoded.id;
+        next();
+    });
+
 };
 
 isAdmin = (req, res, next) => {
