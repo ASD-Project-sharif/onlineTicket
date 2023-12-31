@@ -18,14 +18,13 @@ module.exports = function (app) {
         TicketControllers.addTicket
     );
 
-    // app.post(
-    //     "/api/v1/ticket/edit/",
-    //     [
-    //         authJwt.verifyToken,
-    //         authJwt.isFinalUser
-    //     ],
-    //     TicketControllers.editTicket
-    // );
+    app.post(
+        "/api/v1/ticket/edit/:id",
+        [
+            authJwt.verifyToken
+        ],
+        TicketControllers.editTicket
+    );
     //
     // app.get(
     //     "/api/v1/ticket/get/:id",

@@ -1,12 +1,12 @@
-const {isUserSuspended} = require("../repository/suspendedUser.repository");
-const {hasUserReachedToMaximumOpenTicket, createNewTicket} = require("../repository/ticket.repository");
-const {getOrganizationAdminId} = require("../repository/organization.repository");
-const {isNormalUser} = require("../repository/user.repository");
+const SuspendedUserRepository = require("../repository/suspendedUser.repository");
+const TicketRepository = require("../repository/ticket.repository");
+const OrganizationRepository = require("../repository/organization.repository");
+const UserRepository = require("../repository/user.repository");
 const TicketType = require("../models/enums/ticketType.enum");
 
 
 const isInputDataValid = (req, res) => {
-    if (!Object.values(TicketType).includes(req.body.type)) {
+    if (req.body.type && !Object.values(TicketType).includes(req.body.type)) {
         res.status(400).send({message: "ticket type is invalid!"});
         return false;
     }
@@ -36,25 +36,25 @@ const isInputDataValid = (req, res) => {
 }
 
 const canUserCreateNewTicket = async (req, res) => {
-    const adminId = await getOrganizationAdminId(req.body.organizationId);
+    const adminId = await OrganizationRepository.getOrganizationAdminId(req.body.organizationId);
     if (adminId === null) {
         res.status(403).send({message: "Organization is not correct"});
         return false;
     }
 
-    const isUserNormal = await isNormalUser(req.userId);
+    const isUserNormal = await UserRepository.isNormalUser(req.userId);
     if (!isUserNormal) {
         res.status(403).send({message: "Only normal users can create ticket"});
         return false;
     }
 
-    const isUserSuspendedInThisOrganization = await isUserSuspended(req.userId, req.body.organizationId);
+    const isUserSuspendedInThisOrganization = await SuspendedUserRepository.isUserSuspended(req.userId, req.body.organizationId);
     if (isUserSuspendedInThisOrganization) {
         res.status(403).send({message: "You are Suspended!"});
         return false;
     }
 
-    if (await hasUserReachedToMaximumOpenTicket(req.userId)) {
+    if (await TicketRepository.hasUserReachedToMaximumOpenTicket(req.userId)) {
         res.status(403).send({message: "You can not have more than 30 open tickets!"});
         return false;
     }
@@ -62,6 +62,26 @@ const canUserCreateNewTicket = async (req, res) => {
     return true;
 }
 
+const canUserEditTicket = async (req, res) => {
+    const ticketId = req.params.id;
+    const ticketExist = await TicketRepository.hasTicketExist(ticketId);
+    if (!ticketExist) {
+        res.status(403).send({message: "Ticket does not exist!"})
+        return false;
+    }
+    const isTicketOpen = await TicketRepository.isTicketOpen(ticketId);
+    if (!isTicketOpen) {
+        res.status(403).send({message: "you can not edit closed ticket!"})
+        return false;
+    }
+    const ticketReporterId = await TicketRepository.getTicketReporterId(ticketId);
+    if (ticketReporterId === req.userId) {
+        res.status(403).send({message: "this ticket does not belong to you!"})
+        return false;
+    }
+
+    return true;
+}
 
 createTicket = async (req, res) => {
     if (!isInputDataValid(req, res)) {
@@ -76,7 +96,7 @@ createTicket = async (req, res) => {
         title: req.body.title,
         description: req.body.description,
         created_by: req.userId,
-        assignee: await getOrganizationAdminId(req.body.organizationId),
+        assignee: await OrganizationRepository.getOrganizationAdminId(req.body.organizationId),
         organization: req.body.organizationId,
         type: req.body.type
     };
@@ -84,13 +104,36 @@ createTicket = async (req, res) => {
     if (req.body.deadline) {
         ticket.deadline = new Date(req.body.deadline);
     }
-    await createNewTicket(ticket);
+    await TicketRepository.createNewTicket(ticket);
     res.send({message: "Ticket added successfully!"});
+}
+
+editTicket = async (req, res) => {
+    if (!isInputDataValid(req, res)) {
+        return;
+    }
+    const canEdit = await canUserEditTicket(req, res);
+    if (!canEdit) {
+        return;
+    }
+
+    const ticket = {
+        title: req.body.title,
+        description: req.body.description
+    };
+
+    if (req.body.deadline) {
+        ticket.deadline = new Date(req.body.deadline);
+    }
+
+    await TicketRepository.editTicket(req.params.id, ticket);
+    res.send({message: "ticket edited successfully"});
 }
 
 
 const TicketServices = {
-    createTicket
+    createTicket,
+    editTicket,
 }
 
 module.exports = TicketServices;
