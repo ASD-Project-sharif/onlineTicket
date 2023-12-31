@@ -8,9 +8,14 @@ editTicket = async (req, res) => {
     await TicketServices.editTicket(req, res);
 }
 
+changeStatus = async (req, res) => {
+    await TicketServices.changeTicketStatus(req, res);
+}
+
 const TicketControllers = {
     addTicket,
-    editTicket
+    editTicket,
+    changeStatus
 }
 
 module.exports = TicketControllers;

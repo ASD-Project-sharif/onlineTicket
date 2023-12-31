@@ -28,11 +28,17 @@ isAgent = async (userId) => {
     return user.role === UserRole.AGENT;
 }
 
+isOrganizationUser = async (userId) => {
+    const user = await getDocumentById("User", userId)
+    return user.role === UserRole.ADMIN || user.role === UserRole.AGENT;
+}
+
 const UserRepository = {
     hasUserExist,
     isNormalUser,
     isAdmin,
-    isAgent
+    isAgent,
+    isOrganizationUser
 }
 
 module.exports = UserRepository;

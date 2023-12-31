@@ -3,6 +3,7 @@ const TicketRepository = require("../repository/ticket.repository");
 const OrganizationRepository = require("../repository/organization.repository");
 const UserRepository = require("../repository/user.repository");
 const TicketType = require("../models/enums/ticketType.enum");
+const TicketStatus = require("../models/enums/ticketStatus.enum");
 const TimeServices = require("./time.services");
 
 
@@ -132,10 +133,44 @@ editTicket = async (req, res) => {
     res.send({message: "ticket edited successfully"});
 }
 
+async function canUserOpenOrCloseTicket(req, res) {
+    const ticketId = req.params.id;
+
+    const ticketExist = await TicketRepository.hasTicketExist(ticketId);
+    if (!ticketExist) {
+        res.status(403).send({message: "Ticket does not exist!"})
+        return false;
+    }
+
+    const canUserChangeTicketStatus = await UserRepository.isOrganizationUser(req.userId);
+    if (!canUserChangeTicketStatus) {
+        res.status(403).send({message: "You can not open/close a Ticket"})
+        return false;
+    }
+
+    return true;
+}
+
+changeTicketStatus = async (req, res) => {
+    const canChange = await canUserOpenOrCloseTicket(req, res)
+    if (!canChange) {
+        return;
+    }
+    let shouldOpen = Boolean(req.body.open);
+    const ticket = {
+        status: TicketStatus.IN_PROGRESS,
+        open: shouldOpen
+    }
+
+    await TicketRepository.editTicket(req.params.id, ticket)
+    res.status(200).send({message: "Ticket " + (shouldOpen ? "Opened" : "Closed")})
+}
+
 
 const TicketServices = {
     createTicket,
     editTicket,
+    changeTicketStatus
 }
 
 module.exports = TicketServices;

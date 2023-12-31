@@ -102,6 +102,46 @@ module.exports = function (app) {
         TicketControllers.editTicket
     );
 
+    /**
+     * @swagger
+     * /api/v1/ticket/change/status/{id}:
+     *   post:
+     *     summary: change a ticket status
+     *     description: Open or close a ticket
+     *     tags:
+     *       - Ticket
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         description: ID of the ticket to be edited
+     *         required: true
+     *         schema:
+     *           type: string
+     *     requestBody:
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               open:
+     *                 type: boolean
+     *                 description: ticket should be closed or open
+     *     responses:
+     *       '200':
+     *         description: Ticket edited successfully
+     *       '400':
+     *         description: Bad request, check the request payload
+     *       '403':
+     *         description: Unauthorized, token is missing/invalid, or you do nor have access to edit
+     */
+
+    app.post(
+        "/api/v1/ticket/change/status/:id",
+        [
+            authJwt.verifyToken
+        ],
+        TicketControllers.changeStatus
+    )
     //
     // app.get(
     //     "/api/v1/ticket/get/:id",

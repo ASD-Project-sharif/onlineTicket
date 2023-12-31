@@ -28,7 +28,11 @@ const TicketSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: Object.values(TicketStatus),
-        default: "waiting_for_admin"
+        default: TicketStatus.WAITING_FOR_ADMIN
+    },
+    open: {
+        type: Boolean,
+        default: true
     },
     type: {
         type: String,
