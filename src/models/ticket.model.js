@@ -5,11 +5,13 @@ const TicketStatus = require("./enums/ticketStatus.enum");
 const TicketSchema = new mongoose.Schema({
     title: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
     description: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
     created_by: {
         type: mongoose.Schema.Types.ObjectId,
@@ -29,10 +31,6 @@ const TicketSchema = new mongoose.Schema({
         type: String,
         enum: Object.values(TicketStatus),
         default: TicketStatus.WAITING_FOR_ADMIN
-    },
-    open: {
-        type: Boolean,
-        default: true
     },
     type: {
         type: String,

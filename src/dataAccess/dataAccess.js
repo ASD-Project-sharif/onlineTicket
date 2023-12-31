@@ -19,10 +19,11 @@ async function getDocumentById(modelName, id) {
 
 async function updateDocumentById(modelName, id, data) {
     const Model = mongoose.model(modelName);
-    return Model.findByIdAndUpdate(id, data, {
+    const document = Model.findByIdAndUpdate(id, data, {
         new: true,
         runValidators: true,
     });
+    return document;
 }
 
 async function deleteDocumentById(modelName, id) {
