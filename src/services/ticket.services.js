@@ -63,7 +63,7 @@ const canUserCreateNewTicket = async (req, res) => {
 }
 
 const canUserEditTicket = async (req, res) => {
-    const ticketId = req.param.id;
+    const ticketId = req.params.id;
     const ticketExist = await TicketRepository.hasTicketExist(ticketId);
     if (!ticketExist) {
         res.status(403).send({message: "Ticket does not exist!"})
@@ -126,7 +126,7 @@ editTicket = async (req, res) => {
         ticket.deadline = new Date(req.body.deadline);
     }
 
-    await TicketRepository.editTicket(req.param.id, ticket);
+    await TicketRepository.editTicket(req.params.id, ticket);
     res.send({message: "ticket edited successfully"});
 }
 
