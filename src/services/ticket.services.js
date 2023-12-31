@@ -38,8 +38,8 @@ const isInputDataValid = (req, res) => {
 }
 
 const canUserCreateNewTicket = async (req, res) => {
-    const adminId = await OrganizationRepository.getOrganizationAdminId(req.body.organizationId);
-    if (adminId === null) {
+    const organizationExist = await OrganizationRepository.hasOrganizationExist(req.body.organizationId);
+    if (!organizationExist) {
         res.status(403).send({message: "Organization is not correct"});
         return false;
     }
