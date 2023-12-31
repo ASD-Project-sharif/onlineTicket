@@ -4,7 +4,8 @@ const {
     mongooseClient,
     getDocumentById,
     countDocuments,
-    countDocumentsByQuery
+    countDocumentsByQuery,
+    updateDocumentById
 } = require("../dataAccess/dataAccess");
 
 const TicketStatus = require("../models/enums/ticketStatus.enum")
@@ -18,14 +19,38 @@ hasUserReachedToMaximumOpenTicket = async (userId) => {
     return ticketCount >= 30;
 }
 
+isTicketOpen = async (ticketId) => {
+    const ticket = await getDocumentById("Ticket", ticketId);
+    return ticket.status !== TicketStatus.CLOSED;
+}
+
+hasTicketExist = async (ticketId) => {
+    const ticket = await getDocumentById("Ticket", ticketId);
+    return ticket !== null;
+}
+
+getTicketReporterId = async (ticketId) => {
+    const ticket = await getDocumentById("Ticket", ticketId);
+    return ticket.created_by._id;
+}
+
 createNewTicket = async (data) => {
     return await createDocument("Ticket", data);
 }
 
 
+editTicket = async (id, data) => {
+    return await updateDocumentById("Ticket", id, data);
+}
+
+
 const TicketRepository = {
     hasUserReachedToMaximumOpenTicket,
-    createNewTicket
+    createNewTicket,
+    editTicket,
+    isTicketOpen,
+    getTicketReporterId,
+    hasTicketExist
 }
 
 module.exports = TicketRepository;

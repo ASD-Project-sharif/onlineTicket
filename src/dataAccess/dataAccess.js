@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const mongooseClient = mongoose.Mongoose;
 
 async function createDocument(modelName, data) {
     const Model = mongoose.model(modelName);
@@ -48,7 +47,6 @@ async function findOneDocument(modelName, query) {
 }
 
 module.exports = {
-    mongooseClient,
     createDocument,
     getAllDocuments,
     getDocumentById,
