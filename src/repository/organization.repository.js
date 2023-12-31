@@ -15,9 +15,20 @@ getOrganizationAdminId = async (organizationId) => {
     return null;
 }
 
+hasOrganizationExist = async (organizationId) => {
+    const organization = await getDocumentById("Organization", organizationId)
+    return organization !== null;
+}
+
+getOrganization = async (organizationId) => {
+    return await getDocumentById("Organization", organizationId);
+}
+
 
 const OrganizationRepository = {
     getOrganizationAdminId,
+    hasOrganizationExist,
+    getOrganization
 }
 
 module.exports = OrganizationRepository;
