@@ -51,11 +51,6 @@ const TicketSchema = new mongoose.Schema({
     }
 });
 
-// Middleware to update the 'updated_at' field before each 'update' operation
-TicketSchema.pre('updateOne', function (next) {
-    this.updateOne({}, {$set: {updated_at: new Date()}});
-    next();
-});
 
 const Ticket = mongoose.model("Ticket", TicketSchema);
 module.exports = Ticket;

@@ -3,6 +3,7 @@ const TicketRepository = require("../repository/ticket.repository");
 const OrganizationRepository = require("../repository/organization.repository");
 const UserRepository = require("../repository/user.repository");
 const TicketType = require("../models/enums/ticketType.enum");
+const TimeServices = require("./time.services");
 
 
 const isInputDataValid = (req, res) => {
@@ -27,7 +28,7 @@ const isInputDataValid = (req, res) => {
             res.status(400).send({message: "Invalid deadline format"});
             return false;
         }
-        if (deadline <= new Date()) {
+        if (deadline <= TimeServices.Now()) {
             res.status(400).send({message: "Deadline must be after now!!"});
             return false;
         }
@@ -119,7 +120,8 @@ editTicket = async (req, res) => {
 
     const ticket = {
         title: req.body.title,
-        description: req.body.description
+        description: req.body.description,
+        updated_at: TimeServices.Now()
     };
 
     if (req.body.deadline) {

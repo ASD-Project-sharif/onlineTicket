@@ -10,6 +10,43 @@ module.exports = function (app) {
         next();
     });
 
+    /**
+     * @swagger
+     * /api/v1/ticket/add:
+     *   post:
+     *     summary: Add a new ticket
+     *     description: Create a new ticket with the provided details.
+     *     tags:
+     *       - Ticket
+     *     requestBody:
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               title:
+     *                 type: string
+     *                 description: Title of the ticket
+     *               description:
+     *                 type: string
+     *                 description: Description of the ticket
+     *               organizationId:
+     *                 type: string
+     *                 description: ID of the organization
+     *               type:
+     *                 type: string
+     *                 description: Type of the ticket (e.g., bug, question, suggestion)
+     *               deadline:
+     *                  type: string
+     *                  description: New deadline for the ticket
+     *     responses:
+     *       '200':
+     *         description: Ticket added successfully
+     *       '400':
+     *         description: Bad request, check the request payload
+     *       '403':
+     *         description: Forbidden, user not allowed to add a ticket
+     */
     app.post(
         "/api/v1/ticket/add",
         [
@@ -18,6 +55,45 @@ module.exports = function (app) {
         TicketControllers.addTicket
     );
 
+
+    /**
+     * @swagger
+     * /api/v1/ticket/edit/{id}:
+     *   post:
+     *     summary: Edit a ticket by ID
+     *     description: Edit an existing ticket using its unique identifier.
+     *     tags:
+     *       - Ticket
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         description: ID of the ticket to be edited
+     *         required: true
+     *         schema:
+     *           type: string
+     *     requestBody:
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               title:
+     *                 type: string
+     *                 description: New title for the ticket
+     *               description:
+     *                 type: string
+     *                 description: New description for the ticket
+     *               deadline:
+     *                  type: string
+     *                  description: New deadline for the ticket
+     *     responses:
+     *       '200':
+     *         description: Ticket edited successfully
+     *       '400':
+     *         description: Bad request, check the request payload
+     *       '403':
+     *         description: Unauthorized, token is missing/invalid, or you do nor have access to edit
+     */
     app.post(
         "/api/v1/ticket/edit/:id",
         [
@@ -25,6 +101,7 @@ module.exports = function (app) {
         ],
         TicketControllers.editTicket
     );
+
     //
     // app.get(
     //     "/api/v1/ticket/get/:id",

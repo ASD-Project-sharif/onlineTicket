@@ -3,6 +3,8 @@ const cors = require("cors");
 const cookieSession = require("cookie-session");
 const sanitizeUserInput = require("./middlewares/xss.middleware")
 const errorHandler = require("./middlewares/errors.middleware")
+const specs = require("./middlewares/swagger.middleware");
+const swaggerUi = require('swagger-ui-express');
 const app = express();
 const db = require("./models");
 
@@ -23,6 +25,7 @@ const setupDatabase = async () => {
 function setupUses(app) {
     app.use(express.json());
     app.use(sanitizeUserInput);
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
     app.use(express.urlencoded({extended: true}));
     app.use(
         cookieSession({
@@ -62,7 +65,6 @@ function setupRoutes(app) {
 setupDatabase()
 setupUses(app);
 setupRoutes(app)
-
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
