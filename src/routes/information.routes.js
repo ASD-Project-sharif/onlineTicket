@@ -1,6 +1,9 @@
 const {authJwt} = require("../middlewares");
 const InformationControllers = require("../controllers/information.controller");
 
+const API_VERSION = "/api/v1";
+const API_TAG = "information";
+
 module.exports = function (app) {
     app.use(function (req, res, next) {
         res.header(
@@ -34,7 +37,7 @@ module.exports = function (app) {
      *         description: Internal Server Error, an error occurred while creating the user account
      */
     app.get(
-        "/api/v1/information/organization/:id",
+        `${API_VERSION}/${API_TAG}/organization/:id`,
         [
             authJwt.verifyToken,
         ],
