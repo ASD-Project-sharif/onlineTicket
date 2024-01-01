@@ -24,11 +24,16 @@ getOrganization = async (organizationId) => {
     return await getDocumentById("Organization", organizationId);
 }
 
+getOrganizationByName = async (organizationName) => {
+    return await findOneDocument("Organization", {name: organizationName})
+}
+
 
 const OrganizationRepository = {
     getOrganizationAdminId,
     hasOrganizationExist,
-    getOrganization
+    getOrganization,
+    getOrganizationByName
 }
 
 module.exports = OrganizationRepository;
