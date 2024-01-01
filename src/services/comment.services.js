@@ -111,6 +111,7 @@ createComment = async (req, res) => {
             updated_at: TimeServices.Now()
         };
         await TicketRepository.editTicket(req.params.id, ticket)
+        await session.commitTransaction();
         res.send(
             {
                 message: "Comment added successfully",
