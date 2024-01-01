@@ -32,7 +32,7 @@ signupOrganization = async (req, res) => {
     }
 
     const session = await mongoose.startSession();
-    session.startTransaction();
+    await session.startTransaction();
     try {
         const organizationData = {
             name: req.body.organizationName,
