@@ -1,6 +1,9 @@
 const {authJwt} = require("../middlewares");
 const CommentControllers = require("../controllers/comment.controller");
 
+const API_VERSION = "/api/v1";
+const API_TAG = "comment";
+
 module.exports = function (app) {
     app.use(function (req, res, next) {
         res.header(
@@ -43,7 +46,7 @@ module.exports = function (app) {
      *         description: Forbidden, user not allowed to add a ticket
      */
     app.post(
-        "/api/v1/comment/add/:id",
+        `${API_VERSION}/${API_TAG}/add/:id`,
         [
             authJwt.verifyToken
         ],
@@ -83,7 +86,7 @@ module.exports = function (app) {
      *         description: Forbidden, user not allowed to add a ticket
      */
     app.post(
-        "/api/v1/comment/edit/:id",
+        `${API_VERSION}/${API_TAG}/edit/:id`,
         [
             authJwt.verifyToken
         ],

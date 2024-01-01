@@ -1,6 +1,9 @@
 const {verifySignUp} = require("../middlewares");
 const AuthControllers = require("../controllers/auth.controller");
 
+const API_VERSION = "/api/v1";
+const API_TAG = "auth";
+
 module.exports = function (app) {
     app.use(function (req, res, next) {
         res.header(
@@ -45,7 +48,7 @@ module.exports = function (app) {
      *         description: Internal Server Error, an error occurred while creating the user account
      */
     app.post(
-        "/api/v1/auth/signup/user",
+        `${API_VERSION}/${API_TAG}/signup/user`,
         [
             verifySignUp.checkDuplicateUsernameOrEmail,
         ],
@@ -90,7 +93,7 @@ module.exports = function (app) {
      *         description: Internal Server Error, an error occurred while creating the organization account
      */
     app.post(
-        "/api/v1/auth/signup/organization",
+        `${API_VERSION}/${API_TAG}/organization`,
         [
             verifySignUp.checkDuplicateOrganizationName,
             verifySignUp.checkDuplicateUsernameOrEmail,
@@ -127,7 +130,7 @@ module.exports = function (app) {
      *         description: Internal Server Error, an error occurred
      */
     app.post(
-        "/api/v1/auth/signin",
+        `${API_VERSION}/${API_TAG}/signin`,
         [],
         AuthControllers.signin
     );

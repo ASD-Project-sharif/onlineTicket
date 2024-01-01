@@ -1,6 +1,9 @@
 const {authJwt} = require("../middlewares");
 const TicketControllers = require("../controllers/ticket.controller");
 
+const API_VERSION = "/api/v1";
+const API_TAG = "ticket";
+
 module.exports = function (app) {
     app.use(function (req, res, next) {
         res.header(
@@ -48,7 +51,7 @@ module.exports = function (app) {
      *         description: Forbidden, user not allowed to add a ticket
      */
     app.post(
-        "/api/v1/ticket/add",
+        `${API_VERSION}/${API_TAG}/add`,
         [
             authJwt.verifyToken
         ],
@@ -95,7 +98,7 @@ module.exports = function (app) {
      *         description: Unauthorized, token is missing/invalid, or you do nor have access to edit
      */
     app.post(
-        "/api/v1/ticket/edit/:id",
+        `${API_VERSION}/${API_TAG}/edit/:id`,
         [
             authJwt.verifyToken
         ],
@@ -136,7 +139,7 @@ module.exports = function (app) {
      */
 
     app.post(
-        "/api/v1/ticket/change/status/:id",
+        `${API_VERSION}/${API_TAG}/change/status/:id`,
         [
             authJwt.verifyToken
         ],
