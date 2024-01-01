@@ -35,17 +35,17 @@ module.exports = function (app) {
     //     TicketControllers.getTicket
     // );
     //
+    app.get(
+        "/api/v1/ticket/organization/get/:agentId",
+        [
+            // authJwt.verifyToken,
+            // authJwt.isFinalUser
+        ],
+        TicketControllers.getOrganiztionTickets
+    );
+
     // app.get(
-    //     "/api/v1/ticket/get/",
-    //     [
-    //         authJwt.verifyToken,
-    //         authJwt.isFinalUser
-    //     ],
-    //     TicketControllers.getOrganiztionTickets
-    // );
-    //
-    // app.get(
-    //     "/api/v1/ticket/user/get",
+    //     "/api/v1/ticket/user/get/:userId",
     //     [
     //         authJwt.verifyToken,
     //         authJwt.isFinalUser
