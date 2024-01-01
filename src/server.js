@@ -60,7 +60,7 @@ function setupRoutes(app) {
     require('./routes/auth.routes')(app);
     require('./routes/ticket.routes')(app);
     require('./routes/information.routes')(app);
-
+    require('./routes/comment.routes')(app);
 }
 
 setupDatabase()

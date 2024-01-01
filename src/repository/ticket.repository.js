@@ -31,7 +31,12 @@ hasTicketExist = async (ticketId) => {
 
 getTicketReporterId = async (ticketId) => {
     const ticket = await getDocumentById("Ticket", ticketId);
-    return ticket.created_by._id;
+    return ticket.created_by._id.toString();
+}
+
+getTicketOrganizationId = async (ticketId) => {
+    const ticket = await getDocumentById("Ticket", ticketId);
+    return ticket.organization._id.toString();
 }
 
 createNewTicket = async (data) => {
@@ -50,7 +55,8 @@ const TicketRepository = {
     editTicket,
     isTicketOpen,
     getTicketReporterId,
-    hasTicketExist
+    hasTicketExist,
+    getTicketOrganizationId
 }
 
 module.exports = TicketRepository;

@@ -10,7 +10,7 @@ const {
 getOrganizationAdminId = async (organizationId) => {
     const organization = await getDocumentById("Organization", organizationId)
     if (organization) {
-        return organization.admin._id;
+        return organization.admin._id.toString();
     }
     return null;
 }

@@ -77,7 +77,7 @@ const canUserEditTicket = async (req, res) => {
         return false;
     }
     const ticketReporterId = await TicketRepository.getTicketReporterId(ticketId);
-    if (ticketReporterId === req.userId) {
+    if (ticketReporterId !== req.userId) {
         res.status(403).send({message: "this ticket does not belong to you!"})
         return false;
     }
@@ -106,8 +106,13 @@ createTicket = async (req, res) => {
     if (req.body.deadline) {
         ticket.deadline = new Date(req.body.deadline);
     }
-    await TicketRepository.createNewTicket(ticket);
-    res.send({message: "Ticket added successfully!"});
+    const ticketCreated = await TicketRepository.createNewTicket(ticket);
+    res.send(
+        {
+            message: "Ticket added successfully!",
+            id: ticketCreated._id
+        }
+    );
 }
 
 editTicket = async (req, res) => {
@@ -158,8 +163,8 @@ changeTicketStatus = async (req, res) => {
     }
     let shouldOpen = Boolean(req.body.open);
     const ticket = {
-        status: TicketStatus.IN_PROGRESS,
-        open: shouldOpen
+        status: shouldOpen ? TicketStatus.IN_PROGRESS : TicketStatus.CLOSED,
+        updated_at: TimeServices.Now()
     }
 
     await TicketRepository.editTicket(req.params.id, ticket)
