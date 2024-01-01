@@ -44,12 +44,12 @@ module.exports = function (app) {
         TicketControllers.getOrganiztionTickets
     );
 
-    // app.get(
-    //     "/api/v1/ticket/user/get/:userId",
-    //     [
-    //         authJwt.verifyToken,
-    //         authJwt.isFinalUser
-    //     ],
-    //     TicketControllers.getUserTickets
-    // );
+    app.get(
+        "/api/v1/ticket/user/get/:userId",
+        [
+            // authJwt.verifyToken,
+            // authJwt.isFinalUser
+        ],
+        TicketControllers.getUserTickets
+    );
 };

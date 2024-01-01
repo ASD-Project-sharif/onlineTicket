@@ -1,6 +1,6 @@
 const {isUserSuspended} = require("../repository/suspendedUser.repository");
-const {hasUserReachedToMaximumOpenTicket, createNewTicket, getAllTicketsOfOrganizationWithFilterAndSorting} = require("../reposi" +
-    "tory/ticket.repository");
+const {hasUserReachedToMaximumOpenTicket, createNewTicket, getAllTicketsOfOrganizationWithFilterAndSorting,
+    getAllTicketsOfUserWithFilterAndSorting} = require("../repository/ticket.repository");
 const {getOrganizationAdminId, getOrganizationIdByAgentId} = require("../repository/organization.repository");
 const {isNormalUser} = require("../repository/user.repository");
 const TicketType = require("../models/enums/ticketType.enum");
@@ -110,20 +110,31 @@ const getTicketsByOrganization = async (req, res) => {
     })
 };
 
-// const getUserTickets = async (userId) => {
-//     try {
-//         const tickets = await getAllTicketsByUser(userId);
-//         return tickets;
-//     } catch (error) {
-//         console.error("Error fetching user tickets:", error);
-//         throw error;
-//     }
-// };
+const getUserTickets = async (req, res) => {
+    const userId = req.params.userId
+
+    const filter = {
+        type: req.body.filter.type,
+        status: req.body.filter.status,
+        intervalStart: req.body.filter.intervalStart,
+        intervalEnd: req.body.filter.intervalEnd,
+    }
+    const sort = {
+        type: req.body.sort.type,
+        order: req.body.sort.order
+    }
+
+    const tickets = await getAllTicketsOfUserWithFilterAndSorting(userId, filter, sort);
+    req.send({
+        message: "Got tickets successfully!",
+        tickets,
+    })
+};
 
 const TicketServices = {
     createTicket,
     getTicketsByOrganization,
-    // getUserTickets,
+    getUserTickets,
 }
 
 module.exports = TicketServices;

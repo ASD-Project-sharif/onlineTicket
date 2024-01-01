@@ -23,9 +23,34 @@ createNewTicket = async (data) => {
     return await createDocument("Ticket", data);
 }
 
-// const getTicketsByUser = async (userId) => {
-//     return await getAllDocuments("Ticket", { created_by: userId });
-// };
+const getAllTicketsOfUserWithFilterAndSorting = async (userId, filter, sort) => {
+    const query = {
+        created_by: userId,
+    };
+
+    if (filter.type) {
+        query.type = filter.type;
+    }
+
+    if (filter.status) {
+        query.status = filter.status;
+    }
+
+    if (filter.intervalStart && filter.intervalEnd) {
+        query.created_at = {
+            $gte: new Date(filter.intervalStart),
+            $lte: new Date(filter.intervalEnd),
+        };
+    }
+
+    const options = {};
+
+    if (sort.type) {
+        options[sort.type] = sort.order === 'asc' ? 1 : -1;
+    }
+
+    return await getAllDocuments("Ticket", query).sort(options);
+};
 
 const getAllTicketsOfOrganizationWithFilterAndSorting = async (organizationId, filter, sort) => {
     const query = {
@@ -62,7 +87,7 @@ const TicketRepository = {
     hasUserReachedToMaximumOpenTicket,
     createNewTicket,
     getAllTicketsOfOrganizationWithFilterAndSorting,
-    // getTicketsByUser,
+    getAllTicketsOfUserWithFilterAndSorting,
 
 }
 
