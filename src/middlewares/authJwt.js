@@ -16,7 +16,7 @@ verifyToken = (req, res, next) => {
             return res.status(401).send({message: "Unauthorized!"});
         }
 
-        const user = User.findById(decoded.id).exec();
+        const user = await getDocumentById("User", decoded.id);
         if (!user) {
             return res.status(401).send({message: "Unauthorized!"});
         }
