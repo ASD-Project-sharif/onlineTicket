@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const db = require("../models");
 const UserRepository = require("../repository/user.repository")
+const {getDocumentById} = require("../dataAccess/dataAccess");
 const User = db.user;
 const Role = db.role;
 
