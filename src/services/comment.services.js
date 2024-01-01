@@ -3,6 +3,7 @@ const TicketRepository = require("../repository/ticket.repository");
 const CommentRepository = require("../repository/comment.repository");
 const UserRepository = require("../repository/user.repository");
 const TimeServices = require("./time.services");
+const mongoose = require("mongoose");
 
 
 const isInputDataValid = (req, res) => {
@@ -95,19 +96,33 @@ createComment = async (req, res) => {
     if (!canCreateComment) {
         return;
     }
-    const comment = {
-        text: req.body.text,
-        created_by: req.userId,
-        ticket: req.params.id,
-    };
 
-    const commentCreated = await CommentRepository.createNewComment(comment);
-    res.send(
-        {
-            message: "Comment added successfully",
-            id: commentCreated._id
-        }
-    );
+    const session = await mongoose.startSession();
+    await session.startTransaction();
+    try {
+        const comment = {
+            text: req.body.text,
+            created_by: req.userId,
+            ticket: req.params.id,
+        };
+
+        const commentCreated = await CommentRepository.createNewComment(comment);
+        const ticket = {
+            updated_at: TimeServices.Now()
+        };
+        await TicketRepository.editTicket(req.params.id, ticket)
+        res.send(
+            {
+                message: "Comment added successfully",
+                id: commentCreated._id
+            }
+        );
+    } catch (e) {
+        await session.abortTransaction();
+        throw e;
+    } finally {
+        await session.endSession();
+    }
 }
 
 editComment = async (req, res) => {
