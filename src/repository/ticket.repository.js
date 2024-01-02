@@ -5,10 +5,12 @@ const {
     getDocumentById,
     countDocuments,
     countDocumentsByQuery,
-    getAllDocuments
+    getAllDocuments,
+    getAllDocumentsWithFilterAndSort
 } = require("../dataAccess/dataAccess");
 
-const TicketStatus = require("../models/enums/ticketStatus.enum")
+const TicketStatus = require("../models/enums/ticketStatus.enum");
+const UserType = require("../models/enums/userRoles.enum");
 
 
 hasUserReachedToMaximumOpenTicket = async (userId) => {
@@ -23,10 +25,14 @@ createNewTicket = async (data) => {
     return await createDocument("Ticket", data);
 }
 
-const getAllTicketsOfUserWithFilterAndSorting = async (userId, filter, sort) => {
-    const query = {
-        created_by: userId,
-    };
+const getAllTicketsOfUserWithFilterAndSorting = async (id, userType, filter, sort) => {
+    const query = {}
+
+    if (userType == UserType.AGENT) {
+            query.organization = id;
+    } else {
+            query.created_by = id;
+    }
 
     if (filter.type) {
         query.type = filter.type;
@@ -46,39 +52,12 @@ const getAllTicketsOfUserWithFilterAndSorting = async (userId, filter, sort) => 
     const options = {};
 
     if (sort.type) {
-        options[sort.type] = sort.order === 'asc' ? 1 : -1;
+        options[sort.type] = sort.order === 'ASC' ? 1 : -1;
     }
 
-    return await getAllDocuments("Ticket", query).sort(options);
-};
+    const result = await getAllDocumentsWithFilterAndSort("Ticket", query, options);
 
-const getAllTicketsOfOrganizationWithFilterAndSorting = async (organizationId, filter, sort) => {
-    const query = {
-        organization: organizationId,
-    };
-
-    if (filter.type) {
-        query.type = filter.type;
-    }
-
-    if (filter.status) {
-        query.status = filter.status;
-    }
-
-    if (filter.intervalStart && filter.intervalEnd) {
-        query.created_at = {
-            $gte: new Date(filter.intervalStart),
-            $lte: new Date(filter.intervalEnd),
-        };
-    }
-
-    const options = {};
-
-    if (sort.type) {
-        options[sort.type] = sort.order === 'asc' ? 1 : -1;
-    }
-
-    return await getAllDocuments("Ticket", query).sort(options);
+    return result;
 };
 
 
@@ -86,9 +65,7 @@ const getAllTicketsOfOrganizationWithFilterAndSorting = async (organizationId, f
 const TicketRepository = {
     hasUserReachedToMaximumOpenTicket,
     createNewTicket,
-    getAllTicketsOfOrganizationWithFilterAndSorting,
     getAllTicketsOfUserWithFilterAndSorting,
-
 }
 
 module.exports = TicketRepository;

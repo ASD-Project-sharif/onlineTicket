@@ -12,6 +12,12 @@ async function getAllDocuments(modelName) {
     return Model.find();
 }
 
+async function getAllDocumentsWithFilterAndSort(modelName, query, options) {
+    const Model = mongoose.model(modelName);
+    const result = await Model.find(query).sort(options).lean();
+    return result;
+}
+
 async function getDocumentById(modelName, id) {
     const Model = mongoose.model(modelName);
     const document = Model.findById(id);
@@ -56,5 +62,6 @@ module.exports = {
     deleteDocumentById,
     countDocuments,
     findOneDocument,
-    countDocumentsByQuery
+    countDocumentsByQuery,
+    getAllDocumentsWithFilterAndSort
 };

@@ -1,9 +1,10 @@
 const {isUserSuspended} = require("../repository/suspendedUser.repository");
-const {hasUserReachedToMaximumOpenTicket, createNewTicket, getAllTicketsOfOrganizationWithFilterAndSorting,
-    getAllTicketsOfUserWithFilterAndSorting} = require("../repository/ticket.repository");
+const {hasUserReachedToMaximumOpenTicket, createNewTicket, getAllTicketsOfUserWithFilterAndSorting} = require("../repository/ticket.repository");
 const {getOrganizationAdminId, getOrganizationIdByAgentId} = require("../repository/organization.repository");
 const {isNormalUser} = require("../repository/user.repository");
 const TicketType = require("../models/enums/ticketType.enum");
+const UserRole = require("../models/enums/userRoles.enum");
+
 
 
 const isInputDataValid = (req, res) => {
@@ -91,28 +92,25 @@ createTicket = async (req, res) => {
 
 const getTicketsByOrganization = async (req, res) => {
     const organizationId = await getOrganizationIdByAgentId(req.params.agentId);
-
-    const filter = {
-        type: req.body.filter.type,
-        status: req.body.filter.status,
-        intervalStart: req.body.filter.intervalStart,
-        intervalEnd: req.body.filter.intervalEnd,
-    }
-    const sort = {
-        type: req.body.sort.type,
-        order: req.body.sort.order
-    }
-
-    const tickets = await getAllTicketsOfOrganizationWithFilterAndSorting(organizationId, filter, sort);
-    req.send({
-        message: "Got tickets successfully!",
+    const userType = UserRole.AGENT;
+    const tickets = await getTicketsWithFilterAndSorting(req, res, organizationId, userType);
+    res.status(200).send({
         tickets,
-    })
+        count: 0
+    });
 };
 
-const getUserTickets = async (req, res) => {
-    const userId = req.params.userId
+const getTicketsByUser = async (req, res) => {
+    const userId = req.params.userId;
+    const userType = UserRole.USER;
+    const tickets = await getTicketsWithFilterAndSorting(req, res, userId, userType);
+    res.status(200).send({
+        tickets,
+        count: 0
+    });
+};
 
+const getTicketsWithFilterAndSorting = async (req, res, id, userType) => {
     const filter = {
         type: req.body.filter.type,
         status: req.body.filter.status,
@@ -124,17 +122,14 @@ const getUserTickets = async (req, res) => {
         order: req.body.sort.order
     }
 
-    const tickets = await getAllTicketsOfUserWithFilterAndSorting(userId, filter, sort);
-    req.send({
-        message: "Got tickets successfully!",
-        tickets,
-    })
+    const tickets = await getAllTicketsOfUserWithFilterAndSorting(id, userType, filter, sort);
+    return tickets
 };
 
 const TicketServices = {
     createTicket,
     getTicketsByOrganization,
-    getUserTickets,
+    getTicketsByUser,
 }
 
 module.exports = TicketServices;
