@@ -11,6 +11,7 @@ const {
 
 const TicketStatus = require("../models/enums/ticketStatus.enum");
 const UserType = require("../models/enums/userRoles.enum");
+const DeadlineStatus = require("../models/enums/deadlineStatus.enum");
 
 
 hasUserReachedToMaximumOpenTicket = async (userId) => {
@@ -25,7 +26,7 @@ createNewTicket = async (data) => {
     return await createDocument("Ticket", data);
 }
 
-const getAllTicketsOfUserWithFilterAndSorting = async (id, userType, filter, sort) => {
+const getAllTicketsOfUserWithFilterAndSorting = async (id, userType, filter, sort, deadlineStatus) => {
     const query = {}
 
     if (userType == UserType.AGENT) {
@@ -47,6 +48,21 @@ const getAllTicketsOfUserWithFilterAndSorting = async (id, userType, filter, sor
             $gte: new Date(filter.intervalStart),
             $lte: new Date(filter.intervalEnd),
         };
+    }
+
+    if (deadlineStatus == DeadlineStatus.PASSED) {
+        query.deadline = {
+            $lte: new Date(),
+        }
+    }
+    if (deadlineStatus == DeadlineStatus.NEAR) {
+        const oneDayInMillis = 24 * 60 * 60 * 1000;
+        const oneDayBeforeAfter = new Date(Date.now() + oneDayInMillis);
+
+        query.deadline = {
+            $gte: new Date(),
+            $lte: oneDayBeforeAfter,
+        }
     }
 
     const options = {};

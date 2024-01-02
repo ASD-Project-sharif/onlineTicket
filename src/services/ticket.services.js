@@ -4,6 +4,8 @@ const {getOrganizationAdminId, getOrganizationIdByAgentId} = require("../reposit
 const {isNormalUser} = require("../repository/user.repository");
 const TicketType = require("../models/enums/ticketType.enum");
 const UserRole = require("../models/enums/userRoles.enum");
+const DeadlineStatus = require("../models/enums/deadlineStatus.enum");
+
 
 
 
@@ -113,24 +115,26 @@ const getTicketsByUser = async (req, res) => {
 
 const getTicketsWithFilterAndSorting = async (req, res, id, userType) => {
     const filter = {
-        type: req.body.filter.type,
-        status: req.body.filter.status,
-        intervalStart: req.body.filter.intervalStart,
-        intervalEnd: req.body.filter.intervalEnd,
+        type: req.query.filter?.type ,
+        status: req.query.filter?.status,
+        intervalStart: req.query.filter?.intervalStart,
+        intervalEnd: req.query.filter?.intervalEnd,
     }
     const sort = {
-        type: req.body.sort.type,
-        order: req.body.sort.order
+        type: req.query.sort?.sortBy,
+        order: req.query.sort?.sortOrder
     }
 
-    const tickets = await getAllTicketsOfUserWithFilterAndSorting(id, userType, filter, sort);
+    const deadlineStatus = req.query.deadlineStatus
+
+    const tickets = await getAllTicketsOfUserWithFilterAndSorting(id, userType, filter, sort, deadlineStatus);
     return tickets
 };
 
 const sliceListByPagination = async (req, res, list) => {
     const page = {
-        size: req.body.pageSize,
-        number: req.body.pageNumber
+        size: req.query.pageSize,
+        number: req.query.pageNumber
     }
     const startIndex = (page.number - 1) * page.size;
     const pagedList = list.slice(startIndex, startIndex + page.size);
