@@ -36,7 +36,7 @@ module.exports = function (app) {
     // );
     //
     app.get(
-        "/api/v1/ticket/organization/get/:agentId",
+        "/api/v1/ticket/organization/:agentId",
         [
             // authJwt.verifyToken,
             // authJwt.isFinalUser
@@ -45,7 +45,7 @@ module.exports = function (app) {
     );
 
     app.get(
-        "/api/v1/ticket/user/get/:userId",
+        "/api/v1/ticket/user/:userId",
         [
             // authJwt.verifyToken,
             // authJwt.isFinalUser

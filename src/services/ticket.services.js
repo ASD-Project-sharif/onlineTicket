@@ -94,19 +94,20 @@ const getTicketsByOrganization = async (req, res) => {
     const organizationId = await getOrganizationIdByAgentId(req.params.agentId);
     const userType = UserRole.AGENT;
     const tickets = await getTicketsWithFilterAndSorting(req, res, organizationId, userType);
+    const slicedTickets = await sliceListByPagination(req, res, tickets);
     res.status(200).send({
-        tickets,
-        count: 0
+        tickets: slicedTickets,
+        count: tickets.length,
     });
 };
-
 const getTicketsByUser = async (req, res) => {
     const userId = req.params.userId;
     const userType = UserRole.USER;
     const tickets = await getTicketsWithFilterAndSorting(req, res, userId, userType);
+    const slicedTickets = await sliceListByPagination(req, res, tickets);
     res.status(200).send({
-        tickets,
-        count: 0
+        tickets: slicedTickets,
+        count: tickets.length,
     });
 };
 
@@ -125,6 +126,17 @@ const getTicketsWithFilterAndSorting = async (req, res, id, userType) => {
     const tickets = await getAllTicketsOfUserWithFilterAndSorting(id, userType, filter, sort);
     return tickets
 };
+
+const sliceListByPagination = async (req, res, list) => {
+    const page = {
+        size: req.body.pageSize,
+        number: req.body.pageNumber
+    }
+    const startIndex = (page.number - 1) * page.size;
+    const pagedList = list.slice(startIndex, startIndex + page.size);
+    return pagedList
+};
+
 
 const TicketServices = {
     createTicket,
