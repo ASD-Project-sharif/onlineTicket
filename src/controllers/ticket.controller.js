@@ -12,10 +12,15 @@ const getOrganiztionTickets = async (req, res) => {
     return await TicketServices.getTicketsByOrganization(req, res);
 };
 
+const getTicket = async (req, res) => {
+    return await TicketServices.getTicket(req, res);
+}
+
 const TicketControllers = {
     addTicket,
     getOrganiztionTickets,
     getUserTickets,
+    getTicket,
 
 }
 

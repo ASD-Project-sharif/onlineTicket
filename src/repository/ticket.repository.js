@@ -76,12 +76,18 @@ const getAllTicketsOfUserWithFilterAndSorting = async (id, userType, filter, sor
     return result;
 };
 
+const getTicketById = async (ticketId) => {
+    const ticket = await getDocumentById("Ticket", ticketId);
+    return ticket;
+}
+
 
 
 const TicketRepository = {
     hasUserReachedToMaximumOpenTicket,
     createNewTicket,
     getAllTicketsOfUserWithFilterAndSorting,
+    getTicketById
 }
 
 module.exports = TicketRepository;

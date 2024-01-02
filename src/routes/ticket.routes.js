@@ -26,15 +26,7 @@ module.exports = function (app) {
     //     ],
     //     TicketControllers.editTicket
     // );
-    //
-    // app.get(
-    //     "/api/v1/ticket/get/:id",
-    //     [
-    //         authJwt.verifyToken
-    //     ],
-    //     TicketControllers.getTicket
-    // );
-    //
+
     app.get(
         "/api/v1/ticket/organization/:agentId",
         [
@@ -52,4 +44,13 @@ module.exports = function (app) {
         ],
         TicketControllers.getUserTickets
     );
+
+    app.get(
+        "/api/v1/ticket/:ticketId",
+        [
+            // authJwt.verifyToken
+        ],
+        TicketControllers.getTicket
+    );
+
 };

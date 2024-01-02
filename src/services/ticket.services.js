@@ -1,5 +1,5 @@
 const {isUserSuspended} = require("../repository/suspendedUser.repository");
-const {hasUserReachedToMaximumOpenTicket, createNewTicket, getAllTicketsOfUserWithFilterAndSorting} = require("../repository/ticket.repository");
+const {hasUserReachedToMaximumOpenTicket, createNewTicket, getAllTicketsOfUserWithFilterAndSorting, getTicketById} = require("../repository/ticket.repository");
 const {getOrganizationAdminId, getOrganizationIdByAgentId} = require("../repository/organization.repository");
 const {isNormalUser} = require("../repository/user.repository");
 const TicketType = require("../models/enums/ticketType.enum");
@@ -113,6 +113,15 @@ const getTicketsByUser = async (req, res) => {
     });
 };
 
+const getTicket = async (req, res) => {
+    const ticket = await getTicketById(req.params.ticketId);
+    res.status(200).send({
+        ticket,
+        message: "Ticket returened successfully!",
+    });
+
+};
+
 const getTicketsWithFilterAndSorting = async (req, res, id, userType) => {
     const filter = {
         type: req.query.filter?.type ,
@@ -146,6 +155,7 @@ const TicketServices = {
     createTicket,
     getTicketsByOrganization,
     getTicketsByUser,
+    getTicket,
 }
 
 module.exports = TicketServices;
