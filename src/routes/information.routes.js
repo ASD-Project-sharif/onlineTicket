@@ -37,10 +37,10 @@ module.exports = function (app) {
      *         description: Internal Server Error, an error occurred while creating the user account
      */
     app.get(
-        `${API_VERSION}/${API_TAG}/organization/:id`,
+        `${API_VERSION}/${API_TAG}/organization/:name`,
         [
             authJwt.verifyToken,
         ],
-        InformationControllers.organizationInformation
+        InformationControllers.organizationInformationByName
     );
 };

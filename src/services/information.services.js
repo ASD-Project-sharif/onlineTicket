@@ -15,8 +15,21 @@ getOrganizationInformation = async (req, res) => {
     });
 }
 
+getOrganizationInformationByName = async (req, res) => {
+    const organization = await OrganizationRepository.getOrganizationByName(req.params.name);
+    if(!organization) {
+        res.status(400).send({message: "organization does not exist!"})
+    }
+    res.status(200).send({
+        id: organization._id,
+        name: organization.name,
+        description: organization.description
+    });
+}
+
 const InformationServices = {
     getOrganizationInformation,
+    getOrganizationInformationByName
 }
 
 module.exports = InformationServices;

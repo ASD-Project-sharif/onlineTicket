@@ -93,7 +93,7 @@ module.exports = function (app) {
      *         description: Internal Server Error, an error occurred while creating the organization account
      */
     app.post(
-        `${API_VERSION}/${API_TAG}/organization`,
+        `${API_VERSION}/${API_TAG}/signup/organization`,
         [
             verifySignUp.checkDuplicateOrganizationName,
             verifySignUp.checkDuplicateUsernameOrEmail,
