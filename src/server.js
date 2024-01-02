@@ -45,7 +45,7 @@ function setupUses(app) {
         ],
 
         allowedHeaders: [
-            'Content-Type',
+            'Content-Type', 'x-access-token'
         ],
     };
 

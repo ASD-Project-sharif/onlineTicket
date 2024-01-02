@@ -1,12 +1,13 @@
 const jwt = require("jsonwebtoken");
 const db = require("../models");
 const UserRepository = require("../repository/user.repository")
+const {getDocumentById} = require("../dataAccess/dataAccess");
 const User = db.user;
 const Role = db.role;
 
 verifyToken = (req, res, next) => {
     let token = req.headers["x-access-token"];
-
+    token = token.replace("Token ", "");
     if (!token) {
         return res.status(403).send({message: "No token provided!"});
     }
@@ -16,7 +17,7 @@ verifyToken = (req, res, next) => {
             return res.status(401).send({message: "Unauthorized!"});
         }
 
-        const user = User.findById(decoded.id).exec();
+        const user = await getDocumentById("User", decoded.id);
         if (!user) {
             return res.status(401).send({message: "Unauthorized!"});
         }
