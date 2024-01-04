@@ -86,9 +86,6 @@ module.exports = function (app) {
      *               description:
      *                 type: string
      *                 description: New description for the ticket
-     *               deadline:
-     *                  type: string
-     *                  description: New deadline for the ticket
      *     responses:
      *       '200':
      *         description: Ticket edited successfully
