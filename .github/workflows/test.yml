@@ -43,5 +43,8 @@ jobs:
       working-directory: ./src
     - run: npm test
       working-directory: ./src
+    - name: Install ESLint
+      run: npm install eslint --save-dev
+
     - name: Run ESLint
-      run: cd src && eslint . --ext .js,.jsx,.ts,.tsx 
+      run: cd ./src && npx eslint .
