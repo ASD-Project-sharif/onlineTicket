@@ -43,6 +43,5 @@ jobs:
       working-directory: ./src
     - run: npm test
       working-directory: ./src
-    - uses: stefanoeb/eslint-action@1.0.2
-      with:
-        files: src/  
+    - name: Run ESLint
+      run: cd src && eslint . --ext .js,.jsx,.ts,.tsx 
