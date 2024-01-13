@@ -1,5 +1,4 @@
-const SuspendedUserRepository = require(
-    '../repository/suspendedUser.repository');
+const SuspendedUserRepository = require('../repository/suspendedUser.repository');
 const TicketRepository = require('../repository/ticket.repository');
 const OrganizationRepository = require('../repository/organization.repository');
 const UserRepository = require('../repository/user.repository');
@@ -20,15 +19,15 @@ const isInputDataValid = (req, res) => {
 
   if (req.body.title.length > 100) {
     res.status(400)
-        .send(
-            {message: 'Title length should be less than or equal to 100 characters.'});
+       .send(
+           {message: 'Title length should be less than or equal to 100 characters.'});
     return false;
   }
 
   if (req.body.description.length > 1000) {
     res.status(400)
-        .send(
-            {message: 'Description length should be less than or equal to 1000 characters.'});
+       .send(
+           {message: 'Description length should be less than or equal to 1000 characters.'});
     return false;
   }
 
@@ -74,7 +73,7 @@ const canUserCreateNewTicket = async (req, res) => {
 
   if (await TicketRepository.hasUserReachedToMaximumOpenTicket(req.userId)) {
     res.status(403)
-        .send({message: 'You can not have more than 30 open tickets!'});
+       .send({message: 'You can not have more than 30 open tickets!'});
     return false;
   }
 
@@ -210,7 +209,7 @@ changeTicketStatus = async (req, res) => {
 
   await TicketRepository.editTicket(req.params.id, ticket);
   res.status(200)
-      .send({message: 'Ticket ' + (shouldOpen ? 'Opened' : 'Closed')});
+     .send({message: 'Ticket ' + (shouldOpen ? 'Opened' : 'Closed')});
 };
 
 const TicketServices = {
