@@ -58,51 +58,48 @@ module.exports = function(app) {
       TicketControllers.addTicket,
   );
 
-  /**
-   * @swagger
-   * /api/v1/ticket/edit/{id}:
-   *   post:
-   *     summary: Edit a ticket by ID
-   *     description: Edit an existing ticket using its unique identifier.
-   *     tags:
-   *       - Ticket
-   *     parameters:
-   *       - in: path
-   *         name: id
-   *         description: ID of the ticket to be edited
-   *         required: true
-   *         schema:
-   *           type: string
-   *     requestBody:
-   *       content:
-   *         application/json:
-   *           schema:
-   *             type: object
-   *             properties:
-   *               title:
-   *                 type: string
-   *                 description: New title for the ticket
-   *               description:
-   *                 type: string
-   *                 description: New description for the ticket
-   *               deadline:
-   *                  type: string
-   *                  description: New deadline for the ticket
-   *     responses:
-   *       '200':
-   *         description: Ticket edited successfully
-   *       '400':
-   *         description: Bad request, check the request payload
-   *       '403':
-   *         description: Unauthorized, token is missing/invalid, or you do nor have access to edit
-   */
-  app.post(
-      `${API_VERSION}/${API_TAG}/edit/:id`,
-      [
-        authJwt.verifyToken,
-      ],
-      TicketControllers.editTicket,
-  );
+    /**
+     * @swagger
+     * /api/v1/ticket/edit/{id}:
+     *   post:
+     *     summary: Edit a ticket by ID
+     *     description: Edit an existing ticket using its unique identifier.
+     *     tags:
+     *       - Ticket
+     *     parameters:
+     *       - in: path
+     *         name: id
+     *         description: ID of the ticket to be edited
+     *         required: true
+     *         schema:
+     *           type: string
+     *     requestBody:
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             properties:
+     *               title:
+     *                 type: string
+     *                 description: New title for the ticket
+     *               description:
+     *                 type: string
+     *                 description: New description for the ticket
+     *     responses:
+     *       '200':
+     *         description: Ticket edited successfully
+     *       '400':
+     *         description: Bad request, check the request payload
+     *       '403':
+     *         description: Unauthorized, token is missing/invalid, or you do nor have access to edit
+     */
+    app.post(
+        `${API_VERSION}/${API_TAG}/edit/:id`,
+        [
+            authJwt.verifyToken
+        ],
+        TicketControllers.editTicket
+    );
 
   /**
    * @swagger

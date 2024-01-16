@@ -156,10 +156,6 @@ editTicket = async (req, res) => {
     updated_at: TimeServices.now(),
   };
 
-  if (req.body.deadline) {
-    ticket.deadline = new Date(req.body.deadline);
-  }
-
   await TicketRepository.editTicket(req.params.id, ticket);
   res.send({message: 'ticket edited successfully'});
 };
