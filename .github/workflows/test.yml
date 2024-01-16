@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Test & Code-Style
 
 on:
   pull_request:
@@ -8,31 +8,27 @@ on:
 jobs:
   test:
     runs-on: ubuntu-20.04
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    - name: Create .env file
-      run: |
-        touch .env
-        echo "MONGO_DB=${{ vars.MONGO_DB }}" >> .env
-        echo "MONGO_INITDB_ROOT_USERNAME=${{ vars.MONGO_INITDB_ROOT_USERNAME }}" >> .env
-        echo "MONGO_INITDB_ROOT_PASSWORD=${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}" >> .env
-        echo "MONGO_PORT=${{ vars.MONGO_PORT }}" >> .env
-        echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
-        echo "SERVICE_PORT=${{ vars.SERVICE_PORT }}" >> .env
-        echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> .env
-        echo "REDIS_PORT=${{ vars.REDIS_PORT }}" >> .env
-        echo "IMAGE=${{ vars.IMAGE }}" >> .env
-        echo "TAG=${{ steps.vars.outputs.sha_short }}" >> .env
-        cat .env
-        
-    - name: BUILD IMAGE
-      run: |
-        docker build -t "$IMAGE:latest" -f Dockerfile .
-        docker-compose up -d
-      env:
-        IMAGE: ${{ vars.IMAGE }}
 
-    - name: Run ESLint
-      run: cd ./src && npx eslint --ext .js .
-    - run: docker exec -it asd-project-backend-app sh && npm test
+    strategy:
+      matrix:
+        node-version: [18.x]
+        mongodb-version: ['4.4']
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.10.0
+        with:
+          mongodb-version: ${{ matrix.mongodb-version }}
+
+      - run: yarn
+        working-directory: ./src
+      - name: Run ESLint
+        run: cd ./src && npx eslint --ext .js .
+      - run: npm test
+        working-directory: ./src
