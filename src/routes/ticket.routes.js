@@ -58,7 +58,7 @@ module.exports = function(app) {
       TicketControllers.addTicket,
   );
 
-    /**
+  /**
      * @swagger
      * /api/v1/ticket/edit/{id}:
      *   post:
@@ -93,13 +93,13 @@ module.exports = function(app) {
      *       '403':
      *         description: Unauthorized, token is missing/invalid, or you do nor have access to edit
      */
-    app.post(
-        `${API_VERSION}/${API_TAG}/edit/:id`,
-        [
-            authJwt.verifyToken
-        ],
-        TicketControllers.editTicket
-    );
+  app.post(
+      `${API_VERSION}/${API_TAG}/edit/:id`,
+      [
+        authJwt.verifyToken,
+      ],
+      TicketControllers.editTicket,
+  );
 
   /**
    * @swagger
