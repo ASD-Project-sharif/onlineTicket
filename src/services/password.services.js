@@ -27,8 +27,10 @@ const getPasswordHash = (password) => {
   return bcrypt.hashSync(password, 8);
 };
 
-module.exports = {
+const PasswordServices = {
   isPasswordDifficultEnough,
   arePasswordsEqual,
   getPasswordHash,
 };
+
+module.exports = PasswordServices;

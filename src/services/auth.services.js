@@ -1,13 +1,11 @@
-const {findOneDocument, createDocument, updateDocumentById} = require(
-    '../dataAccess/dataAccess');
+const UserRepository = require('../repository/user.repository');
+const OrganizationRepository = require('../repository/organization.repository');
 const UserRole = require('../models/enums/userRoles.enum');
-const {isPasswordDifficultEnough, arePasswordsEqual, getPasswordHash} = require(
-    './password.services');
-const {generateToken} = require('./token.services');
-const mongoose = require('mongoose');
+const PasswordServices = require('./password.services');
+const TokenServices = require('./token.services');
 
 signup = async (req, res) => {
-  if (!isPasswordDifficultEnough(req.body.password)) {
+  if (!PasswordServices.isPasswordDifficultEnough(req.body.password)) {
     res.status(400).send({message: 'password is not difficult enough!'});
     return;
   }
@@ -20,63 +18,46 @@ signup = async (req, res) => {
     username: req.body.username,
     name: req.body.name,
     email: req.body.email,
-    password: getPasswordHash(req.body.password),
+    password: PasswordServices.getPasswordHash(req.body.password),
     role: UserRole.USER,
   };
-  await createDocument('User', user);
+  await UserRepository.createNewUser(user);
   res.send({message: 'User was registered successfully!'});
 };
 
 signupOrganization = async (req, res) => {
-  if (!isPasswordDifficultEnough(req.body.password)) {
+  if (!PasswordServices.isPasswordDifficultEnough(req.body.password)) {
     res.status(400).send({message: 'password is not difficult enough!'});
     return;
   }
+  const organizationData = {
+    name: req.body.organizationName,
+    description: req.body.organizationDescription,
+  };
+  const organization = await OrganizationRepository.createNewOrganization(organizationData);
+  const organizationUser = {
+    username: req.body.username,
+    email: req.body.email,
+    password: PasswordServices.getPasswordHash(req.body.password),
+    organization: organization._id,
+    role: UserRole.ADMIN,
+  };
 
-  const session = await mongoose.startSession();
-  await session.startTransaction();
-  try {
-    const organizationData = {
-      name: req.body.organizationName,
-      description: req.body.organizationDescription,
-    };
-    const organization = await createDocument('Organization', organizationData);
-    const organizationUser = {
-      username: req.body.username,
-      email: req.body.email,
-      password: getPasswordHash(req.body.password),
-      organization: organization._id,
-      role: UserRole.ADMIN,
-    };
+  const admin = await UserRepository.createNewUser(organizationUser);
 
-    const admin = await createDocument('User', organizationUser);
-
-    organization.admin = admin._id;
-    await updateDocumentById('Organization', organization._id, organization);
-
-    await session.commitTransaction();
-    res.send({message: 'Admin was registered successfully!'});
-  } catch (e) {
-    await session.abortTransaction();
-    throw e;
-  } finally {
-    await session.endSession();
-  }
+  organization.admin = admin._id;
+  await OrganizationRepository.editOrganization(organization._id, organization);
+  res.send({message: 'Admin was registered successfully!'});
 };
 
 signIn = async (req, res) => {
-  const user = await findOneDocument('User', {username: req.body.username});
+  const user = await UserRepository.getByUsername(req.body.username);
   if (!user) {
-    return res.status(400).
-        send({message: 'User and Password combination is incorrect.'});
+    return res.status(400).send({message: 'User and Password combination is incorrect.'});
   }
-  const passwordIsValid = arePasswordsEqual(
-      req.body.password,
-      user.password,
-  );
+  const passwordIsValid = PasswordServices.arePasswordsEqual(req.body.password, user.password);
   if (!passwordIsValid) {
-    return res.status(400).
-        send({message: 'User and Password combination is incorrect.'});
+    return res.status(400).send({message: 'User and Password combination is incorrect.'});
   }
 
   const authority = 'ROLE_' + user.role.toUpperCase();
@@ -85,7 +66,7 @@ signIn = async (req, res) => {
     username: user.username,
     email: user.email,
     role: authority,
-    accessToken: generateToken(user.id),
+    accessToken: TokenServices.generateToken(user.id),
   });
 };
 

@@ -6,7 +6,7 @@
   "scripts": {
     "pm2": "pm2 start processes.json --no-daemon",
     "start": "node ./bin/www",
-    "test": "jest",
+    "test": "SECRET_KEY=mytestsecretkey jest",
     "migrate": "node ./bin/migrate.js"
   },
   "keywords": [

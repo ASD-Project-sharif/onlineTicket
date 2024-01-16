@@ -1,8 +1,5 @@
 const jwt = require('jsonwebtoken');
-const db = require('../models');
-const {getDocumentById} = require('../dataAccess/dataAccess');
-const User = db.user;
-const Role = db.role;
+const UserRepository = require('../repository/user.repository');
 
 verifyToken = (req, res, next) => {
   let token = req.headers['x-access-token'];
@@ -16,8 +13,8 @@ verifyToken = (req, res, next) => {
       return res.status(401).send({message: 'Unauthorized!'});
     }
 
-    const user = await getDocumentById('User', decoded.id);
-    if (!user) {
+    const userExist = await UserRepository.hasUserExist(decoded.id);
+    if (!userExist) {
       return res.status(401).send({message: 'Unauthorized!'});
     }
     req.userId = decoded.id;
@@ -25,70 +22,7 @@ verifyToken = (req, res, next) => {
   });
 };
 
-isAdmin = (req, res, next) => {
-  User.findById(req.userId).exec((err, user) => {
-    if (err) {
-      res.status(500).send({message: err});
-      return;
-    }
-
-    Role.find(
-        {
-          _id: {$in: user.role},
-        },
-        (err, roles) => {
-          if (err) {
-            res.status(500).send({message: err});
-            return;
-          }
-
-          for (let i = 0; i < roles.length; i++) {
-            if (roles[i].name === 'admin') {
-              next();
-              return;
-            }
-          }
-
-          res.status(403).send({message: 'Require Admin Role!'});
-        },
-    );
-  });
-};
-
-isAgent = (req, res, next) => {
-  User.findById(req.userId).exec((err, user) => {
-    if (err) {
-      res.status(500).send({message: err});
-      return;
-    }
-
-    Role.find(
-        {
-          _id: {$in: user.roles},
-        },
-        (err, roles) => {
-          if (err) {
-            res.status(500).send({message: err});
-            return;
-          }
-
-          for (let i = 0; i < roles.length; i++) {
-            if (roles[i].name === 'agent') {
-              next();
-              return;
-            }
-          }
-
-          res.status(403).send({message: 'Require Agent Role!'});
-        },
-    );
-  });
-};
-
 const authJwt = {
   verifyToken,
-  isAdmin,
-  isAgent,
-  // isFinalUser // todo: @mahdi
 };
 module.exports = authJwt;
