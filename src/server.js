@@ -32,19 +32,14 @@ function setupUses(app) {
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
   app.use(express.urlencoded({extended: true}));
   app.use(cookieSession({
-    name: 'ticket-session', keys: ['COOKIE_SECRET'], // should use as secret
-    // environment variable
+    name: 'ticket-session', keys: ['COOKIE_SECRET'],
     httpOnly: true,
   }));
 
   const corsOpts = {
     origin: '*',
-
-    methods: [
-      'GET', 'POST'],
-
-    allowedHeaders: [
-      'Content-Type', 'x-access-token'],
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type', 'x-access-token'],
   };
 
   app.use(cors(corsOpts));

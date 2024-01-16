@@ -10,7 +10,8 @@ const generateToken = (userID) => {
       });
 };
 
-module.exports = {
+const TokenServices = {
   generateToken,
-
 };
+
+module.exports = TokenServices;

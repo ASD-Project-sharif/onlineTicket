@@ -1,5 +1,7 @@
 const {
   getDocumentById,
+  createDocument,
+  findOneDocument,
 } = require('../dataAccess/dataAccess');
 const UserRole = require('../models/enums/userRoles.enum');
 
@@ -28,12 +30,22 @@ isOrganizationUser = async (userId) => {
   return user.role === UserRole.ADMIN || user.role === UserRole.AGENT;
 };
 
+createNewUser = async (data) => {
+  return await createDocument('User', data);
+};
+
+getByUsername = async (username) => {
+  return await findOneDocument('User', {username: username});
+};
+
 const UserRepository = {
   hasUserExist,
   isNormalUser,
   isAdmin,
   isAgent,
   isOrganizationUser,
+  createNewUser,
+  getByUsername,
 };
 
 module.exports = UserRepository;

@@ -43,5 +43,4 @@ jobs:
       working-directory: ./src
     - name: Run ESLint
       run: cd ./src && npx eslint --ext .js .
-    - run: npm test
-      working-directory: ./src
+    - run: docker exec -it asd-project-backend-app sh && npm test

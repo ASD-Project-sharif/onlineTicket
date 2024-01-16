@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 /**
  * @return {Promise<*>}
  * @param {string} modelName
- * @param {array} data
+ * @param {{}} data
  */
 async function createDocument(modelName, data) {
   const Model = mongoose.model(modelName);
@@ -33,7 +33,7 @@ async function getDocumentById(modelName, id) {
 /**
  * @param {string} modelName
  * @param {string} id
- * @param {array} data
+ * @param {{}} data
  */
 async function updateDocumentById(modelName, id, data) {
   const Model = mongoose.model(modelName);
@@ -62,7 +62,7 @@ async function countDocuments(modelName) {
 
 /**
  * @param {string} modelName
- * @param {array} query
+ * @param {{}} query
  */
 async function countDocumentsByQuery(modelName, query) {
   const Model = mongoose.model(modelName);
@@ -71,7 +71,7 @@ async function countDocumentsByQuery(modelName, query) {
 
 /**
  * @param {string} modelName
- * @param {array} query
+ * @param {{}} query
  */
 async function findOneDocument(modelName, query) {
   const Model = mongoose.model(modelName);

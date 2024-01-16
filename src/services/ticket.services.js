@@ -49,8 +49,7 @@ const isInputDataValid = (req, res) => {
  * @return {Promise<boolean>}
  */
 const canUserCreateNewTicket = async (req, res) => {
-  const organizationExist = await OrganizationRepository.hasOrganizationExist(
-      req.body.organizationId);
+  const organizationExist = await OrganizationRepository.hasOrganizationExist(req.body.organizationId);
   if (!organizationExist) {
     res.status(403).send({message: 'Organization is not correct'});
     return false;
@@ -63,7 +62,9 @@ const canUserCreateNewTicket = async (req, res) => {
   }
 
   const isUserSuspendedInThisOrganization = await SuspendedUserRepository.isUserSuspended(
-      req.userId, req.body.organizationId);
+      req.userId,
+      req.body.organizationId,
+  );
   if (isUserSuspendedInThisOrganization) {
     res.status(403).send({message: 'You are Suspended!'});
     return false;
@@ -121,8 +122,7 @@ createTicket = async (req, res) => {
     title: req.body.title,
     description: req.body.description,
     created_by: req.userId,
-    assignee: await OrganizationRepository.getOrganizationAdminId(
-        req.body.organizationId),
+    assignee: await OrganizationRepository.getOrganizationAdminId(req.body.organizationId),
     organization: req.body.organizationId,
     type: req.body.type,
   };
@@ -131,9 +131,7 @@ createTicket = async (req, res) => {
     ticket.deadline = new Date(req.body.deadline);
   }
   const ticketCreated = await TicketRepository.createNewTicket(ticket);
-  res.send({
-    message: 'Ticket added successfully!', id: ticketCreated._id,
-  });
+  res.send({message: 'Ticket added successfully!', id: ticketCreated._id});
 };
 
 /**
@@ -178,8 +176,7 @@ async function canUserOpenOrCloseTicket(req, res) {
     return false;
   }
 
-  const canUserChangeTicketStatus = await UserRepository.isOrganizationUser(
-      req.userId);
+  const canUserChangeTicketStatus = await UserRepository.isOrganizationUser(req.userId);
   if (!canUserChangeTicketStatus) {
     res.status(403).send({message: 'You can not open/close a Ticket'});
     return false;
