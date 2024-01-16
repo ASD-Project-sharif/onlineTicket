@@ -1,16 +1,16 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const Organization = mongoose.model(
-    "Organization",
+    'Organization',
     new mongoose.Schema({
-        name: String,
-        description: String,
-        // logo: String,
-        admin: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
-        }
-    })
+      name: String,
+      description: String,
+      // logo: String,
+      admin: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    }),
 );
 
-module.exports = Organization
+module.exports = Organization;

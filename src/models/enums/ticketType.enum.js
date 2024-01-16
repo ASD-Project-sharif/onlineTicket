@@ -1,7 +1,7 @@
 const TicketType = {
-    BUG: 'bug',
-    QUESTION: 'question',
-    SUGGESTION: 'suggestion',
+  BUG: 'bug',
+  QUESTION: 'question',
+  SUGGESTION: 'suggestion',
 };
 
 module.exports = TicketType;
