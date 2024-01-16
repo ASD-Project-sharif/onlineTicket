@@ -27,8 +27,8 @@ jobs:
 
     - name: BUILD IMAGE
       run: |
+        cat .env
         docker build -t "$IMAGE:latest" -f Dockerfile .
-        docker-compose up -d
       env:
         IMAGE: ${{ vars.IMAGE }}
 
