@@ -93,7 +93,7 @@ createTicket = async (req, res) => {
 }
 
 const getTicketsByOrganization = async (req, res) => {
-    const organizationId = await getOrganizationIdByAgentId(req.params.agentId);
+    const organizationId = await getOrganizationIdByAgentId(req.userId);
     const userType = UserRole.AGENT;
     const tickets = await getTicketsWithFilterAndSorting(req, res, organizationId, userType);
     const slicedTickets = await sliceListByPagination(req, res, tickets);
@@ -103,7 +103,7 @@ const getTicketsByOrganization = async (req, res) => {
     });
 };
 const getTicketsByUser = async (req, res) => {
-    const userId = req.params.userId;
+    const userId = req.userId;
     const userType = UserRole.USER;
     const tickets = await getTicketsWithFilterAndSorting(req, res, userId, userType);
     const slicedTickets = await sliceListByPagination(req, res, tickets);
@@ -135,8 +135,11 @@ const getTicketsWithFilterAndSorting = async (req, res, id, userType) => {
     }
 
     const deadlineStatus = req.query.deadlineStatus
+    // it could be null and move to filter
 
     const tickets = await getAllTicketsOfUserWithFilterAndSorting(id, userType, filter, sort, deadlineStatus);
+
+    // add a mapping to set deadlineStatue (if deadlineStatus available set equal to deadlineStatus, else filter and build each status)
     return tickets
 };
 
