@@ -11,9 +11,14 @@ async function getAllDocuments(modelName) {
     return Model.find();
 }
 
-async function getAllDocumentsWithFilterAndSort(modelName, query, options) {
+async function getAllPopulatedDocumentsWithFilterAndSort(modelName, query, options) {
     const Model = mongoose.model(modelName);
-    const result = await Model.find(query);
+    const result = await Model.find(query)
+        .populate('organization', 'name')
+        .populate('assignee', 'username')
+        .populate('created_by', 'username')
+        .sort(options)
+        .lean();
 
     return result;
 }
@@ -22,6 +27,17 @@ async function getAllDocumentsWithFilterAndSort(modelName, query, options) {
 async function getDocumentById(modelName, id) {
     const Model = mongoose.model(modelName);
     const document = Model.findById(id);
+    return document;
+}
+
+async function getPopulatedDocumentById(modelName, id) {
+    const Model = mongoose.model(modelName);
+    const document = Model.findById(id)
+        .populate('organization', 'name')
+        .populate('assignee', 'username')
+        .populate('created_by', 'username')
+        .lean();
+
     return document;
 }
 
@@ -64,5 +80,6 @@ module.exports = {
     countDocuments,
     findOneDocument,
     countDocumentsByQuery,
-    getAllDocumentsWithFilterAndSort
+    getAllPopulatedDocumentsWithFilterAndSort,
+    getPopulatedDocumentById
 };

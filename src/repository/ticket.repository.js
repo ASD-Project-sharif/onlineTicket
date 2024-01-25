@@ -6,7 +6,7 @@ const {
     countDocuments,
     countDocumentsByQuery,
     getAllDocuments,
-    getAllDocumentsWithFilterAndSort,
+    getAllPopulatedDocumentsWithFilterAndSort,
     updateDocumentById
 } = require("../dataAccess/dataAccess");
 
@@ -92,22 +92,13 @@ const getAllTicketsOfUserWithFilterAndSorting = async (id, userType, filter, sor
         options[sort.type] = sort.order === 'ASC' ? 1 : -1;
     }
 
-    const result = await getAllDocumentsWithFilterAndSort("Ticket", query, options)
-        .populate('organization', 'name')
-        .populate('assignee', 'username')
-        .populate('created_by', 'username')
-        .sort(options)
-        .lean();
+    const result = await getAllPopulatedDocumentsWithFilterAndSort("Ticket", query, options)
 
     return result;
 };
 
 const getTicketById = async (ticketId) => {
-    const ticket = await getDocumentById("Ticket", ticketId)
-        .populate('organization', 'name')
-        .populate('assignee', 'username')
-        .populate('created_by', 'username')
-        .lean();
+    const ticket = await getPopulatedDocumentById("Ticket", ticketId);
     return ticket;
 }
 
