@@ -30,9 +30,9 @@ const getAllTicketsOfUserWithFilterAndSorting = async (id, userType, filter, sor
     const query = {}
 
     if (userType == UserType.AGENT) {
-            query.organization = id;
+        query.organization = id;
     } else {
-            query.created_by = id;
+        query.created_by = id;
     }
 
     if (filter.type) {
@@ -71,16 +71,24 @@ const getAllTicketsOfUserWithFilterAndSorting = async (id, userType, filter, sor
         options[sort.type] = sort.order === 'ASC' ? 1 : -1;
     }
 
-    const result = await getAllDocumentsWithFilterAndSort("Ticket", query, options);
+    const result = await getAllDocumentsWithFilterAndSort("Ticket", query, options)
+        .populate('organization', 'name')
+        .populate('assignee', 'username')
+        .populate('created_by', 'username')
+        .sort(options)
+        .lean();
 
     return result;
 };
 
 const getTicketById = async (ticketId) => {
-    const ticket = await getDocumentById("Ticket", ticketId);
+    const ticket = await getDocumentById("Ticket", ticketId)
+        .populate('organization', 'name')
+        .populate('assignee', 'username')
+        .populate('created_by', 'username')
+        .lean();
     return ticket;
 }
-
 
 
 const TicketRepository = {
