@@ -264,8 +264,7 @@ const setTicketsDeadlineStatus = (tickets) => {
 const TicketServices = {
     createTicket,
     editTicket,
-    changeTicketStatus
-    createTicket,
+    changeTicketStatus,
     getTicketsByOrganization,
     getTicketsByUser,
     getTicket,

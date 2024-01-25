@@ -6,8 +6,7 @@ const {
     countDocuments,
     countDocumentsByQuery,
     getAllDocuments,
-    getAllDocumentsWithFilterAndSort
-    countDocumentsByQuery,
+    getAllDocumentsWithFilterAndSort,
     updateDocumentById
 } = require("../dataAccess/dataAccess");
 
@@ -122,8 +121,7 @@ const TicketRepository = {
     hasUserReachedToMaximumOpenTicket,
     createNewTicket,
     getAllTicketsOfUserWithFilterAndSorting,
-    getTicketById
-    createNewTicket,
+    getTicketById,
     editTicket,
     isTicketOpen,
     getTicketReporterId,
