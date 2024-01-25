@@ -5,11 +5,13 @@ const TicketStatus = require("./enums/ticketStatus.enum");
 const TicketSchema = new mongoose.Schema({
     title: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
     description: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
     created_by: {
         type: mongoose.Schema.Types.ObjectId,
@@ -28,7 +30,7 @@ const TicketSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: Object.values(TicketStatus),
-        default: "waiting_for_admin"
+        default: TicketStatus.WAITING_FOR_ADMIN
     },
     type: {
         type: String,
@@ -51,11 +53,6 @@ const TicketSchema = new mongoose.Schema({
     }
 });
 
-// Middleware to update the 'updated_at' field before each 'update' operation
-TicketSchema.pre('updateOne', function (next) {
-    this.updateOne({}, {$set: {updated_at: new Date()}});
-    next();
-});
 
 const Ticket = mongoose.model("Ticket", TicketSchema);
 module.exports = Ticket;

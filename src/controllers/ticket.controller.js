@@ -4,6 +4,13 @@ addTicket = async (req, res) => {
     await TicketServices.createTicket(req, res);
 };
 
+editTicket = async (req, res) => {
+    await TicketServices.editTicket(req, res);
+}
+
+changeStatus = async (req, res) => {
+    await TicketServices.changeTicketStatus(req, res);
+}
 const getUserTickets = async (req, res) => {
     return await TicketServices.getTicketsByUser(req, res);
 };
@@ -21,7 +28,8 @@ const TicketControllers = {
     getOrganiztionTickets,
     getUserTickets,
     getTicket,
-
+    editTicket,
+    changeStatus
 }
 
 module.exports = TicketControllers;

@@ -65,14 +65,14 @@ signupOrganization = async (req, res) => {
 signIn = async (req, res) => {
     const user = await findOneDocument("User", {username: req.body.username});
     if (!user) {
-        return res.status(404).send({message: "User and Password combination is incorrect."});
+        return res.status(400).send({message: "User and Password combination is incorrect."});
     }
     const passwordIsValid = arePasswordsEqual(
         req.body.password,
         user.password,
     );
     if (!passwordIsValid) {
-        return res.status(404).send({message: "User and Password combination is incorrect."});
+        return res.status(400).send({message: "User and Password combination is incorrect."});
     }
 
     const authority = "ROLE_" + user.role.toUpperCase();
