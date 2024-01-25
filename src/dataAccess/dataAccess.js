@@ -14,9 +14,16 @@ async function getAllDocuments(modelName) {
 
 async function getAllDocumentsWithFilterAndSort(modelName, query, options) {
     const Model = mongoose.model(modelName);
-    const result = await Model.find(query).sort(options).lean();
+    const result = await Model.find(query)
+        .populate('organization', 'name')
+        .populate('assignee', 'username')
+        .populate('created_by', 'username')
+        .sort(options)
+        .lean();
+
     return result;
 }
+
 
 async function getDocumentById(modelName, id) {
     const Model = mongoose.model(modelName);

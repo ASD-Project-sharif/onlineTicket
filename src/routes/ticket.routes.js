@@ -39,7 +39,7 @@ module.exports = function (app) {
     app.get(
         "/api/v1/ticket/user",
         [
-             authJwt.verifyToken,
+            //authJwt.verifyToken,
             // authJwt.isFinalUser
         ],
         TicketControllers.getUserTickets

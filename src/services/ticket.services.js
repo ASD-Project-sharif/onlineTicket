@@ -135,12 +135,12 @@ const getTicketsWithFilterAndSorting = async (req, res, id, userType) => {
     }
 
     const deadlineStatus = req.query.deadlineStatus
-    // it could be null and move to filter
 
     const tickets = await getAllTicketsOfUserWithFilterAndSorting(id, userType, filter, sort, deadlineStatus);
 
-    // add a mapping to set deadlineStatue (if deadlineStatus available set equal to deadlineStatus, else filter and build each status)
-    return tickets
+    const ticketsWithUpdatedStatus = setTicketsDeadlineStatus(tickets)
+
+    return ticketsWithUpdatedStatus
 };
 
 const sliceListByPagination = async (req, res, list) => {
@@ -151,6 +151,26 @@ const sliceListByPagination = async (req, res, list) => {
     const startIndex = (page.number - 1) * page.size;
     const pagedList = list.slice(startIndex, startIndex + page.size);
     return pagedList
+};
+
+const calculateDeadlineStatus = (deadline) => {
+    const oneDayInMillis = 24 * 60 * 60 * 1000;
+    const oneDayBeforeAfter = new Date(Date.now() + oneDayInMillis);
+
+    if (deadline && deadline <= new Date()) {
+        return DeadlineStatus.PASSED;
+    } else if (deadline && deadline <= oneDayBeforeAfter) {
+        return DeadlineStatus.NEAR;
+    } else {
+        return DeadlineStatus.NORMAL;
+    }
+};
+
+const setTicketsDeadlineStatus = (tickets) => {
+    return tickets.map((ticket) => ({
+        ...ticket,
+        deadlineStatus: calculateDeadlineStatus(ticket.deadline),
+    }));
 };
 
 
