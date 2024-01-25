@@ -7,7 +7,8 @@ const {
     countDocumentsByQuery,
     getAllDocuments,
     getAllPopulatedDocumentsWithFilterAndSort,
-    updateDocumentById
+    updateDocumentById,
+    getPopulatedDocumentById
 } = require("../dataAccess/dataAccess");
 
 const TicketStatus = require("../models/enums/ticketStatus.enum");
