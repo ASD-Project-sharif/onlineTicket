@@ -5,17 +5,6 @@ const UserRepository = require('../repository/user.repository');
 const TicketType = require('../models/enums/ticketType.enum');
 const TicketStatus = require('../models/enums/ticketStatus.enum');
 const TimeServices = require('./time.services');
-const SuspendedUserRepository = require("../repository/suspendedUser.repository");
-const TicketRepository = require("../repository/ticket.repository");
-const OrganizationRepository = require("../repository/organization.repository");
-const UserRepository = require("../repository/user.repository");
-const {isUserSuspended} = require("../repository/suspendedUser.repository");
-const {hasUserReachedToMaximumOpenTicket, createNewTicket, getAllTicketsOfUserWithFilterAndSorting, getTicketById} = require("../repository/ticket.repository");
-const {getOrganizationAdminId, getOrganizationIdByAgentId} = require("../repository/organization.repository");
-const {isNormalUser} = require("../repository/user.repository");
-const TicketType = require("../models/enums/ticketType.enum");
-const TicketStatus = require("../models/enums/ticketStatus.enum");
-const TimeServices = require("./time.services");
 const UserRole = require("../models/enums/userRoles.enum");
 const DeadlineStatus = require("../models/enums/deadlineStatus.enum");
 
@@ -215,12 +204,9 @@ changeTicketStatus = async (req, res) => {
   await TicketRepository.editTicket(req.params.id, ticket);
   res.status(200).send({message: 'Ticket ' + (shouldOpen ? 'Opened' : 'Closed')});
 };
-    await TicketRepository.editTicket(req.params.id, ticket)
-    res.status(200).send({message: "Ticket " + (shouldOpen ? "Opened" : "Closed")})
-}
 
 const getTicketsByOrganization = async (req, res) => {
-    const organizationId = await getOrganizationIdByAgentId(req.userId);
+    const organizationId = await OrganizationRepository.getOrganizationIdByAgentId(req.userId);
     const userType = UserRole.AGENT;
     const tickets = await getTicketsWithFilterAndSorting(req, res, organizationId, userType);
     const slicedTickets = await sliceListByPagination(req, res, tickets);
@@ -241,7 +227,7 @@ const getTicketsByUser = async (req, res) => {
 };
 
 const getTicket = async (req, res) => {
-    const ticket = await getTicketById(req.params.ticketId);
+    const ticket = await TicketRepository.getTicketById(req.params.ticketId);
     res.status(200).send({
         ticket,
         message: "Ticket returened successfully!",
@@ -263,7 +249,7 @@ const getTicketsWithFilterAndSorting = async (req, res, id, userType) => {
 
     const deadlineStatus = req.query.deadlineStatus
 
-    const tickets = await getAllTicketsOfUserWithFilterAndSorting(id, userType, filter, sort, deadlineStatus);
+    const tickets = await TicketRepository.getAllTicketsOfUserWithFilterAndSorting(id, userType, filter, sort, deadlineStatus);
 
     const ticketsWithUpdatedStatus = setTicketsDeadlineStatus(tickets)
 

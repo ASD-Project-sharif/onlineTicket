@@ -11,8 +11,7 @@ editTicket = async (req, res) => {
 changeStatus = async (req, res) => {
   await TicketServices.changeTicketStatus(req, res);
 };
-    await TicketServices.changeTicketStatus(req, res);
-}
+
 const getUserTickets = async (req, res) => {
     return await TicketServices.getTicketsByUser(req, res);
 };
@@ -23,15 +22,15 @@ const getOrganiztionTickets = async (req, res) => {
 
 const getTicket = async (req, res) => {
     return await TicketServices.getTicket(req, res);
-}
+};
 
 const TicketControllers = {
   addTicket,
   editTicket,
   changeStatus,
-    getOrganiztionTickets,
-    getUserTickets,
-    getTicket,
+  getOrganiztionTickets,
+  getUserTickets,
+  getTicket,
 };
 
 module.exports = TicketControllers;

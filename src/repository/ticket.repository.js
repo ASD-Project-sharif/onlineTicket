@@ -12,7 +12,6 @@ const {
 } = require("../dataAccess/dataAccess");
 
 const TicketStatus = require('../models/enums/ticketStatus.enum');
-const TicketStatus = require("../models/enums/ticketStatus.enum");
 const UserType = require("../models/enums/userRoles.enum");
 const DeadlineStatus = require("../models/enums/deadlineStatus.enum");
 
@@ -48,8 +47,6 @@ getTicketOrganizationId = async (ticketId) => {
 createNewTicket = async (data) => {
   return await createDocument('Ticket', data);
 };
-    return await createDocument("Ticket", data);
-}
 
 const getAllTicketsOfUserWithFilterAndSorting = async (id, userType, filter, sort, deadlineStatus) => {
     const query = {}
