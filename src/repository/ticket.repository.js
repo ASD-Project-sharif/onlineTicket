@@ -47,7 +47,7 @@ createNewTicket = async (data) => {
 const getAllTicketsOfUserWithFilterAndSorting = async (id, userType, filter, sort, deadlineStatus) => {
   const query = {};
 
-  if (userType == UserType.AGENT) {
+  if (userType === UserType.AGENT) {
     query.organization = id;
   } else {
     query.created_by = id;
@@ -68,12 +68,12 @@ const getAllTicketsOfUserWithFilterAndSorting = async (id, userType, filter, sor
     };
   }
 
-  if (deadlineStatus == DeadlineStatus.PASSED) {
+  if (deadlineStatus === DeadlineStatus.PASSED) {
     query.deadline = {
       $lte: new Date(),
     };
   }
-  if (deadlineStatus == DeadlineStatus.NEAR) {
+  if (deadlineStatus === DeadlineStatus.NEAR) {
     const oneDayInMillis = 24 * 60 * 60 * 1000;
     const oneDayBeforeAfter = new Date(Date.now() + oneDayInMillis);
 
@@ -82,7 +82,6 @@ const getAllTicketsOfUserWithFilterAndSorting = async (id, userType, filter, sor
       $lte: oneDayBeforeAfter,
     };
   }
-
   const options = {};
 
   if (sort.type) {
