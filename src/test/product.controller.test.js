@@ -26,6 +26,8 @@ describe('Product Controllers', () => {
 
   adminShouldEditProductSuccessfully();
   onlyAdminOfProductOrganizationCanEditProduct();
+
+  adminShouldDeleteProductSuccessfully();
 });
 
 /**
@@ -214,7 +216,6 @@ function onlyAdminOfProductOrganizationCanEditProduct() {
   test('edit others product', async () => {
     jest.spyOn(ProductRepository, 'hasProductExist').mockResolvedValue(true);
     jest.spyOn(OrganizationRepository, 'getOrganizationAdminId').mockResolvedValue('adminId');
-    jest.spyOn(UserRepository, 'isAdmin').mockResolvedValue(false);
 
     const res = mockResponse();
     const req = {
@@ -222,7 +223,7 @@ function onlyAdminOfProductOrganizationCanEditProduct() {
         name: 'edited name',
         description: 'edited description',
       },
-      userId: 'userId', // This user is not the admin of the product's organization
+      userId: 'userId',
       params: {
         id: 'productId',
       },
@@ -233,6 +234,29 @@ function onlyAdminOfProductOrganizationCanEditProduct() {
     expect(ProductRepository.editProduct).not.toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(403);
     expect(res.send).toHaveBeenCalledWith({message: 'You do not have the right access!'});
+  });
+}
+
+/**
+ * @private
+ */
+function adminShouldDeleteProductSuccessfully() {
+  test('delete product', async () => {
+    jest.spyOn(ProductRepository, 'hasProductExist').mockResolvedValue(true);
+    jest.spyOn(OrganizationRepository, 'getOrganizationAdminId').mockResolvedValue('adminId');
+
+    const res = mockResponse();
+    const req = {
+      userId: 'adminId',
+      params: {
+        id: 'productId',
+      },
+    };
+
+    await ProductControllers.deleteProduct(req, res);
+
+    expect(ProductRepository.deleteProduct).toHaveBeenCalledWith('productId');
+    expect(res.send).toHaveBeenCalledWith({message: 'Product deleted successfully!'});
   });
 }
 
