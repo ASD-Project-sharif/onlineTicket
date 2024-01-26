@@ -1,16 +1,13 @@
-const SuspendedUserRepository = require(
-    '../repository/suspendedUser.repository');
+const SuspendedUserRepository = require('../repository/suspendedUser.repository');
 const TicketRepository = require('../repository/ticket.repository');
 const CommentRepository = require('../repository/comment.repository');
 const UserRepository = require('../repository/user.repository');
 const TimeServices = require('./time.services');
-const mongoose = require('mongoose');
 
 const isInputDataValid = (req, res) => {
   if (req.body.text.length > 1000) {
-    res.status(400).
-        send(
-            {message: 'Text length should be less than or equal to 1000 characters.'});
+    res.status(400).send(
+        {message: 'Text length should be less than or equal to 1000 characters.'});
     return false;
   }
   return true;
@@ -42,13 +39,11 @@ const canUserEditComment = async (req, res) => {
   const ticketId = await CommentRepository.getCommentTicketId(commentId);
   const isTicketOpen = await isTicketExistAndOpen(req, res, ticketId);
   if (!isTicketOpen) {
-    res.status(403).
-        send({message: 'you can not edit a comment on closed ticket!'});
+    res.status(403).send({message: 'you can not edit a comment on closed ticket!'});
     return false;
   }
 
-  const organizationId = await TicketRepository.getTicketOrganizationId(
-      ticketId);
+  const organizationId = await TicketRepository.getTicketOrganizationId(ticketId);
   const isUserSuspendedInThisOrganization = await SuspendedUserRepository.isUserSuspended(
       req.userId, organizationId);
   if (isUserSuspendedInThisOrganization) {
@@ -56,8 +51,7 @@ const canUserEditComment = async (req, res) => {
     return false;
   }
 
-  const commentReporterId = await CommentRepository.getCommentReporterId(
-      commentId);
+  const commentReporterId = await CommentRepository.getCommentReporterId(commentId);
   if (commentReporterId !== req.userId) {
     res.status(403).send({message: 'you can not edit others comment!'});
     return false;
@@ -74,10 +68,9 @@ const canUserCreateComment = async (req, res) => {
     return false;
   }
 
-  const organizationId = await TicketRepository.getTicketOrganizationId(
-      ticketId);
-  const isUserSuspendedInThisOrganization = await SuspendedUserRepository.isUserSuspended(
-      req.userId, organizationId);
+  const organizationId = await TicketRepository.getTicketOrganizationId(ticketId);
+  const isUserSuspendedInThisOrganization =
+      await SuspendedUserRepository.isUserSuspended(req.userId, organizationId);
   if (isUserSuspendedInThisOrganization) {
     res.status(403).send({message: 'You are Suspended!'});
     return false;
@@ -86,8 +79,7 @@ const canUserCreateComment = async (req, res) => {
   const isUserNormal = await UserRepository.isNormalUser(req.userId);
   const ticketReportedId = await TicketRepository.getTicketReporterId(ticketId);
   if (isUserNormal && ticketReportedId !== req.userId) {
-    res.status(403).
-        send({message: 'You can not comment on other users ticket'});
+    res.status(403).send({message: 'You can not comment on other users ticket'});
     return false;
   }
 
@@ -103,33 +95,21 @@ createComment = async (req, res) => {
     return;
   }
 
-  const session = await mongoose.startSession();
-  await session.startTransaction();
-  try {
-    const comment = {
-      text: req.body.text,
-      created_by: req.userId,
-      ticket: req.params.id,
-    };
+  const comment = {
+    text: req.body.text,
+    created_by: req.userId,
+    ticket: req.params.id,
+  };
 
-    const commentCreated = await CommentRepository.createNewComment(comment);
-    const ticket = {
-      updated_at: TimeServices.now(),
-    };
-    await TicketRepository.editTicket(req.params.id, ticket);
-    await session.commitTransaction();
-    res.send(
-        {
-          message: 'Comment added successfully',
-          id: commentCreated._id,
-        },
-    );
-  } catch (e) {
-    await session.abortTransaction();
-    throw e;
-  } finally {
-    await session.endSession();
-  }
+  const commentCreated = await CommentRepository.createNewComment(comment);
+  const ticket = {updated_at: TimeServices.now()};
+  await TicketRepository.editTicket(req.params.id, ticket);
+  res.send(
+      {
+        message: 'Comment added successfully',
+        id: commentCreated._id,
+      },
+  );
 };
 
 editComment = async (req, res) => {
@@ -145,8 +125,7 @@ editComment = async (req, res) => {
     text: req.body.text,
     updated_at: TimeServices.now(),
   };
-  const commentUpdated = await CommentRepository.editComment(req.params.id,
-      comment);
+  const commentUpdated = await CommentRepository.editComment(req.params.id, comment);
   res.send(
       {
         message: 'Comment edited successfully',
