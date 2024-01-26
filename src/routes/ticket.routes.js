@@ -145,8 +145,8 @@ module.exports = function(app) {
     app.get(
         "/api/v1/ticket/organization",
         [
-            // authJwt.verifyToken,
-            // authJwt.isFinalUser
+            authJwt.verifyToken,
+            authJwt.isFinalUser
         ],
         TicketControllers.getOrganiztionTickets
     );
@@ -154,8 +154,8 @@ module.exports = function(app) {
     app.get(
         "/api/v1/ticket/user",
         [
-            //authJwt.verifyToken,
-            // authJwt.isFinalUser
+            authJwt.verifyToken,
+            authJwt.isFinalUser
         ],
         TicketControllers.getUserTickets
     );
@@ -163,7 +163,7 @@ module.exports = function(app) {
     app.get(
         "/api/v1/ticket/:ticketId",
         [
-            // authJwt.verifyToken
+            authJwt.verifyToken
         ],
         TicketControllers.getTicket
     );
