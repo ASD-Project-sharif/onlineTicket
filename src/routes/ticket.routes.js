@@ -146,7 +146,6 @@ module.exports = function(app) {
         "/api/v1/ticket/organization",
         [
             authJwt.verifyToken,
-            authJwt.isFinalUser
         ],
         TicketControllers.getOrganiztionTickets
     );
@@ -155,7 +154,6 @@ module.exports = function(app) {
         "/api/v1/ticket/user",
         [
             authJwt.verifyToken,
-            authJwt.isFinalUser
         ],
         TicketControllers.getUserTickets
     );
