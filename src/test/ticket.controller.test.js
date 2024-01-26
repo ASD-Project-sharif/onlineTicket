@@ -291,7 +291,21 @@ function getOrganizationTicketsTests() {
  */
 function getTicketTests() {
     test('get ticket by ID', async () => {
+        const ticketId = 'mockTicketId';
+        const mockTicket = generateMockTicket();
 
+        jest.spyOn(TicketServices, 'getTicket').mockImplementationOnce((req, res) => {
+            return res.send(mockTicket);
+        });
+
+        const req = { params: { id: ticketId } };
+        const res = mockResponse();
+
+        await TicketControllers.getTicket(req, res);
+
+        expect(TicketServices.getTicket).toHaveBeenCalledWith(req, res);
+        expect(res.send).toHaveBeenCalledWith(mockTicket);
+        expect(res.status).not.toHaveBeenCalled();
     });
 }
 
