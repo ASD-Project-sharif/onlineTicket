@@ -1,7 +1,7 @@
 const DeadlineStatusEnum = {
-    PASSED: 'passed',
-    NEAR: 'near',
-    NORMAL: 'normal'
+  PASSED: 'passed',
+  NEAR: 'near',
+  NORMAL: 'normal',
 };
 
 module.exports = DeadlineStatusEnum;

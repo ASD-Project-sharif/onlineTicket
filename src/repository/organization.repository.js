@@ -24,39 +24,39 @@ getOrganization = async (organizationId) => {
 
 
 getOrganizationByName = async (organizationName) => {
-    return await findOneDocument('Organization', {name: organizationName});
+  return await findOneDocument('Organization', {name: organizationName});
 };
 
 createNewOrganization = async (data) => {
-    return await createDocument('Organization', data);
+  return await createDocument('Organization', data);
 };
 editOrganization = async (id, data) => {
-    return await updateDocumentById('Organization', id, data);
+  return await updateDocumentById('Organization', id, data);
 };
 
 
 getOrganizationIdByAgentId = async (adminId) => {
-    const agent = await getDocumentById("User", adminId)
-    if (agent){
-        const organizationId = agent.organization;
-        const organization = await getDocumentById("Organization", organizationId);
-        if (organization) {
-            return organization._id;
-        }
-        return null
+  const agent = await getDocumentById('User', adminId);
+  if (agent) {
+    const organizationId = agent.organization;
+    const organization = await getDocumentById('Organization', organizationId);
+    if (organization) {
+      return organization._id;
     }
-    return null
-}
+    return null;
+  }
+  return null;
+};
 
 
 const OrganizationRepository = {
-    getOrganizationAdminId,
-    hasOrganizationExist,
-    getOrganization,
-    getOrganizationIdByAgentId,
-    getOrganizationByName,
-    createNewOrganization,
-    editOrganization,
+  getOrganizationAdminId,
+  hasOrganizationExist,
+  getOrganization,
+  getOrganizationIdByAgentId,
+  getOrganizationByName,
+  createNewOrganization,
+  editOrganization,
 };
 
 module.exports = OrganizationRepository;

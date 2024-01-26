@@ -134,35 +134,35 @@ module.exports = function(app) {
    *         description: Unauthorized, token is missing/invalid, or you do nor have access to edit
    */
 
-    app.post(
-        `${API_VERSION}/${API_TAG}/change/status/:id`,
-        [
-            authJwt.verifyToken,
-        ],
-        TicketControllers.changeStatus,
-    );
+  app.post(
+      `${API_VERSION}/${API_TAG}/change/status/:id`,
+      [
+        authJwt.verifyToken,
+      ],
+      TicketControllers.changeStatus,
+  );
 
-    app.get(
-        "/api/v1/ticket/organization",
-        [
-            authJwt.verifyToken,
-        ],
-        TicketControllers.getOrganiztionTickets
-    );
+  app.get(
+      '/api/v1/ticket/organization',
+      [
+        authJwt.verifyToken,
+      ],
+      TicketControllers.getOrganiztionTickets,
+  );
 
-    app.get(
-        "/api/v1/ticket/user",
-        [
-            authJwt.verifyToken,
-        ],
-        TicketControllers.getUserTickets
-    );
+  app.get(
+      '/api/v1/ticket/user',
+      [
+        authJwt.verifyToken,
+      ],
+      TicketControllers.getUserTickets,
+  );
 
-    app.get(
-        "/api/v1/ticket/:ticketId",
-        [
-            authJwt.verifyToken
-        ],
-        TicketControllers.getTicket
-    );
+  app.get(
+      '/api/v1/ticket/:ticketId',
+      [
+        authJwt.verifyToken,
+      ],
+      TicketControllers.getTicket,
+  );
 };

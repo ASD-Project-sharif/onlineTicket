@@ -5,9 +5,8 @@ const UserRepository = require('../repository/user.repository');
 const TicketType = require('../models/enums/ticketType.enum');
 const TicketStatus = require('../models/enums/ticketStatus.enum');
 const TimeServices = require('./time.services');
-const UserRole = require("../models/enums/userRoles.enum");
-const DeadlineStatus = require("../models/enums/deadlineStatus.enum");
-
+const UserRole = require('../models/enums/userRoles.enum');
+const DeadlineStatus = require('../models/enums/deadlineStatus.enum');
 
 
 /**
@@ -206,94 +205,94 @@ changeTicketStatus = async (req, res) => {
 };
 
 const getTicketsByOrganization = async (req, res) => {
-    const organizationId = await OrganizationRepository.getOrganizationIdByAgentId(req.userId);
-    const userType = UserRole.AGENT;
-    const tickets = await getTicketsWithFilterAndSorting(req, res, organizationId, userType);
-    const slicedTickets = await sliceListByPagination(req, res, tickets);
-    res.status(200).send({
-        tickets: slicedTickets,
-        count: tickets.length,
-    });
+  const organizationId = await OrganizationRepository.getOrganizationIdByAgentId(req.userId);
+  const userType = UserRole.AGENT;
+  const tickets = await getTicketsWithFilterAndSorting(req, res, organizationId, userType);
+  const slicedTickets = await sliceListByPagination(req, res, tickets);
+  res.status(200).send({
+    tickets: slicedTickets,
+    count: tickets.length,
+  });
 };
 const getTicketsByUser = async (req, res) => {
-    const userId = req.userId;
-    const userType = UserRole.USER;
-    const tickets = await getTicketsWithFilterAndSorting(req, res, userId, userType);
-    const slicedTickets = await sliceListByPagination(req, res, tickets);
-    res.status(200).send({
-        tickets: slicedTickets,
-        count: tickets.length,
-    });
+  const userId = req.userId;
+  const userType = UserRole.USER;
+  const tickets = await getTicketsWithFilterAndSorting(req, res, userId, userType);
+  const slicedTickets = await sliceListByPagination(req, res, tickets);
+  res.status(200).send({
+    tickets: slicedTickets,
+    count: tickets.length,
+  });
 };
 
 const getTicket = async (req, res) => {
-    const ticket = await TicketRepository.getTicketById(req.params.ticketId);
-    res.status(200).send({
-        ticket,
-        message: "Ticket returened successfully!",
-    });
-
+  const ticket = await TicketRepository.getTicketById(req.params.ticketId);
+  res.status(200).send({
+    ticket,
+    message: 'Ticket returened successfully!',
+  });
 };
 
 const getTicketsWithFilterAndSorting = async (req, res, id, userType) => {
-    const filter = {
-        type: req.query.filter?.type ,
-        status: req.query.filter?.status,
-        intervalStart: req.query.filter?.intervalStart,
-        intervalEnd: req.query.filter?.intervalEnd,
-    }
-    const sort = {
-        type: req.query.sort?.sortBy,
-        order: req.query.sort?.sortOrder
-    }
+  const filter = {
+    type: req.query.filter?.type,
+    status: req.query.filter?.status,
+    intervalStart: req.query.filter?.intervalStart,
+    intervalEnd: req.query.filter?.intervalEnd,
+  };
+  const sort = {
+    type: req.query.sort?.sortBy,
+    order: req.query.sort?.sortOrder,
+  };
 
-    const deadlineStatus = req.query.deadlineStatus
+  const deadlineStatus = req.query.deadlineStatus;
 
-    const tickets = await TicketRepository.getAllTicketsOfUserWithFilterAndSorting(id, userType, filter, sort, deadlineStatus);
+  const tickets =
+      await TicketRepository.getAllTicketsOfUserWithFilterAndSorting(id, userType, filter, sort, deadlineStatus);
 
-    const ticketsWithUpdatedStatus = setTicketsDeadlineStatus(tickets)
+  const ticketsWithUpdatedStatus = setTicketsDeadlineStatus(tickets);
 
-    return ticketsWithUpdatedStatus
+  return ticketsWithUpdatedStatus;
 };
 
 const sliceListByPagination = async (req, res, list) => {
-    const page = {
-        size: req.query.pageSize,
-        number: req.query.pageNumber
-    }
-    const startIndex = (page.number - 1) * page.size;
-    const pagedList = list.slice(startIndex, startIndex + page.size);
-    return pagedList
+  const page = {
+    size: req.query.pageSize,
+    number: req.query.pageNumber,
+  };
+  const startIndex = (page.number - 1) * page.size;
+  const pagedList = list.slice(startIndex, startIndex + page.size);
+  return pagedList;
 };
 
 const calculateDeadlineStatus = (deadline) => {
-    const oneDayInMillis = 24 * 60 * 60 * 1000;
-    const oneDayBeforeAfter = new Date(Date.now() + oneDayInMillis);
+  const oneDayInMillis = 24 * 60 * 60 * 1000;
+  const oneDayBeforeAfter = new Date(Date.now() + oneDayInMillis);
 
-    if (deadline && deadline <= new Date()) {
-        return DeadlineStatus.PASSED;
-    } else if (deadline && deadline <= oneDayBeforeAfter) {
-        return DeadlineStatus.NEAR;
-    } else {
-        return DeadlineStatus.NORMAL;
-    }
+  if (deadline && deadline <= new Date()) {
+    return DeadlineStatus.PASSED;
+  } else if (deadline && deadline <= oneDayBeforeAfter) {
+    return DeadlineStatus.NEAR;
+  } else {
+    return DeadlineStatus.NORMAL;
+  }
 };
 
 const setTicketsDeadlineStatus = (tickets) => {
-    return tickets.map((ticket) => ({
-        ...ticket,
-        deadlineStatus: calculateDeadlineStatus(ticket.deadline),
-    }));
+  return tickets.map((ticket) => ({
+    ...ticket,
+    deadlineStatus: calculateDeadlineStatus(ticket.deadline),
+  }));
 };
 
 
 const TicketServices = {
-    createTicket,
-    editTicket,
-    changeTicketStatus,
-    getTicketsByOrganization,
-    getTicketsByUser,
-    getTicket,
+  createTicket,
+  editTicket,
+  changeTicketStatus,
+  getTicketsByOrganization,
+  getTicketsByUser,
+  getTicket,
 };
 
 module.exports = TicketServices;

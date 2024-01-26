@@ -9,7 +9,6 @@ const TicketServices = require('../services/ticket.services');
 
 const TicketStatus = require('../models/enums/ticketStatus.enum');
 const TicketType = require('../models/enums/ticketType.enum');
-const Ticket = require('../models/ticket.model');
 
 jest.mock('../repository/user.repository');
 jest.mock('../repository/organization.repository');
@@ -248,9 +247,10 @@ function getUserTicketsTests() {
     });
 
     const res = mockResponse();
-    await TicketControllers.getUserTickets({ params: { userId: 'userId' } }, res);
+    await TicketControllers.getUserTickets({params: {userId: 'userId'}}, res);
 
-    expect(TicketServices.getTicketsByUser).toHaveBeenCalledWith(expect.objectContaining({ params: { userId: 'userId' } }), res);
+    expect(TicketServices.getTicketsByUser)
+        .toHaveBeenCalledWith(expect.objectContaining({params: {userId: 'userId'}}), res);
     expect(res.send).toHaveBeenCalledWith(userTickets);
   });
 }
@@ -271,7 +271,7 @@ function getOrganizationTicketsTests() {
       return res.send(mockTickets);
     });
 
-    const req = { params: { organizationId } };
+    const req = {params: {organizationId}};
     const res = mockResponse();
 
     await TicketControllers.getOrganiztionTickets(req, res);
@@ -294,7 +294,7 @@ function getTicketTests() {
       return res.send(mockTicket);
     });
 
-    const req = { params: { id: ticketId } };
+    const req = {params: {id: ticketId}};
     const res = mockResponse();
 
     await TicketControllers.getTicket(req, res);
@@ -307,7 +307,7 @@ function getTicketTests() {
 
 /**
  * Generates mock ticket data for testing purposes
- * @returns {Object} Mock ticket data
+ * @return {Object} Mock ticket data
  */
 function generateMockTicket() {
   return {

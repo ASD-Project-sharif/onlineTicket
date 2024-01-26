@@ -1,19 +1,15 @@
 const {
-    findOneDocument,
-    createDocument,
-    mongooseClient,
-    getDocumentById,
-    countDocuments,
-    countDocumentsByQuery,
-    getAllDocuments,
-    getAllPopulatedDocumentsWithFilterAndSort,
-    updateDocumentById,
-    getPopulatedDocumentById
-} = require("../dataAccess/dataAccess");
+  createDocument,
+  getDocumentById,
+  countDocumentsByQuery,
+  getAllPopulatedDocumentsWithFilterAndSort,
+  updateDocumentById,
+  getPopulatedDocumentById,
+} = require('../dataAccess/dataAccess');
 
 const TicketStatus = require('../models/enums/ticketStatus.enum');
-const UserType = require("../models/enums/userRoles.enum");
-const DeadlineStatus = require("../models/enums/deadlineStatus.enum");
+const UserType = require('../models/enums/userRoles.enum');
+const DeadlineStatus = require('../models/enums/deadlineStatus.enum');
 
 
 hasUserReachedToMaximumOpenTicket = async (userId) => {
@@ -49,59 +45,59 @@ createNewTicket = async (data) => {
 };
 
 const getAllTicketsOfUserWithFilterAndSorting = async (id, userType, filter, sort, deadlineStatus) => {
-    const query = {}
+  const query = {};
 
-    if (userType == UserType.AGENT) {
-        query.organization = id;
-    } else {
-        query.created_by = id;
-    }
+  if (userType == UserType.AGENT) {
+    query.organization = id;
+  } else {
+    query.created_by = id;
+  }
 
-    if (filter.type) {
-        query.type = filter.type;
-    }
+  if (filter.type) {
+    query.type = filter.type;
+  }
 
-    if (filter.status) {
-        query.status = filter.status;
-    }
+  if (filter.status) {
+    query.status = filter.status;
+  }
 
-    if (filter.intervalStart && filter.intervalEnd) {
-        query.created_at = {
-            $gte: new Date(filter.intervalStart),
-            $lte: new Date(filter.intervalEnd),
-        };
-    }
+  if (filter.intervalStart && filter.intervalEnd) {
+    query.created_at = {
+      $gte: new Date(filter.intervalStart),
+      $lte: new Date(filter.intervalEnd),
+    };
+  }
 
-    if (deadlineStatus == DeadlineStatus.PASSED) {
-        query.deadline = {
-            $lte: new Date(),
-        }
-    }
-    if (deadlineStatus == DeadlineStatus.NEAR) {
-        const oneDayInMillis = 24 * 60 * 60 * 1000;
-        const oneDayBeforeAfter = new Date(Date.now() + oneDayInMillis);
+  if (deadlineStatus == DeadlineStatus.PASSED) {
+    query.deadline = {
+      $lte: new Date(),
+    };
+  }
+  if (deadlineStatus == DeadlineStatus.NEAR) {
+    const oneDayInMillis = 24 * 60 * 60 * 1000;
+    const oneDayBeforeAfter = new Date(Date.now() + oneDayInMillis);
 
-        query.deadline = {
-            $gte: new Date(),
-            $lte: oneDayBeforeAfter,
-        }
-    }
+    query.deadline = {
+      $gte: new Date(),
+      $lte: oneDayBeforeAfter,
+    };
+  }
 
-    const options = {};
+  const options = {};
 
-    if (sort.type) {
-        options[sort.type] = sort.order === 'ASC' ? 1 : -1;
-    }
+  if (sort.type) {
+    options[sort.type] = sort.order === 'ASC' ? 1 : -1;
+  }
 
-    const result = await getAllPopulatedDocumentsWithFilterAndSort("Ticket", query, options)
+  const result = await getAllPopulatedDocumentsWithFilterAndSort('Ticket', query, options);
 
-    return result;
+  return result;
 };
 
 const getTicketById = async (ticketId) => {
-    const ticket = await getPopulatedDocumentById("Ticket", ticketId);
-    return ticket;
-}
+  const ticket = await getPopulatedDocumentById('Ticket', ticketId);
+  return ticket;
+};
 
 
 editTicket = async (id, data) => {
@@ -109,15 +105,15 @@ editTicket = async (id, data) => {
 };
 
 const TicketRepository = {
-    hasUserReachedToMaximumOpenTicket,
-    createNewTicket,
-    getAllTicketsOfUserWithFilterAndSorting,
-    getTicketById,
-    editTicket,
-    isTicketOpen,
-    getTicketReporterId,
-    hasTicketExist,
-    getTicketOrganizationId
-}
+  hasUserReachedToMaximumOpenTicket,
+  createNewTicket,
+  getAllTicketsOfUserWithFilterAndSorting,
+  getTicketById,
+  editTicket,
+  isTicketOpen,
+  getTicketReporterId,
+  hasTicketExist,
+  getTicketOrganizationId,
+};
 
 module.exports = TicketRepository;
