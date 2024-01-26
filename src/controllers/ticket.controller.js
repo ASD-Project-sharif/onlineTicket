@@ -1,14 +1,16 @@
-const TicketServices = require("../services/ticket.services");
+const TicketServices = require('../services/ticket.services');
 
 addTicket = async (req, res) => {
-    await TicketServices.createTicket(req, res);
+  await TicketServices.createTicket(req, res);
 };
 
 editTicket = async (req, res) => {
-    await TicketServices.editTicket(req, res);
-}
+  await TicketServices.editTicket(req, res);
+};
 
 changeStatus = async (req, res) => {
+  await TicketServices.changeTicketStatus(req, res);
+};
     await TicketServices.changeTicketStatus(req, res);
 }
 const getUserTickets = async (req, res) => {
@@ -24,12 +26,12 @@ const getTicket = async (req, res) => {
 }
 
 const TicketControllers = {
-    addTicket,
+  addTicket,
+  editTicket,
+  changeStatus,
     getOrganiztionTickets,
     getUserTickets,
     getTicket,
-    editTicket,
-    changeStatus
-}
+};
 
 module.exports = TicketControllers;

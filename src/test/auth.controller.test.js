@@ -1,108 +1,198 @@
-const {createDocument, findOneDocument} = require('../dataAccess/dataAccess');
+const UserRepository = require('../repository/user.repository');
+const OrganizationRepository = require('../repository/organization.repository');
 
-const AuthControllers = require("../controllers/auth.controller")
-const bcrypt = require("bcryptjs");
+const AuthControllers = require('../controllers/auth.controller');
+const PasswordServices = require('../services/password.services');
 const UserRole = require('../models/enums/userRoles.enum');
 
-
-jest.mock('../dataAccess/dataAccess');
-
+jest.mock('../repository/user.repository');
+jest.mock('../repository/organization.repository');
 
 beforeEach(() => {
-    jest.clearAllMocks();
+  jest.clearAllMocks();
+});
+afterEach(() => {
+  jest.restoreAllMocks();
 });
 
 describe('Authentication Controllers', () => {
-    test('signup should register a new user successfully', async () => {
-        jest.spyOn(bcrypt, 'hashSync').mockImplementation((pass, salt, cb) => "12345")
-        const userMockData = {
-            username: 'testuser',
-            name: 'Test User',
-            email: 'testuser@example.com',
-            password: 'testpassword',
-        };
+  validUserShouldSignUpSuccessfully();
+  validOrganizationShouldSignUpSuccessfully();
+  validUserShouldSignInSuccessfully();
 
-        const res = {
-            status: jest.fn().mockReturnThis(), // This line
-            send: jest.fn(), // also mocking for send function
-        };
+  userCanNotSignUpWithWeekPassword();
+  userCanNotSignUpWhenConfirmingPasswordIsDifferent();
+  userCanNotSignInWithWrongPassword();
+});
 
+/**
+ * @private
+ */
+function validUserShouldSignUpSuccessfully() {
+  test('signup user', async () => {
+    jest.spyOn(PasswordServices, 'getPasswordHash').mockImplementation((pass, salt, cb) => '12345');
+    const userMockData = {
+      username: 'testuser',
+      name: 'Test User',
+      email: 'testuser@example.com',
+      password: 'Testpassword1@',
+      confirm: 'Testpassword1@',
+    };
 
-        createDocument.mockResolvedValueOnce();
+    const res = mockResponse();
 
-        await AuthControllers.signup({body: userMockData}, res);
+    UserRepository.createNewUser.mockResolvedValueOnce();
 
-        expect(createDocument).toHaveBeenCalledWith('User', {...userMockData, password: "12345", role: "user"});
-        // expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.send).toHaveBeenCalledWith({message: 'User was registered successfully!'});
-    });
+    await AuthControllers.signup({body: userMockData}, res);
+    delete userMockData.confirm;
+    expect(UserRepository.createNewUser).toHaveBeenCalledWith({...userMockData, password: '12345', role: 'user'});
+    expect(res.send).toHaveBeenCalledWith({message: 'User was registered successfully!'});
+  });
+}
 
-    test('signupOrganization should register a new organization and admin successfully', async () => {
+/**
+ * @private
+ */
+function validOrganizationShouldSignUpSuccessfully() {
+  test(
+      'signup Organization',
+      async () => {
         const organizationMockData = {
-            organizationName: 'TestOrg',
-            organizationDescription: 'Test Organization Description',
+          organizationName: 'TestOrg',
+          organizationDescription: 'Test Organization Description',
         };
 
         const adminUserMockData = {
-            username: 'testadmin',
-            email: 'testadmin@example.com',
-            password: 'testpassword',
+          username: 'testadmin',
+          email: 'testadmin@example.com',
+          password: 'Testpassword1@',
+          confirm: 'Testpassword1@',
         };
+        jest.spyOn(PasswordServices, 'getPasswordHash').mockImplementation((pass, salt, cb) => '12345');
 
-        const res = {
-            status: jest.fn().mockReturnThis(), // This line
-            send: jest.fn(), // also mocking for send function
-        };
+        const res = mockResponse();
 
-        createDocument.mockResolvedValueOnce({_id: 'orgId'});
-        createDocument.mockResolvedValueOnce();
+        OrganizationRepository.createNewOrganization.mockResolvedValueOnce({_id: 'orgId'});
+        UserRepository.createNewUser.mockResolvedValueOnce({_id: 'adminId'});
 
         await AuthControllers.signupOrganization({body: {...organizationMockData, ...adminUserMockData}}, res);
 
-        expect(createDocument).toHaveBeenCalledWith('Organization', {
-            "description": "Test Organization Description",
-            "name": "TestOrg"
+        expect(OrganizationRepository.createNewOrganization).toHaveBeenCalledWith({
+          'description': 'Test Organization Description',
+          'name': 'TestOrg',
         });
-        expect(createDocument).toHaveBeenCalledWith('User', {
-            ...adminUserMockData,
-            organization: 'orgId',
-            role: UserRole.ADMIN,
-            password: "12345"
-        });
-        // expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.send).toHaveBeenCalledWith({message: 'Admin was registered successfully!'});
-    });
 
-    test('signin should sign in a user and return a valid JWT token', async () => {
-        jest.spyOn(bcrypt, 'compareSync').mockImplementation((pass, salt, cb) => true)
+        delete adminUserMockData.confirm;
+        expect(UserRepository.createNewUser).toHaveBeenCalledWith({
+          ...adminUserMockData,
+          organization: 'orgId',
+          role: UserRole.ADMIN,
+          password: '12345',
+        });
+
+        expect(OrganizationRepository.editOrganization).toHaveBeenCalledWith('orgId', {
+          '_id': 'orgId',
+          'admin': 'adminId',
+        });
+
+        expect(res.send).toHaveBeenCalledWith({message: 'Admin was registered successfully!'});
+      });
+}
+
+/**
+ * @private
+ */
+function validUserShouldSignInSuccessfully() {
+  test('signIn user',
+      async () => {
+        jest.spyOn(PasswordServices, 'arePasswordsEqual').mockImplementation((pass, salt, cb) => true);
 
         const existingUserMockData = {
-            username: 'testuser',
-            password: 'testpassword',
+          username: 'testuser',
+          password: 'Testpassword1@',
         };
 
         const res = mockResponse();
 
-        findOneDocument.mockResolvedValueOnce({
-            _id: 'userId',
-            username: 'testuser',
-            email: 'testuser@example.com',
-            password: 'hashedPassword',
-            role: UserRole.USER,
+        UserRepository.getByUsername.mockResolvedValueOnce({
+          _id: 'userId',
+          username: 'testuser',
+          email: 'testuser@example.com',
+          password: 'hashedPassword',
+          role: UserRole.USER,
         });
 
         await AuthControllers.signin({body: existingUserMockData}, res);
 
-        expect(findOneDocument).toHaveBeenCalledWith('User', {username: 'testuser'});
+        expect(UserRepository.getByUsername).toHaveBeenCalledWith('testuser');
         expect(res.status).toHaveBeenCalledWith(200);
-        // Add more assertions based on your specific requirements
-    });
-});
+      });
+}
 
-// Mock response object
+/**
+ * @private
+ */
+function userCanNotSignUpWithWeekPassword() {
+  test('week password', async () => {
+    const userMockData = {
+      password: 'Testweekpasswor',
+    };
+
+    const res = mockResponse();
+    await AuthControllers.signup({body: userMockData}, res);
+    expect(res.send).toHaveBeenCalledWith({message: 'password is not difficult enough!'});
+    expect(res.status).toHaveBeenCalledWith(400);
+  });
+}
+
+/**
+ * @private
+ */
+function userCanNotSignUpWhenConfirmingPasswordIsDifferent() {
+  test('confirm password', async () => {
+    const res = mockResponse();
+
+    const userMockData = {
+      password: 'Testpassword1@',
+      confirm: 'Testpassword1%#',
+    };
+
+    await AuthControllers.signup({body: userMockData}, res);
+    expect(res.send).toHaveBeenCalledWith({message: 'passwords are different!'});
+    expect(res.status).toHaveBeenCalledWith(400);
+  });
+}
+
+/**
+ * @private
+ */
+function userCanNotSignInWithWrongPassword() {
+  test('wrong password',
+      async () => {
+        const res = mockResponse();
+        jest.spyOn(PasswordServices, 'getPasswordHash').mockImplementation((pass, salt, cb) => 'wrongpassword');
+
+        const UserMockData = {
+          username: 'testuser',
+          password: 'wrongpassword',
+        };
+        UserRepository.getByUsername.mockResolvedValueOnce({
+          password: 'hashedPassword',
+        });
+
+        await AuthControllers.signin({body: UserMockData}, res);
+
+        expect(res.send).toHaveBeenCalledWith({message: 'User and Password combination is incorrect.'});
+        expect(res.status).toHaveBeenCalledWith(400);
+      });
+}
+
+/**
+ * @return {{}}
+ */
 function mockResponse() {
-    const res = {};
-    res.status = jest.fn().mockReturnValue(res);
-    res.send = jest.fn().mockReturnValue(res);
-    return res;
+  return {
+    status: jest.fn().mockReturnThis(),
+    send: jest.fn(),
+  };
 }
