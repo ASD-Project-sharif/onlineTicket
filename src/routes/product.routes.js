@@ -51,4 +51,47 @@ module.exports = function(app) {
       ],
       ProductControllers.addProduct,
   );
+
+  /**
+   * @swagger
+   * /api/v1/product/edit/{id}:
+   *   post:
+   *     summary: Edit a Product by ID
+   *     description: Edit an existing product using its unique identifier.
+   *     tags:
+   *       - Product
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         description: ID of the product to be edited
+   *         required: true
+   *         schema:
+   *           type: string
+   *     requestBody:
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               name:
+   *                 type: string
+   *                 description: New name for the product
+   *               description:
+   *                 type: string
+   *                 description: New description for the product
+   *     responses:
+   *       '200':
+   *         description: Product edited successfully
+   *       '400':
+   *         description: Bad request, check the request payload
+   *       '403':
+   *         description: Unauthorized, token is missing/invalid, or you do nor have access to edit
+   */
+  app.post(
+      `${API_VERSION}/${API_TAG}/edit/:id`,
+      [
+        authJwt.verifyToken,
+      ],
+      ProductControllers.editProduct,
+  );
 };
