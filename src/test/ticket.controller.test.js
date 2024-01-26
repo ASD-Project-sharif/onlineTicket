@@ -7,6 +7,13 @@ const TimeServices = require('../services/time.services');
 const TicketControllers = require('../controllers/ticket.controller');
 
 const TicketStatus = require('../models/enums/ticketStatus.enum');
+const TicketType = require('../models/enums/ticketType.enum');
+const Ticket = require('../models/ticket.model');
+
+const TicketServices = require('../services/ticket.services');
+
+
+
 
 jest.mock('../repository/user.repository');
 jest.mock('../repository/organization.repository');
@@ -31,6 +38,10 @@ describe('Ticket Controllers', () => {
     userCanNotEditOthersTicket();
 
     organizationUserShouldCloseTicket();
+
+    getUserTicketsTests();
+    getOrganizationTicketsTests();
+    getTicketTests();
 });
 
 /**
@@ -228,6 +239,64 @@ function organizationUserShouldCloseTicket() {
         expect(res.send).toHaveBeenCalledWith({message: 'Ticket Closed'});
     });
 }
+
+/**
+ * @private
+ */
+function getUserTicketsTests() {
+    test('get user tickets', async () => {
+        const userTickets = [generateMockTicket(), generateMockTicket()];
+
+        jest.spyOn(TicketServices, 'getTicketsByUser').mockImplementation(async (req, res) => {
+            res.send(userTickets);
+        });
+
+        const res = mockResponse();
+        await TicketControllers.getUserTickets({ params: { userId: 'userId' } }, res);
+
+        expect(TicketServices.getTicketsByUser).toHaveBeenCalledWith(expect.objectContaining({ params: { userId: 'userId' } }), res);
+        expect(res.send).toHaveBeenCalledWith(userTickets);
+    });
+}
+
+
+/**
+ * @private
+ */
+function getOrganizationTicketsTests() {
+    test('get organization tickets', async () => {
+    });
+}
+
+/**
+ * @private
+ */
+function getTicketTests() {
+    test('get ticket by ID', async () => {
+
+    });
+}
+
+/**
+ * Generates mock ticket data for testing purposes
+ * @returns {Object} Mock ticket data
+ */
+function generateMockTicket() {
+    return {
+        _id: 'mockTicketId',
+        title: 'Mock Ticket Title',
+        description: 'Mock Ticket Description',
+        created_by: 'mockUserId',
+        assignee: 'mockAssigneeId',
+        organization: 'mockOrganizationId',
+        status: TicketStatus.WAITING_FOR_ADMIN,
+        type: TicketType.BUG,
+        created_at: new Date(),
+        updated_at: new Date(),
+        deadline: null,
+    };
+}
+
 
 /**
  * @return {{}}
