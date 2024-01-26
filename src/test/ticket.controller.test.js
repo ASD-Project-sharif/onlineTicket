@@ -95,7 +95,7 @@ function onlyNormalUserCanCreateTicket() {
 function userCanNotCreateTicketWithDeadlineBeforeNow() {
     test('ticket deadline',
         async () => {
-            const deadlineMock = TimeServices.now();
+            const deadlineMock = TimeServices.Now();
             deadlineMock.setHours(deadlineMock.getHours() - 2);
 
             const ticketMockData = {
@@ -143,8 +143,8 @@ function validUserShouldEditValidTicket() {
         jest.spyOn(TicketRepository, 'isTicketOpen').mockImplementation((pass, salt, cb) => true);
         jest.spyOn(TicketRepository, 'getTicketReporterId').mockImplementation((pass, salt, cb) => 'userId');
 
-        const now = TimeServices.now();
-        jest.spyOn(TimeServices, 'now').mockImplementation((pass, salt, cb) => now);
+        const Now = TimeServices.Now();
+        jest.spyOn(TimeServices, 'Now').mockImplementation((pass, salt, cb) => Now);
 
         const res = mockResponse();
         const ticketMockData = {
@@ -155,7 +155,7 @@ function validUserShouldEditValidTicket() {
         await TicketControllers.editTicket({body: ticketMockData, userId: 'userId', params: {id: 'ticketId'}}, res);
         expect(TicketRepository.editTicket).toHaveBeenCalledWith('ticketId', {
             ...ticketMockData,
-            'updated_at': now,
+            'updated_at': Now,
         });
         expect(res.send).toHaveBeenCalledWith({message: 'ticket edited successfully'});
     });
@@ -214,8 +214,8 @@ function organizationUserShouldCloseTicket() {
         jest.spyOn(TicketRepository, 'hasTicketExist').mockImplementation((pass, salt, cb) => true);
         jest.spyOn(UserRepository, 'isOrganizationUser').mockImplementation((pass, salt, cb) => true);
 
-        const now = TimeServices.now();
-        jest.spyOn(TimeServices, 'now').mockImplementation((pass, salt, cb) => now);
+        const Now = TimeServices.Now();
+        jest.spyOn(TimeServices, 'Now').mockImplementation((pass, salt, cb) => Now);
 
         const ticketMockData = {open: false};
         const res = mockResponse();
@@ -223,7 +223,7 @@ function organizationUserShouldCloseTicket() {
         await TicketControllers.changeStatus({body: ticketMockData, userId: 'userId', params: {id: 'ticketId'}}, res);
         expect(TicketRepository.editTicket).toHaveBeenCalledWith('ticketId', {
             status: TicketStatus.CLOSED,
-            updated_at: now,
+            updated_at: Now,
         });
         expect(res.send).toHaveBeenCalledWith({message: 'Ticket Closed'});
     });
