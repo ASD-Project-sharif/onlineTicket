@@ -23,6 +23,9 @@ describe('Product Controllers', () => {
   adminCanNotCreateProductWithDescriptionLengthMoreThan1000();
   onlyAdminCanCreateProduct();
   userCanNotCreateProductForAnotherOrganization();
+
+  adminShouldEditProductSuccessfully();
+  onlyAdminOfProductOrganizationCanEditProduct();
 });
 
 /**
@@ -168,6 +171,68 @@ function userCanNotCreateProductForAnotherOrganization() {
     expect(res.send).toHaveBeenCalledWith({
       message: 'You can not create product for another organization!',
     });
+  });
+}
+
+/**
+ * @private
+ */
+function adminShouldEditProductSuccessfully() {
+  test('edit product', async () => {
+    jest.spyOn(ProductRepository, 'hasProductExist').mockResolvedValue(true);
+    jest.spyOn(OrganizationRepository, 'getOrganizationAdminId').mockResolvedValue('adminId');
+    jest.spyOn(UserRepository, 'isAdmin').mockResolvedValue(true);
+
+    const res = mockResponse();
+    const req = {
+      body: {
+        name: 'edited name',
+        description: 'edited description',
+      },
+      userId: 'adminId',
+      params: {
+        id: 'productId',
+      },
+    };
+
+    await ProductControllers.editProduct(req, res);
+
+    expect(ProductRepository.editProduct).toHaveBeenCalledWith('productId', {
+      name: 'edited name',
+      description: 'edited description',
+      updated_at: expect.any(Date),
+    });
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith({message: 'Product updated successfully!'});
+  });
+}
+
+/**
+ * @private
+ */
+function onlyAdminOfProductOrganizationCanEditProduct() {
+  test('edit others product', async () => {
+    jest.spyOn(ProductRepository, 'hasProductExist').mockResolvedValue(true);
+    jest.spyOn(OrganizationRepository, 'getOrganizationAdminId').mockResolvedValue('adminId');
+    jest.spyOn(UserRepository, 'isAdmin').mockResolvedValue(false);
+
+    const res = mockResponse();
+    const req = {
+      body: {
+        name: 'edited name',
+        description: 'edited description',
+      },
+      userId: 'userId', // This user is not the admin of the product's organization
+      params: {
+        id: 'productId',
+      },
+    };
+
+    await ProductControllers.editProduct(req, res);
+
+    expect(ProductRepository.editProduct).not.toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(res.send).toHaveBeenCalledWith({message: 'You do not have the right access!'});
   });
 }
 
