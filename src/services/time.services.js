@@ -11,7 +11,7 @@ now = () => {
 oneDayBeforeAfter = () => {
   const oneDayInMillis = 24 * 60 * 60 * 1000;
   const oneDayAfter = new Date(Date.now() + oneDayInMillis);
-  return oneDayAfter
+  return oneDayAfter;
 };
 
 TimeServices = {

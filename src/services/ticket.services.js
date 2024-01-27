@@ -5,7 +5,6 @@ const UserRepository = require('../repository/user.repository');
 const TicketType = require('../models/enums/ticketType.enum');
 const TicketStatus = require('../models/enums/ticketStatus.enum');
 const TimeServices = require('./time.services');
-const UserRole = require('../models/enums/userRoles.enum');
 const DeadlineStatus = require('../models/enums/deadlineStatus.enum');
 
 
@@ -205,7 +204,7 @@ changeTicketStatus = async (req, res) => {
 };
 
 const getTicketsByOrganization = async (req, res) => {
-  const userId = req.userId
+  const userId = req.userId;
   const organizationId = await OrganizationRepository.getOrganizationIdByAgentId(userId);
   const tickets = await getTicketsWithFilterAndSorting(req, res, userId, organizationId);
   const slicedTickets = await sliceListByPagination(req, res, tickets);
