@@ -205,9 +205,9 @@ changeTicketStatus = async (req, res) => {
 };
 
 const getTicketsByOrganization = async (req, res) => {
-  const organizationId = await OrganizationRepository.getOrganizationIdByAgentId(req.userId);
-  const userType = UserRole.AGENT;
-  const tickets = await getTicketsWithFilterAndSorting(req, res, organizationId, userType);
+  const userId = req.userId
+  const organizationId = await OrganizationRepository.getOrganizationIdByAgentId(userId);
+  const tickets = await getTicketsWithFilterAndSorting(req, res, userId, organizationId);
   const slicedTickets = await sliceListByPagination(req, res, tickets);
   res.status(200).send({
     tickets: slicedTickets,
@@ -216,8 +216,7 @@ const getTicketsByOrganization = async (req, res) => {
 };
 const getTicketsByUser = async (req, res) => {
   const userId = req.userId;
-  const userType = UserRole.USER;
-  const tickets = await getTicketsWithFilterAndSorting(req, res, userId, userType);
+  const tickets = await getTicketsWithFilterAndSorting(req, res, userId);
   const slicedTickets = await sliceListByPagination(req, res, tickets);
   res.status(200).send({
     tickets: slicedTickets,
@@ -233,7 +232,7 @@ const getTicket = async (req, res) => {
   });
 };
 
-const getTicketsWithFilterAndSorting = async (req, res, id, userType) => {
+const getTicketsWithFilterAndSorting = async (req, res, userId, organizationId?) => {
   const filter = {
     type: req.query.filter?.type,
     status: req.query.filter?.status,
@@ -247,8 +246,8 @@ const getTicketsWithFilterAndSorting = async (req, res, id, userType) => {
 
   const deadlineStatus = req.query.deadlineStatus;
 
-  const tickets =
-      await TicketRepository.getAllTicketsOfUserWithFilterAndSorting(id, userType, filter, sort, deadlineStatus);
+  const tickets = await TicketRepository.getAllTicketsOfUserWithFilterAndSorting(
+      userId, filter, sort, deadlineStatus, organizationId?);
 
   const ticketsWithUpdatedStatus = setTicketsDeadlineStatus(tickets);
 
@@ -266,12 +265,9 @@ const sliceListByPagination = async (req, res, list) => {
 };
 
 const calculateDeadlineStatus = (deadline) => {
-  const oneDayInMillis = 24 * 60 * 60 * 1000;
-  const oneDayBeforeAfter = new Date(Date.now() + oneDayInMillis);
-
-  if (deadline && deadline <= new Date()) {
+  if (deadline && deadline <= TimeServices.now()) {
     return DeadlineStatus.PASSED;
-  } else if (deadline && deadline <= oneDayBeforeAfter) {
+  } else if (deadline && deadline <= TimeServices.oneDayBeforeAfter()) {
     return DeadlineStatus.NEAR;
   } else {
     return DeadlineStatus.NORMAL;

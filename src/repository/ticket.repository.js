@@ -10,6 +10,7 @@ const {
 const TicketStatus = require('../models/enums/ticketStatus.enum');
 const UserType = require('../models/enums/userRoles.enum');
 const DeadlineStatus = require('../models/enums/deadlineStatus.enum');
+const TimeService = require('../services/time.services');
 
 
 hasUserReachedToMaximumOpenTicket = async (userId) => {
@@ -44,11 +45,12 @@ createNewTicket = async (data) => {
   return await createDocument('Ticket', data);
 };
 
-const getAllTicketsOfUserWithFilterAndSorting = async (id, userType, filter, sort, deadlineStatus) => {
+const getAllTicketsOfUserWithFilterAndSorting = async (userId, filter, sort, deadlineStatus, organizationId?)
+    => {
   const query = {};
 
-  if (userType === UserType.AGENT) {
-    query.organization = id;
+  if (organizationId) {
+    query.organization = organizationId;
   } else {
     query.created_by = id;
   }
@@ -61,36 +63,47 @@ const getAllTicketsOfUserWithFilterAndSorting = async (id, userType, filter, sor
     query.status = filter.status;
   }
 
-  if (filter.intervalStart && filter.intervalEnd) {
-    query.created_at = {
-      $gte: new Date(filter.intervalStart),
-      $lte: new Date(filter.intervalEnd),
-    };
+  if (filter.intervalStart) {
+    query.created_at = { $gte: new Date(filter.intervalStart) };
+  }
+
+  if (filter.intervalEnd) {
+    query.created_at = { $lte: new Date(filter.intervalEnd) };
   }
 
   if (deadlineStatus === DeadlineStatus.PASSED) {
     query.deadline = {
-      $lte: new Date(),
+      $lte: TimeService.now(),
     };
   }
   if (deadlineStatus === DeadlineStatus.NEAR) {
-    const oneDayInMillis = 24 * 60 * 60 * 1000;
-    const oneDayBeforeAfter = new Date(Date.now() + oneDayInMillis);
-
     query.deadline = {
-      $gte: new Date(),
-      $lte: oneDayBeforeAfter,
+      $gte: TimeService.now(),
+      $lte: TimeServie.oneDayBeforeAfter(),
     };
   }
-  const options = {};
 
-  if (sort.type) {
-    options[sort.type] = sort.order === 'ASC' ? 1 : -1;
-  }
+  const options = await sortTicketsByTicketStatusAndAgentId(sort, organizatoinId?);
 
   const result = await getAllPopulatedDocumentsWithFilterAndSort('Ticket', query, options);
 
   return result;
+};
+
+const sortTicketsByTicketStatusAndAgentId = async (sort, organizatoinId?) => {
+  const options = {};
+
+  if (sort.type) {
+    if (organizatoinId) {
+      const isClosed = query.status === TicketStatus.CLOSED;
+      const isAssignee = query.assignee === userId;
+
+      options[sort.type] = isClosed ? (isAssignee ? 1 : -1) : (sort.order === 'ASC' ? 1 : -1);
+    } else {
+      options[sort.type] = sort.order === 'ASC' ? 1 : -1;
+    }
+  }
+  return options
 };
 
 const getTicketById = async (ticketId) => {

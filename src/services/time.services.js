@@ -8,8 +8,15 @@ now = () => {
   return tehranTimezone.toDate();
 };
 
+oneDayBeforeAfter = () => {
+  const oneDayInMillis = 24 * 60 * 60 * 1000;
+  const oneDayAfter = new Date(Date.now() + oneDayInMillis);
+  return oneDayAfter
+};
+
 TimeServices = {
   now,
+  oneDayBeforeAfter,
 };
 
 module.exports = TimeServices;
