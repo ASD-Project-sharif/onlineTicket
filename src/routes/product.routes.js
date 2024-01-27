@@ -96,7 +96,7 @@ module.exports = function(app) {
   );
 
   app.get(
-      '/api/v1/product/:productId',
+      `${API_VERSION}/${API_TAG}/:productId`,
       [
         authJwt.verifyToken
       ]
@@ -104,7 +104,7 @@ module.exports = function(app) {
   );
 
   app.get(
-      '/api/v1/product/organization',
+      `${API_VERSION}/${API_TAG}/organization`,
       [
         authJwt.verifyToken
       ]

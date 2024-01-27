@@ -1,7 +1,7 @@
 const OrganizationRepository = require('../repository/organization.repository');
 const UserRepository = require('../repository/user.repository');
 const ProductRepository = require('../repository/product.repository');
-
+const PaginationServices = require('../services/pagination.services');
 const TimeServices = require('../services/time.services');
 
 /**
@@ -57,6 +57,14 @@ const canUserEditProduct = async (req, res) => {
     return false;
   }
   return true;
+};
+
+const canUserFetchProduct = async (req, res) => {
+  const productExist = await ProductRepository.hasProductExist(req.params.id);
+  if (!productExist) {
+    res.status(400).send({message: 'Product does not exist!'});
+    return false;
+  }
 };
 
 createProduct = async (req, res) => {
@@ -118,11 +126,35 @@ deleteProduct = async (req, res) => {
 };
 
 const getProduct = (req, res) => {
+  const canSeeProdcut = await canUserFetchProduct(req, res);
+  if (!canSeeProdcut) {
+    return;
+  }
+  const product = await ProductRepository.getProduct(req.params.id);
+  res.status(200).send({
+    product,
+    message: 'Product returned successfully!',
+  });
 
 };
 
 const getOrganizationProducts = (req, res) => {
+  const userId = req.userId;
+  const organizationId = await OrganizationRepository.getOrganizationIdByAgentId(userId);
+  const products = await ProductRepository.getOrganizationProducts();
+  const slicedProducts = await sliceListByPagination(req, res, products);
+  res.status(200).send({
+    products: slicedProducts,
+    count: products.length,
+  });
+};
 
+const sliceListByPagination = async (req, res, list) => {
+  const page = {
+    size: req.query.pageSize,
+    number: req.query.pageNumber,
+  };
+  return await PaginationServices.sliceListByPagination(page.size, page.number, list);
 };
 
 const ProductServices = {

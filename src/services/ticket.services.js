@@ -6,6 +6,7 @@ const TicketType = require('../models/enums/ticketType.enum');
 const TicketStatus = require('../models/enums/ticketStatus.enum');
 const TimeServices = require('./time.services');
 const DeadlineStatus = require('../models/enums/deadlineStatus.enum');
+const PaginationServices = require('../services/pagination.services');
 
 /**
  * @param {Object} req - Express Request object
@@ -289,9 +290,7 @@ const sliceListByPagination = async (req, res, list) => {
     size: req.query.pageSize,
     number: req.query.pageNumber,
   };
-  const startIndex = (page.number - 1) * page.size;
-  const pagedList = list.slice(startIndex, startIndex + page.size);
-  return pagedList;
+  return await PaginationServices.sliceListByPagination(page.size, page.number, list);
 };
 
 const calculateDeadlineStatus = (deadline) => {
