@@ -107,9 +107,19 @@ editProduct = async (req, res) => {
   res.status(200).send({message: 'Product updated successfully!'});
 };
 
+const getProduct = (req, res) => {
+
+};
+
+const getOrganizationProducts = (req, res) => {
+
+};
+
 const ProductServices = {
   createProduct,
   editProduct,
+  getOrganizationProducts,
+  getProduct,
 };
 
 module.exports = ProductServices;

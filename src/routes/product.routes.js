@@ -94,4 +94,20 @@ module.exports = function(app) {
       ],
       ProductControllers.editProduct,
   );
+
+  app.get(
+      '/api/v1/product/:productId',
+      [
+        authJwt.verifyToken
+      ]
+      ProductControllers.getProduct
+  );
+
+  app.get(
+      '/api/v1/product/organization',
+      [
+        authJwt.verifyToken
+      ]
+      ProductControllers.getOrganizationProducts
+  );
 };

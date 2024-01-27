@@ -20,11 +20,21 @@ getProductOrganizationId = async (productId) => {
   return product.organization._id.toString();
 };
 
+getProductById = async () => {
+
+};
+
+getOrganizationProductsByAgentId = async () => {
+
+};
+
 const ProductRepository = {
   createNewProduct,
   editProduct,
   hasProductExist,
   getProductOrganizationId,
+  getProductById,
+  getOrganizationProductsByAgentId,
 };
 
 module.exports = ProductRepository;
