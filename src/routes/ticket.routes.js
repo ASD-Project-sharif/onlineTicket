@@ -165,4 +165,13 @@ module.exports = function(app) {
       ],
       TicketControllers.getTicket,
   );
+
+  app.get(
+      '/api/v1/ticket/search/:ticketTitle',
+      [
+        authJwt.verifyToken,
+      ],
+      TicketControllers.getTicketsByTitle,
+  );
+
 };
