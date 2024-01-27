@@ -274,7 +274,7 @@ function getOrganizationTicketsTests() {
     const req = {params: {organizationId}};
     const res = mockResponse();
 
-    await TicketControllers.getOrganiztionTickets(req, res);
+    await TicketControllers.getOrganizationTickets(req, res);
 
     expect(TicketServices.getTicketsByOrganization).toHaveBeenCalledWith(req, res);
     expect(res.send).toHaveBeenCalledWith(mockTickets);

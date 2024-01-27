@@ -41,7 +41,7 @@ getOrganizationIdByAgentId = async (adminId) => {
     const organizationId = agent.organization;
     const organization = await getDocumentById('Organization', organizationId);
     if (organization) {
-      return organization._id;
+      return organization._id.toString();
     }
     return null;
   }

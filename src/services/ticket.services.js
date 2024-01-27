@@ -7,7 +7,6 @@ const TicketStatus = require('../models/enums/ticketStatus.enum');
 const TimeServices = require('./time.services');
 const DeadlineStatus = require('../models/enums/deadlineStatus.enum');
 
-
 /**
  * @param {Object} req - Express Request object
  * @param {Object} res - Express Response object
@@ -223,11 +222,41 @@ const getTicketsByUser = async (req, res) => {
   });
 };
 
+const canUserFetchTicket = async (req, res) => {
+  const ticketExist = await TicketRepository.hasTicketExist(req.params.id);
+  if (!ticketExist) {
+    res.status(400).send({message: 'ticket does not exist!'});
+    return false;
+  }
+
+  const isNormalUser = await UserRepository.isNormalUser(req.userId);
+  if (isNormalUser) {
+    const ticketReporterId = await TicketRepository.getTicketReporterId(req.params.id);
+    if (ticketReporterId !== req.userId) {
+      res.status(400).send({message: 'this is not your ticket!'});
+      return false;
+    }
+    return true;
+  }
+  const userOrganizationId = await OrganizationRepository.getOrganizationIdByAgentId(req.userId);
+  const ticketOrganizationId = await TicketRepository.getTicketOrganizationId(req.params.id);
+  if (userOrganizationId !== ticketOrganizationId) {
+    res.status(400).send({message: 'this is not your organization ticket!'});
+    return false;
+  }
+  return true;
+};
+
 const getTicket = async (req, res) => {
-  const ticket = await TicketRepository.getTicketById(req.params.ticketId);
+  const canSeeTicket = await canUserFetchTicket(req, res);
+  if (!canSeeTicket) {
+    return;
+  }
+
+  const ticket = await TicketRepository.getTicketById(req.params.id);
   res.status(200).send({
     ticket,
-    message: 'Ticket returened successfully!',
+    message: 'Ticket returned successfully!',
   });
 };
 
@@ -246,15 +275,13 @@ const getTicketsWithFilterAndSorting = async (req, res, userId, organizationId) 
   const deadlineStatus = req.query.deadlineStatus;
 
   let tickets = await
-      TicketRepository.getAllTicketsOfUserWithFilterAndSorting(userId, filter, sort, deadlineStatus, organizationId);
+  TicketRepository.getAllTicketsOfUserWithFilterAndSorting(userId, filter, sort, deadlineStatus, organizationId);
 
   if (organizationId) {
     tickets = await sortTicketsByAssigneeAndStatus(tickets, userId);
   }
 
-  const ticketsWithUpdatedStatus = setTicketsDeadlineStatus(tickets);
-
-  return ticketsWithUpdatedStatus;
+  return setTicketsDeadlineStatus(tickets);
 };
 
 const sliceListByPagination = async (req, res, list) => {
