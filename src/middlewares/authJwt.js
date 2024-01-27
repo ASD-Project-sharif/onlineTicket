@@ -6,6 +6,7 @@ verifyToken = (req, res, next) => {
   if (!token) {
     return res.status(403).send({message: 'No token provided!'});
   }
+  token = token.replace('Token ', '');
 
   jwt.verify(token, process.env.SECRET_KEY, async (err, decoded) => {
     if (err) {
