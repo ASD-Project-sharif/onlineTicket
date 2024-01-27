@@ -22,11 +22,45 @@ async function getAllDocuments(modelName) {
 
 /**
  * @param {string} modelName
+ * @param {{}} query
+ * @param {{}} options
+ * @return {{}}
+ */
+async function getAllPopulatedDocumentsWithFilterAndSort(modelName, query, options) {
+  const Model = mongoose.model(modelName);
+  const result = await Model.find(query)
+      .populate('organization', 'name')
+      .populate('assignee', 'username')
+      .populate('created_by', 'username')
+      .sort(options)
+      .lean();
+
+  return result;
+}
+
+/**
+ * @param {string} modelName
  * @param {*} id
  */
 async function getDocumentById(modelName, id) {
   const Model = mongoose.model(modelName);
-  const document = Model.findById(id);
+  const document = await Model.findById(id);
+  return document;
+}
+
+/**
+ * @param {string} modelName
+ * @param  {string} id
+ * @return {{}}
+ */
+async function getPopulatedDocumentById(modelName, id) {
+  const Model = mongoose.model(modelName);
+  const document = await Model.findById(id)
+      .populate('organization', 'name')
+      .populate('assignee', 'username')
+      .populate('created_by', 'username')
+      .lean();
+
   return document;
 }
 
@@ -37,7 +71,7 @@ async function getDocumentById(modelName, id) {
  */
 async function updateDocumentById(modelName, id, data) {
   const Model = mongoose.model(modelName);
-  const document = Model.findByIdAndUpdate(id, data, {
+  const document = await Model.findByIdAndUpdate(id, data, {
     new: true, runValidators: true,
   });
   return document;
@@ -88,4 +122,6 @@ module.exports = {
   countDocuments,
   findOneDocument,
   countDocumentsByQuery,
+  getAllPopulatedDocumentsWithFilterAndSort,
+  getPopulatedDocumentById,
 };

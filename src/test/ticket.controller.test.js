@@ -5,8 +5,10 @@ const SuspendedUserRepository = require('../repository/suspendedUser.repository'
 
 const TimeServices = require('../services/time.services');
 const TicketControllers = require('../controllers/ticket.controller');
+const TicketServices = require('../services/ticket.services');
 
 const TicketStatus = require('../models/enums/ticketStatus.enum');
+const TicketType = require('../models/enums/ticketType.enum');
 
 jest.mock('../repository/user.repository');
 jest.mock('../repository/organization.repository');
@@ -31,6 +33,10 @@ describe('Ticket Controllers', () => {
   userCanNotEditOthersTicket();
 
   organizationUserShouldCloseTicket();
+
+  getUserTicketsTests();
+  getOrganizationTicketsTests();
+  getTicketTests();
 });
 
 /**
@@ -227,6 +233,96 @@ function organizationUserShouldCloseTicket() {
     });
     expect(res.send).toHaveBeenCalledWith({message: 'Ticket Closed'});
   });
+}
+
+/**
+ * @private
+ */
+function getUserTicketsTests() {
+  test('get user tickets', async () => {
+    const userTickets = [generateMockTicket(), generateMockTicket()];
+
+    jest.spyOn(TicketServices, 'getTicketsByUser').mockImplementation(async (req, res) => {
+      res.send(userTickets);
+    });
+
+    const res = mockResponse();
+    await TicketControllers.getUserTickets({params: {userId: 'userId'}}, res);
+
+    expect(TicketServices.getTicketsByUser)
+        .toHaveBeenCalledWith(expect.objectContaining({params: {userId: 'userId'}}), res);
+    expect(res.send).toHaveBeenCalledWith(userTickets);
+  });
+}
+
+
+/**
+ * @private
+ */
+function getOrganizationTicketsTests() {
+  test('get organization tickets', async () => {
+    const organizationId = 'mockOrganizationId';
+    const mockTickets = [
+      generateMockTicket(),
+      generateMockTicket(),
+    ];
+
+    jest.spyOn(TicketServices, 'getTicketsByOrganization').mockImplementationOnce((req, res) => {
+      return res.send(mockTickets);
+    });
+
+    const req = {params: {organizationId}};
+    const res = mockResponse();
+
+    await TicketControllers.getOrganizationTickets(req, res);
+
+    expect(TicketServices.getTicketsByOrganization).toHaveBeenCalledWith(req, res);
+    expect(res.send).toHaveBeenCalledWith(mockTickets);
+    expect(res.status).not.toHaveBeenCalled();
+  });
+}
+
+/**
+ * @private
+ */
+function getTicketTests() {
+  test('get ticket by ID', async () => {
+    const ticketId = 'mockTicketId';
+    const mockTicket = generateMockTicket();
+
+    jest.spyOn(TicketServices, 'getTicket').mockImplementationOnce((req, res) => {
+      return res.send(mockTicket);
+    });
+
+    const req = {params: {id: ticketId}};
+    const res = mockResponse();
+
+    await TicketControllers.getTicket(req, res);
+
+    expect(TicketServices.getTicket).toHaveBeenCalledWith(req, res);
+    expect(res.send).toHaveBeenCalledWith(mockTicket);
+    expect(res.status).not.toHaveBeenCalled();
+  });
+}
+
+/**
+ * Generates mock ticket data for testing purposes
+ * @return {Object} Mock ticket data
+ */
+function generateMockTicket() {
+  return {
+    _id: 'mockTicketId',
+    title: 'Mock Ticket Title',
+    description: 'Mock Ticket Description',
+    created_by: 'mockUserId',
+    assignee: 'mockAssigneeId',
+    organization: 'mockOrganizationId',
+    status: TicketStatus.WAITING_FOR_ADMIN,
+    type: TicketType.BUG,
+    created_at: new Date(),
+    updated_at: new Date(),
+    deadline: null,
+  };
 }
 
 /**
