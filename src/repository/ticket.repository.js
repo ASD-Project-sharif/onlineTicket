@@ -45,14 +45,13 @@ createNewTicket = async (data) => {
   return await createDocument('Ticket', data);
 };
 
-const getAllTicketsOfUserWithFilterAndSorting = async (userId, filter, sort, deadlineStatus, organizationId?)
-    => {
+const getAllTicketsOfUserWithFilterAndSorting = async (userId, filter, sort, deadlineStatus, organizationId) => {
   const query = {};
 
   if (organizationId) {
     query.organization = organizationId;
   } else {
-    query.created_by = id;
+    query.created_by = userId;
   }
 
   if (filter.type) {
@@ -83,25 +82,18 @@ const getAllTicketsOfUserWithFilterAndSorting = async (userId, filter, sort, dea
     };
   }
 
-  const options = await sortTicketsByTicketStatusAndAgentId(sort, organizatoinId?);
+  const options = await sortTickets(sort);
 
   const result = await getAllPopulatedDocumentsWithFilterAndSort('Ticket', query, options);
 
   return result;
 };
 
-const sortTicketsByTicketStatusAndAgentId = async (sort, organizatoinId?) => {
+const sortTickets = async (sort) => {
   const options = {};
 
   if (sort.type) {
-    if (organizatoinId) {
-      const isClosed = query.status === TicketStatus.CLOSED;
-      const isAssignee = query.assignee === userId;
-
-      options[sort.type] = isClosed ? (isAssignee ? 1 : -1) : (sort.order === 'ASC' ? 1 : -1);
-    } else {
-      options[sort.type] = sort.order === 'ASC' ? 1 : -1;
-    }
+    options[sort.type] = sort.order === 'ASC' ? 1 : -1;
   }
   return options
 };

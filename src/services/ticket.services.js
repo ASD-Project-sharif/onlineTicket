@@ -232,7 +232,7 @@ const getTicket = async (req, res) => {
   });
 };
 
-const getTicketsWithFilterAndSorting = async (req, res, userId, organizationId?) => {
+const getTicketsWithFilterAndSorting = async (req, res, userId, organizationId) => {
   const filter = {
     type: req.query.filter?.type,
     status: req.query.filter?.status,
@@ -246,8 +246,12 @@ const getTicketsWithFilterAndSorting = async (req, res, userId, organizationId?)
 
   const deadlineStatus = req.query.deadlineStatus;
 
-  const tickets = await TicketRepository.getAllTicketsOfUserWithFilterAndSorting(
-      userId, filter, sort, deadlineStatus, organizationId?);
+  let tickets = await
+      TicketRepository.getAllTicketsOfUserWithFilterAndSorting(userId, filter, sort, deadlineStatus, organizationId);
+
+  if (organizationId) {
+    tickets = await sortTicketsByAssigneeAndStatus(tickets, userId);
+  }
 
   const ticketsWithUpdatedStatus = setTicketsDeadlineStatus(tickets);
 
@@ -281,6 +285,29 @@ const setTicketsDeadlineStatus = (tickets) => {
   }));
 };
 
+const sortTicketsByAssigneeAndStatus = (tickets, userId) => {
+  const openAssignedTickets = [];
+  const openUnAssignedTickets = [];
+  const closedAssignedTickets = [];
+  const closedUnAssignedTickets = [];
+
+  for (const ticket of tickets) {
+    if (ticket.status !== TicketStatus.CLOSED) {
+      if (ticket.assignee._id.toString() === userId) {
+        openAssignedTickets.push(ticket);
+      } else {
+        openUnAssignedTickets.push(ticket);
+      }
+    } else {
+      if (ticket.assignee._id.toString() === userId) {
+        closedAssignedTickets.push(ticket);
+      } else {
+        closedUnAssignedTickets.push(ticket);
+      }
+    }
+  }
+  return openAssignedTickets.concat(openUnAssignedTickets, closedAssignedTickets, closedUnAssignedTickets);
+};
 
 const TicketServices = {
   createTicket,
