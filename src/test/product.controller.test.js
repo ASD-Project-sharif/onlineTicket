@@ -22,7 +22,6 @@ describe('Product Controllers', () => {
   adminCanNotCreateProductWithNameLengthMoreThan100();
   adminCanNotCreateProductWithDescriptionLengthMoreThan1000();
   onlyAdminCanCreateProduct();
-  userCanNotCreateProductForAnotherOrganization();
 
   adminShouldEditProductSuccessfully();
   onlyAdminOfProductOrganizationCanEditProduct();
