@@ -38,6 +38,7 @@ function adminShouldCreateProductSuccessfully() {
     jest.spyOn(OrganizationRepository, 'hasOrganizationExist').mockResolvedValue(true);
     jest.spyOn(UserRepository, 'isAdmin').mockResolvedValue(true);
     jest.spyOn(OrganizationRepository, 'getOrganizationAdminId').mockResolvedValue('userId');
+    jest.spyOn(OrganizationRepository, 'getOrganizationIdByAgentId').mockResolvedValue('orgId');
 
     ProductRepository.createNewProduct.mockResolvedValue({_id: 'productId'});
 
@@ -46,7 +47,6 @@ function adminShouldCreateProductSuccessfully() {
       body: {
         name: 'test name',
         description: 'test description',
-        organizationId: 'orgId',
       },
       userId: 'userId',
     };

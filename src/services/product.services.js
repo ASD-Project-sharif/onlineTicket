@@ -68,10 +68,13 @@ createProduct = async (req, res) => {
     return;
   }
 
+  const userId = req.userId;
+  const organizationId = await OrganizationRepository.getOrganizationIdByAgentId(userId);
+
   const product = {
     name: req.body.name,
     description: req.body.description,
-    organization: req.body.organizationId,
+    organization: organizationId,
   };
   if (req.body.logo) {
     product.logo = req.body.logo;

@@ -33,9 +33,6 @@ module.exports = function(app) {
    *               description:
    *                 type: string
    *                 description: Description of the Product
-   *               organizationId:
-   *                 type: string
-   *                 description: ID of the organization
    *     responses:
    *       '200':
    *         description: Product added successfully
