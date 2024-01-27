@@ -5,6 +5,7 @@ const UserRepository = require('../repository/user.repository');
 const TicketType = require('../models/enums/ticketType.enum');
 const TicketStatus = require('../models/enums/ticketStatus.enum');
 const TimeServices = require('./time.services');
+const DeadlineStatus = require('../models/enums/deadlineStatus.enum');
 
 /**
  * @param {Object} req - Express Request object
@@ -201,8 +202,155 @@ changeTicketStatus = async (req, res) => {
   res.status(200).send({message: 'Ticket ' + (shouldOpen ? 'Opened' : 'Closed')});
 };
 
+const getTicketsByOrganization = async (req, res) => {
+  const userId = req.userId;
+  const organizationId = await OrganizationRepository.getOrganizationIdByAgentId(userId);
+  const tickets = await getTicketsWithFilterAndSorting(req, res, userId, organizationId);
+  const slicedTickets = await sliceListByPagination(req, res, tickets);
+  res.status(200).send({
+    tickets: slicedTickets,
+    count: tickets.length,
+  });
+};
+const getTicketsByUser = async (req, res) => {
+  const userId = req.userId;
+  const tickets = await getTicketsWithFilterAndSorting(req, res, userId);
+  const slicedTickets = await sliceListByPagination(req, res, tickets);
+  res.status(200).send({
+    tickets: slicedTickets,
+    count: tickets.length,
+  });
+};
+
+const canUserFetchTicket = async (req, res) => {
+  const ticketExist = await TicketRepository.hasTicketExist(req.params.id);
+  if (!ticketExist) {
+    res.status(400).send({message: 'ticket does not exist!'});
+    return false;
+  }
+
+  const isNormalUser = await UserRepository.isNormalUser(req.userId);
+  if (isNormalUser) {
+    const ticketReporterId = await TicketRepository.getTicketReporterId(req.params.id);
+    if (ticketReporterId !== req.userId) {
+      res.status(400).send({message: 'this is not your ticket!'});
+      return false;
+    }
+    return true;
+  }
+  const userOrganizationId = await OrganizationRepository.getOrganizationIdByAgentId(req.userId);
+  const ticketOrganizationId = await TicketRepository.getTicketOrganizationId(req.params.id);
+  if (userOrganizationId !== ticketOrganizationId) {
+    res.status(400).send({message: 'this is not your organization ticket!'});
+    return false;
+  }
+  return true;
+};
+
+const getTicket = async (req, res) => {
+  const canSeeTicket = await canUserFetchTicket(req, res);
+  if (!canSeeTicket) {
+    return;
+  }
+
+  const ticket = await TicketRepository.getTicketById(req.params.id);
+  res.status(200).send({
+    ticket,
+    message: 'Ticket returned successfully!',
+  });
+};
+
+const getTicketsWithFilterAndSorting = async (req, res, userId, organizationId) => {
+  const filter = {
+    type: req.query.filter?.type,
+    status: req.query.filter?.status,
+    intervalStart: req.query.filter?.intervalStart,
+    intervalEnd: req.query.filter?.intervalEnd,
+  };
+  const sort = {
+    type: req.query.sort?.sortBy,
+    order: req.query.sort?.sortOrder,
+  };
+
+  const deadlineStatus = req.query.deadlineStatus;
+
+  let tickets = await
+  TicketRepository.getAllTicketsOfUserWithFilterAndSorting(userId, filter, sort, deadlineStatus, organizationId);
+
+  if (organizationId) {
+    tickets = await sortTicketsByAssigneeAndStatus(tickets, userId);
+  }
+
+  return setTicketsDeadlineStatus(tickets);
+};
+
+const sliceListByPagination = async (req, res, list) => {
+  const page = {
+    size: req.query.pageSize,
+    number: req.query.pageNumber,
+  };
+  const startIndex = (page.number - 1) * page.size;
+  const pagedList = list.slice(startIndex, startIndex + page.size);
+  return pagedList;
+};
+
+const calculateDeadlineStatus = (deadline) => {
+  if (deadline && deadline <= TimeServices.now()) {
+    return DeadlineStatus.PASSED;
+  } else if (deadline && deadline <= TimeServices.oneDayBeforeAfter()) {
+    return DeadlineStatus.NEAR;
+  } else {
+    return DeadlineStatus.NORMAL;
+  }
+};
+
+const setTicketsDeadlineStatus = (tickets) => {
+  return tickets.map((ticket) => ({
+    ...ticket,
+    deadlineStatus: calculateDeadlineStatus(ticket.deadline),
+  }));
+};
+
+const sortTicketsByAssigneeAndStatus = (tickets, userId) => {
+  const openAssignedTickets = [];
+  const openUnAssignedTickets = [];
+  const closedAssignedTickets = [];
+  const closedUnAssignedTickets = [];
+
+  for (const ticket of tickets) {
+    if (ticket.status !== TicketStatus.CLOSED) {
+      if (ticket.assignee._id.toString() === userId) {
+        openAssignedTickets.push(ticket);
+      } else {
+        openUnAssignedTickets.push(ticket);
+      }
+    } else {
+      if (ticket.assignee._id.toString() === userId) {
+        closedAssignedTickets.push(ticket);
+      } else {
+        closedUnAssignedTickets.push(ticket);
+      }
+    }
+  }
+  return openAssignedTickets.concat(openUnAssignedTickets, closedAssignedTickets, closedUnAssignedTickets);
+};
+
+const getTicketsByTitle = async (req, res) => {
+  const tickets = await TicketRepository.getTicketsByTitle(req.params.ticketTitle);
+  res.status(200).send({
+    tickets,
+    message: 'Ticket returened successfully!',
+  });
+};
+
 const TicketServices = {
-  createTicket, editTicket, changeTicketStatus,
+  createTicket,
+  editTicket,
+  changeTicketStatus,
+  getTicketsByOrganization,
+  getTicketsByUser,
+  getTicket,
+  getTicketsByTitle,
 };
 
 module.exports = TicketServices;

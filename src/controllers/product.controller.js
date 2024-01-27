@@ -8,6 +8,9 @@ editProduct = async (req, res) => {
   await ProductServices.editProduct(req, res);
 };
 
+deleteProduct = async (req, res) => {
+  await ProductServices.deleteProduct(req, res);
+};
 getProduct = async (req, res) => {
   await ProductServices.getProduct(req, res);
 };
@@ -22,6 +25,7 @@ const ProductControllers = {
   editProduct,
   getProduct,
   getOrganizationProducts,
+  deleteProduct,
 };
 
 module.exports = ProductControllers;

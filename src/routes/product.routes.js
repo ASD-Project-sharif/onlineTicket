@@ -110,4 +110,35 @@ module.exports = function(app) {
       ]
       ProductControllers.getOrganizationProducts
   );
+
+  /**
+   * @swagger
+   * /api/v1/product/delete/{id}:
+   *   post:
+   *     summary: Delete a Product
+   *     description: Delete a Product with the provided ID.
+   *     tags:
+   *       - Product
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         description: ID of the product to be deleted
+   *         required: true
+   *         schema:
+   *           type: string
+   *     responses:
+   *       '200':
+   *         description: Product deleted successfully
+   *       '400':
+   *         description: Bad request, check the request payload
+   *       '403':
+   *         description: Forbidden, user not allowed to delete a Product
+   */
+  app.post(
+      `${API_VERSION}/${API_TAG}/delete/:id`,
+      [
+        authJwt.verifyToken,
+      ],
+      ProductControllers.deleteProduct,
+  );
 };

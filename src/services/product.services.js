@@ -107,6 +107,16 @@ editProduct = async (req, res) => {
   res.status(200).send({message: 'Product updated successfully!'});
 };
 
+deleteProduct = async (req, res) => {
+  const canEditProduct = await canUserEditProduct(req, res);
+  if (!canEditProduct) {
+    return;
+  }
+
+  await ProductRepository.deleteProduct(req.params.id);
+  res.send({message: 'Product deleted successfully!'});
+};
+
 const getProduct = (req, res) => {
 
 };
@@ -118,6 +128,7 @@ const getOrganizationProducts = (req, res) => {
 const ProductServices = {
   createProduct,
   editProduct,
+  deleteProduct,
   getOrganizationProducts,
   getProduct,
 };

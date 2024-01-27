@@ -1,5 +1,5 @@
 const {
-  createDocument, getDocumentById, updateDocumentById,
+  createDocument, getDocumentById, updateDocumentById, deleteDocumentById,
 } = require('../dataAccess/dataAccess');
 
 createNewProduct = async (data) => {
@@ -8,6 +8,10 @@ createNewProduct = async (data) => {
 
 editProduct = async (productId, data) => {
   return await updateDocumentById('Product', productId, data);
+};
+
+deleteProduct = async (productId) => {
+  return await deleteDocumentById('Product', productId);
 };
 
 hasProductExist = async (productId) => {
@@ -31,6 +35,7 @@ getOrganizationProductsByAgentId = async () => {
 const ProductRepository = {
   createNewProduct,
   editProduct,
+  deleteProduct,
   hasProductExist,
   getProductOrganizationId,
   getProductById,
