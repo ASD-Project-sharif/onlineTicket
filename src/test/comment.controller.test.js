@@ -6,6 +6,8 @@ const SuspendedUserRepository = require('../repository/suspendedUser.repository'
 const TimeServices = require('../services/time.services');
 const CommentControllers = require('../controllers/comment.controller');
 
+const TicketStatus = require('../models/enums/ticketStatus.enum');
+
 jest.mock('../repository/user.repository');
 jest.mock('../repository/organization.repository');
 jest.mock('../repository/ticket.repository');
@@ -62,6 +64,7 @@ function validUserShouldAddCommentOnValidTicketSuccessfully() {
     });
     expect(TicketRepository.editTicket).toHaveBeenCalledWith('ticketId', {
       updated_at: now,
+      status: TicketStatus.WAITING_FOR_ADMIN,
     });
     expect(res.send).toHaveBeenCalledWith({message: 'Comment added successfully', id: 'commentId'});
   });

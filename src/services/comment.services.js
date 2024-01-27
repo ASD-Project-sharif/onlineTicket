@@ -4,6 +4,8 @@ const CommentRepository = require('../repository/comment.repository');
 const UserRepository = require('../repository/user.repository');
 const TimeServices = require('./time.services');
 
+const TicketStatus = require('../models/enums/ticketStatus.enum');
+
 const isInputDataValid = (req, res) => {
   if (req.body.text.length > 1000) {
     res.status(400).send(
@@ -102,7 +104,12 @@ createComment = async (req, res) => {
   };
 
   const commentCreated = await CommentRepository.createNewComment(comment);
-  const ticket = {updated_at: TimeServices.now()};
+
+  const isNormalUser = await UserRepository.isNormalUser(req.userId);
+  const ticket = {
+    updated_at: TimeServices.now(),
+    status: isNormalUser ? TicketStatus.WAITING_FOR_ADMIN : TicketStatus.IN_PROGRESS,
+  };
   await TicketRepository.editTicket(req.params.id, ticket);
   res.send(
       {
