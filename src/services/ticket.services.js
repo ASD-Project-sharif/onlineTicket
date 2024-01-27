@@ -335,6 +335,14 @@ const sortTicketsByAssigneeAndStatus = (tickets, userId) => {
   return openAssignedTickets.concat(openUnAssignedTickets, closedAssignedTickets, closedUnAssignedTickets);
 };
 
+const getTicketsByTitle = async (req, res) => {
+  const tickets = await TicketRepository.getTicketsByTitle(req.params.ticketTitle);
+  res.status(200).send({
+    tickets,
+    message: 'Ticket returened successfully!',
+  });
+};
+
 const TicketServices = {
   createTicket,
   editTicket,
@@ -342,6 +350,7 @@ const TicketServices = {
   getTicketsByOrganization,
   getTicketsByUser,
   getTicket,
+  getTicketsByTitle,
 };
 
 module.exports = TicketServices;

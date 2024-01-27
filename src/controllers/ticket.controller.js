@@ -24,6 +24,10 @@ const getTicket = async (req, res) => {
   await TicketServices.getTicket(req, res);
 };
 
+const getTicketsByTitle = async (req, res) => {
+  await TicketServices.getTicketsByTitle(req, res);
+};
+
 const TicketControllers = {
   addTicket,
   editTicket,
@@ -31,6 +35,7 @@ const TicketControllers = {
   getOrganizationTickets,
   getUserTickets,
   getTicket,
+  getTicketsByTitle,
 };
 
 module.exports = TicketControllers;

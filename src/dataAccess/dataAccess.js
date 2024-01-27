@@ -66,6 +66,21 @@ async function getPopulatedDocumentById(modelName, id) {
 
 /**
  * @param {string} modelName
+ * @param {{}} query
+ * @return {{}}
+ */
+async function getPopulatedDocumentsByQuery(modelName, query) {
+  const Model = mongoose.model(modelName);
+  const documents = await Model.find(query)
+      .populate('organization', 'name')
+      .populate('assignee', 'username')
+      .populate('created_by', 'username')
+      .lean();
+  return documents;
+}
+
+/**
+ * @param {string} modelName
  * @param {string} id
  * @param {{}} data
  */
@@ -124,4 +139,5 @@ module.exports = {
   countDocumentsByQuery,
   getAllPopulatedDocumentsWithFilterAndSort,
   getPopulatedDocumentById,
+  getPopulatedDocumentsByQuery,
 };

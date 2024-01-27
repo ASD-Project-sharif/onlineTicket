@@ -5,6 +5,7 @@ const {
   getAllPopulatedDocumentsWithFilterAndSort,
   updateDocumentById,
   getPopulatedDocumentById,
+  getPopulatedDocumentsByQuery,
 } = require('../dataAccess/dataAccess');
 
 const TicketStatus = require('../models/enums/ticketStatus.enum');
@@ -97,6 +98,12 @@ const getTicketById = async (ticketId) => {
   return await getPopulatedDocumentById('Ticket', ticketId);
 };
 
+const getTicketsByTitle = async (ticketTitle) => {
+  const regex = new RegExp(ticketTitle, 'i');
+  return await getPopulatedDocumentsByQuery('Ticket', {title: {$regex: regex}});
+};
+
+
 editTicket = async (id, data) => {
   return await updateDocumentById('Ticket', id, data);
 };
@@ -111,6 +118,7 @@ const TicketRepository = {
   getTicketReporterId,
   hasTicketExist,
   getTicketOrganizationId,
+  getTicketsByTitle,
 };
 
 module.exports = TicketRepository;
