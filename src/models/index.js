@@ -10,6 +10,7 @@ db.organization = require('./oraganization.model');
 db.ticket = require('./ticket.model');
 db.suspended_user = require('./suspendedUser.model');
 db.comment = require('./comment.model');
+db.product = require('./product.model');
 
 db.ROLES = ['user', 'admin', 'agent'];
 

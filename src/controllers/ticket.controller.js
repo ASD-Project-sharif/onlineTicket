@@ -16,7 +16,7 @@ const getUserTickets = async (req, res) => {
   await TicketServices.getTicketsByUser(req, res);
 };
 
-const getOrganiztionTickets = async (req, res) => {
+const getOrganizationTickets = async (req, res) => {
   await TicketServices.getTicketsByOrganization(req, res);
 };
 
@@ -32,7 +32,7 @@ const TicketControllers = {
   addTicket,
   editTicket,
   changeStatus,
-  getOrganiztionTickets,
+  getOrganizationTickets,
   getUserTickets,
   getTicket,
   getTicketsByTitle,

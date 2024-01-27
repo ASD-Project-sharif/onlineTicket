@@ -7,10 +7,7 @@ const {
 
 getOrganizationAdminId = async (organizationId) => {
   const organization = await getDocumentById('Organization', organizationId);
-  if (organization) {
-    return organization.admin._id.toString();
-  }
-  return null;
+  return organization.admin._id.toString();
 };
 
 hasOrganizationExist = async (organizationId) => {
@@ -41,7 +38,7 @@ getOrganizationIdByAgentId = async (adminId) => {
     const organizationId = agent.organization;
     const organization = await getDocumentById('Organization', organizationId);
     if (organization) {
-      return organization._id;
+      return organization._id.toString();
     }
     return null;
   }

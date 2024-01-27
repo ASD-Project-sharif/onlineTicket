@@ -59,40 +59,40 @@ module.exports = function(app) {
   );
 
   /**
-     * @swagger
-     * /api/v1/ticket/edit/{id}:
-     *   post:
-     *     summary: Edit a ticket by ID
-     *     description: Edit an existing ticket using its unique identifier.
-     *     tags:
-     *       - Ticket
-     *     parameters:
-     *       - in: path
-     *         name: id
-     *         description: ID of the ticket to be edited
-     *         required: true
-     *         schema:
-     *           type: string
-     *     requestBody:
-     *       content:
-     *         application/json:
-     *           schema:
-     *             type: object
-     *             properties:
-     *               title:
-     *                 type: string
-     *                 description: New title for the ticket
-     *               description:
-     *                 type: string
-     *                 description: New description for the ticket
-     *     responses:
-     *       '200':
-     *         description: Ticket edited successfully
-     *       '400':
-     *         description: Bad request, check the request payload
-     *       '403':
-     *         description: Unauthorized, token is missing/invalid, or you do nor have access to edit
-     */
+   * @swagger
+   * /api/v1/ticket/edit/{id}:
+   *   post:
+   *     summary: Edit a ticket by ID
+   *     description: Edit an existing ticket using its unique identifier.
+   *     tags:
+   *       - Ticket
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         description: ID of the ticket to be edited
+   *         required: true
+   *         schema:
+   *           type: string
+   *     requestBody:
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               title:
+   *                 type: string
+   *                 description: New title for the ticket
+   *               description:
+   *                 type: string
+   *                 description: New description for the ticket
+   *     responses:
+   *       '200':
+   *         description: Ticket edited successfully
+   *       '400':
+   *         description: Bad request, check the request payload
+   *       '403':
+   *         description: Unauthorized, token is missing/invalid, or you do nor have access to edit
+   */
   app.post(
       `${API_VERSION}/${API_TAG}/edit/:id`,
       [
@@ -133,7 +133,6 @@ module.exports = function(app) {
    *       '403':
    *         description: Unauthorized, token is missing/invalid, or you do nor have access to edit
    */
-
   app.post(
       `${API_VERSION}/${API_TAG}/change/status/:id`,
       [
@@ -142,24 +141,171 @@ module.exports = function(app) {
       TicketControllers.changeStatus,
   );
 
+  /**
+   * @swagger
+   * /api/v1/ticket/organization:
+   *   get:
+   *     summary: Get organization tickets
+   *     description: Get tickets associated with the organization.
+   *     tags:
+   *       - Ticket
+   *     parameters:
+   *       - in: query
+   *         name: filter[type]
+   *         description: Filter tickets by type
+   *         schema:
+   *           type: string
+   *       - in: query
+   *         name: filter[status]
+   *         description: Filter tickets by status
+   *         schema:
+   *           type: string
+   *       - in: query
+   *         name: filter[intervalStart]
+   *         description: Filter tickets by interval start
+   *         schema:
+   *           type: string
+   *       - in: query
+   *         name: filter[intervalEnd]
+   *         description: Filter tickets by interval end
+   *         schema:
+   *           type: string
+   *       - in: query
+   *         name: sort[sortBy]
+   *         description: Sort tickets by field
+   *         schema:
+   *           type: string
+   *       - in: query
+   *         name: sort[sortOrder]
+   *         description: Sort tickets in ascending or descending order
+   *         schema:
+   *           type: string
+   *       - in: query
+   *         name: deadlineStatus
+   *         description: Filter tickets by deadline status
+   *         schema:
+   *           type: string
+   *       - in: query
+   *         name: pageSize
+   *         description: Number of tickets per page
+   *         schema:
+   *           type: integer
+   *           minimum: 1
+   *           maximum: 100
+   *       - in: query
+   *         name: pageNumber
+   *         description: Page number
+   *         schema:
+   *           type: integer
+   *           minimum: 1
+   *     responses:
+   *       '200':
+   *         description: Success
+   *       '403':
+   *         description: Unauthorized, token is missing/invalid
+   */
   app.get(
-      '/api/v1/ticket/organization',
+      `${API_VERSION}/${API_TAG}/organization`,
       [
         authJwt.verifyToken,
       ],
-      TicketControllers.getOrganiztionTickets,
+      TicketControllers.getOrganizationTickets,
   );
 
+  /**
+   * @swagger
+   * /api/v1/ticket/user:
+   *   get:
+   *     summary: Get user tickets
+   *     description: Get tickets associated with the user.
+   *     tags:
+   *       - Ticket
+   *     parameters:
+   *       - in: query
+   *         name: filter[type]
+   *         description: Filter tickets by type
+   *         schema:
+   *           type: string
+   *       - in: query
+   *         name: filter[status]
+   *         description: Filter tickets by status
+   *         schema:
+   *           type: string
+   *       - in: query
+   *         name: filter[intervalStart]
+   *         description: Filter tickets by interval start
+   *         schema:
+   *           type: string
+   *       - in: query
+   *         name: filter[intervalEnd]
+   *         description: Filter tickets by interval end
+   *         schema:
+   *           type: string
+   *       - in: query
+   *         name: sort[sortBy]
+   *         description: Sort tickets by field
+   *         schema:
+   *           type: string
+   *       - in: query
+   *         name: sort[sortOrder]
+   *         description: Sort tickets in ascending or descending order
+   *         schema:
+   *           type: string
+   *       - in: query
+   *         name: deadlineStatus
+   *         description: Filter tickets by deadline status
+   *         schema:
+   *           type: string
+   *       - in: query
+   *         name: pageSize
+   *         description: Number of tickets per page
+   *         schema:
+   *           type: integer
+   *           minimum: 1
+   *           maximum: 100
+   *       - in: query
+   *         name: pageNumber
+   *         description: Page number
+   *         schema:
+   *           type: integer
+   *           minimum: 1
+   *     responses:
+   *       '200':
+   *         description: Success
+   *       '403':
+   *         description: Unauthorized, token is missing/invalid
+   */
   app.get(
-      '/api/v1/ticket/user',
+      `${API_VERSION}/${API_TAG}/user`,
       [
         authJwt.verifyToken,
       ],
       TicketControllers.getUserTickets,
   );
 
+  /**
+   * @swagger
+   * /api/v1/ticket/{id}:
+   *   get:
+   *     summary: get a ticket
+   *     description: get all fields of a ticket
+   *     tags:
+   *       - Ticket
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         description: ID of the ticket
+   *         required: true
+   *         schema:
+   *           type: string
+   *     responses:
+   *       '200':
+   *         description: Ticket fetched successfully
+   *       '403':
+   *         description: Unauthorized, token is missing/invalid, or you do nor have access to edit
+   */
   app.get(
-      '/api/v1/ticket/:ticketId',
+      `${API_VERSION}/${API_TAG}/:id`,
       [
         authJwt.verifyToken,
       ],

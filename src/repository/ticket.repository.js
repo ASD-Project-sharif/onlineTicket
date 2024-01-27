@@ -12,7 +12,6 @@ const TicketStatus = require('../models/enums/ticketStatus.enum');
 const DeadlineStatus = require('../models/enums/deadlineStatus.enum');
 const TimeService = require('../services/time.services');
 
-
 hasUserReachedToMaximumOpenTicket = async (userId) => {
   const ticketCount = await countDocumentsByQuery('Ticket', {
     created_by: userId,
@@ -82,14 +81,11 @@ const getAllTicketsOfUserWithFilterAndSorting = async (userId, filter, sort, dea
     };
   }
 
-  const options = await sortTickets(sort);
-
-  const result = await getAllPopulatedDocumentsWithFilterAndSort('Ticket', query, options);
-
-  return result;
+  const options = sortTickets(sort);
+  return await getAllPopulatedDocumentsWithFilterAndSort('Ticket', query, options);
 };
 
-const sortTickets = async (sort) => {
+const sortTickets = (sort) => {
   const options = {};
 
   if (sort.type) {
@@ -99,8 +95,7 @@ const sortTickets = async (sort) => {
 };
 
 const getTicketById = async (ticketId) => {
-  const ticket = await getPopulatedDocumentById('Ticket', ticketId);
-  return ticket;
+  return await getPopulatedDocumentById('Ticket', ticketId);
 };
 
 const getTicketsByTitle = async (ticketTitle) => {

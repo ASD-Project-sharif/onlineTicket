@@ -10,8 +10,8 @@ const db = require('./models');
 
 const setupDatabase = async () => {
   try {
-    const dbUrl = `mongodb://${process.env.DATABASE_USER}:${process.env.DATABASE_PASS}@
-                          ${process.env.DATABASE_HOST}:${process.env.DATABASE_PORT}/${process.env.DATABASE_NAME}`;
+    const dbLogin = `mongodb://${process.env.DATABASE_USER}:${process.env.DATABASE_PASS}`;
+    const dbUrl = `${dbLogin}@${process.env.DATABASE_HOST}:${process.env.DATABASE_PORT}/${process.env.DATABASE_NAME}`;
     await db.mongoose.connect(dbUrl, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -31,10 +31,13 @@ function setupUses(app) {
   app.use(sanitizeUserInput);
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
   app.use(express.urlencoded({extended: true}));
-  app.use(cookieSession({
-    name: 'ticket-session', keys: ['COOKIE_SECRET'],
-    httpOnly: true,
-  }));
+  app.use(
+      cookieSession({
+        name: 'ticket-session',
+        keys: ['COOKIE_SECRET'],
+        httpOnly: true,
+      }),
+  );
 
   const corsOpts = {
     origin: '*',
@@ -57,6 +60,7 @@ function setupRoutes(app) {
   require('./routes/ticket.routes')(app);
   require('./routes/information.routes')(app);
   require('./routes/comment.routes')(app);
+  require('./routes/product.routes')(app);
 }
 
 setupDatabase();
