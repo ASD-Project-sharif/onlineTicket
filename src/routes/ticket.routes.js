@@ -201,6 +201,8 @@ module.exports = function(app) {
    *     responses:
    *       '200':
    *         description: Success
+   *       '400':
+   *         description: Bad request, check the request payload
    *       '403':
    *         description: Unauthorized, token is missing/invalid
    */
@@ -272,6 +274,8 @@ module.exports = function(app) {
    *     responses:
    *       '200':
    *         description: Success
+   *       '400':
+   *         description: Bad request, check the request payload
    *       '403':
    *         description: Unauthorized, token is missing/invalid
    */
@@ -301,6 +305,8 @@ module.exports = function(app) {
    *     responses:
    *       '200':
    *         description: Ticket fetched successfully
+   *       '400':
+   *         description: Bad request, check the request payload
    *       '403':
    *         description: Unauthorized, token is missing/invalid, or you do nor have access to edit
    */
@@ -312,6 +318,29 @@ module.exports = function(app) {
       TicketControllers.getTicket,
   );
 
+  /**
+   * @swagger
+   * /api/v1/ticket/search/{title}:
+   *   get:
+   *     summary: search tickets
+   *     description: search for tickets with matched title
+   *     tags:
+   *       - Ticket
+   *     parameters:
+   *       - in: path
+   *         name: title
+   *         description: title of ticket
+   *         required: true
+   *         schema:
+   *           type: string
+   *     responses:
+   *       '200':
+   *         description: Ticket(s) fetched successfully
+   *       '400':
+   *         description: Bad request, check the request payload
+   *       '403':
+   *         description: Unauthorized, token is missing/invalid, or you do nor have access to get
+   */
   app.get(
       '/api/v1/ticket/search/:ticketTitle',
       [

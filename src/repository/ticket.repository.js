@@ -98,11 +98,20 @@ const getTicketById = async (ticketId) => {
   return await getPopulatedDocumentById('Ticket', ticketId);
 };
 
-const getTicketsByTitle = async (ticketTitle) => {
+const getTicketsByTitle = async (ticketTitle, userId, organizationId) => {
   const regex = new RegExp(ticketTitle, 'i');
-  return await getPopulatedDocumentsByQuery('Ticket', {title: {$regex: regex}});
+  return await getPopulatedDocumentsByQuery('Ticket', {
+    $and: [
+      {
+        $or: [
+          {created_by: userId},
+          {organization: organizationId},
+        ],
+      },
+      {title: {$regex: regex}},
+    ],
+  });
 };
-
 
 editTicket = async (id, data) => {
   return await updateDocumentById('Ticket', id, data);
