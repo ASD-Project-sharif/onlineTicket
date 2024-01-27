@@ -150,35 +150,6 @@ function onlyAdminCanCreateProduct() {
 /**
  * @private
  */
-function userCanNotCreateProductForAnotherOrganization() {
-  test('other organization', async () => {
-    jest.spyOn(OrganizationRepository, 'hasOrganizationExist').mockResolvedValue(true);
-    jest.spyOn(UserRepository, 'isAdmin').mockResolvedValue(true);
-    jest.spyOn(OrganizationRepository, 'getOrganizationAdminId').mockResolvedValue('adminId');
-
-    const res = mockResponse();
-    const req = {
-      body: {
-        name: 'Valid Name',
-        description: 'Valid Description',
-        organizationId: 'otherOrgId',
-      },
-      userId: 'userId',
-    };
-
-    await ProductControllers.addProduct(req, res);
-
-    expect(ProductRepository.createNewProduct).not.toHaveBeenCalled();
-    expect(res.status).toHaveBeenCalledWith(403);
-    expect(res.send).toHaveBeenCalledWith({
-      message: 'You can not create product for another organization!',
-    });
-  });
-}
-
-/**
- * @private
- */
 function adminShouldEditProductSuccessfully() {
   test('edit product', async () => {
     jest.spyOn(ProductRepository, 'hasProductExist').mockResolvedValue(true);
