@@ -2,6 +2,7 @@ const {
   createDocument,
   getDocumentById,
   updateDocumentById,
+  findDocuments,
 } = require('../dataAccess/dataAccess');
 
 hasCommentExist = async (commentId) => {
@@ -19,6 +20,10 @@ getCommentTicketId = async (commentId) => {
   return comment.ticket._id.toString();
 };
 
+getTicketComments = async (ticketId) => {
+  return await findDocuments('Comment', {ticket: ticketId}, {created_at: 1});
+};
+
 createNewComment = async (data) => {
   return await createDocument('Comment', data);
 };
@@ -33,6 +38,7 @@ const CommentRepository = {
   getCommentReporterId,
   hasCommentExist,
   getCommentTicketId,
+  getTicketComments,
 };
 
 module.exports = CommentRepository;
