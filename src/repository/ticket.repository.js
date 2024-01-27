@@ -103,10 +103,9 @@ const getTicketById = async (ticketId) => {
   return ticket;
 };
 
-const getTicketsByTitle = async (ticketTilte) => {
-  const regex = new RegExp(ticketTilte, 'i');
-  const tickets = await getPopulatedDocumentsByQuery('Ticket', { title: { $regex: regex } });
-  return tickets;
+const getTicketsByTitle = async (ticketTitle) => {
+  const regex = new RegExp(ticketTitle, 'i');
+  return await getPopulatedDocumentsByQuery('Ticket', {title: {$regex: regex}});
 };
 
 

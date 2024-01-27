@@ -64,13 +64,18 @@ async function getPopulatedDocumentById(modelName, id) {
   return document;
 }
 
+/**
+ * @param {string} modelName
+ * @param {{}} query
+ * @return {{}}
+ */
 async function getPopulatedDocumentsByQuery(modelName, query) {
   const Model = mongoose.model(modelName);
   const documents = await Model.find(query)
-                              .populate('organization', 'name')
-                              .populate('assignee', 'username')
-                              .populate('created_by', 'username')
-                              .lean();
+      .populate('organization', 'name')
+      .populate('assignee', 'username')
+      .populate('created_by', 'username')
+      .lean();
   return documents;
 }
 

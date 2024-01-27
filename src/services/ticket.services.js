@@ -246,7 +246,7 @@ const getTicketsWithFilterAndSorting = async (req, res, userId, organizationId) 
   const deadlineStatus = req.query.deadlineStatus;
 
   let tickets = await
-      TicketRepository.getAllTicketsOfUserWithFilterAndSorting(userId, filter, sort, deadlineStatus, organizationId);
+  TicketRepository.getAllTicketsOfUserWithFilterAndSorting(userId, filter, sort, deadlineStatus, organizationId);
 
   if (organizationId) {
     tickets = await sortTicketsByAssigneeAndStatus(tickets, userId);

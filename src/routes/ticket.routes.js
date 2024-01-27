@@ -173,5 +173,4 @@ module.exports = function(app) {
       ],
       TicketControllers.getTicketsByTitle,
   );
-
 };
