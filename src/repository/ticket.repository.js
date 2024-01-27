@@ -8,7 +8,6 @@ const {
 } = require('../dataAccess/dataAccess');
 
 const TicketStatus = require('../models/enums/ticketStatus.enum');
-const UserType = require('../models/enums/userRoles.enum');
 const DeadlineStatus = require('../models/enums/deadlineStatus.enum');
 const TimeService = require('../services/time.services');
 
@@ -63,11 +62,11 @@ const getAllTicketsOfUserWithFilterAndSorting = async (userId, filter, sort, dea
   }
 
   if (filter.intervalStart) {
-    query.created_at = { $gte: new Date(filter.intervalStart) };
+    query.created_at = {$gte: new Date(filter.intervalStart)};
   }
 
   if (filter.intervalEnd) {
-    query.created_at = { $lte: new Date(filter.intervalEnd) };
+    query.created_at = {$lte: new Date(filter.intervalEnd)};
   }
 
   if (deadlineStatus === DeadlineStatus.PASSED) {
@@ -78,7 +77,7 @@ const getAllTicketsOfUserWithFilterAndSorting = async (userId, filter, sort, dea
   if (deadlineStatus === DeadlineStatus.NEAR) {
     query.deadline = {
       $gte: TimeService.now(),
-      $lte: TimeServie.oneDayBeforeAfter(),
+      $lte: TimeService.oneDayBeforeAfter(),
     };
   }
 
@@ -95,7 +94,7 @@ const sortTickets = async (sort) => {
   if (sort.type) {
     options[sort.type] = sort.order === 'ASC' ? 1 : -1;
   }
-  return options
+  return options;
 };
 
 const getTicketById = async (ticketId) => {
