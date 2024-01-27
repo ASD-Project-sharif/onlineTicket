@@ -22,7 +22,6 @@ describe('Product Controllers', () => {
   adminCanNotCreateProductWithNameLengthMoreThan100();
   adminCanNotCreateProductWithDescriptionLengthMoreThan1000();
   onlyAdminCanCreateProduct();
-  userCanNotCreateProductForAnotherOrganization();
 
   adminShouldEditProductSuccessfully();
   onlyAdminOfProductOrganizationCanEditProduct();
@@ -143,35 +142,6 @@ function onlyAdminCanCreateProduct() {
     expect(res.status).toHaveBeenCalledWith(403);
     expect(res.send).toHaveBeenCalledWith({
       message: 'You do not have the right access!',
-    });
-  });
-}
-
-/**
- * @private
- */
-function userCanNotCreateProductForAnotherOrganization() {
-  test('other organization', async () => {
-    jest.spyOn(OrganizationRepository, 'hasOrganizationExist').mockResolvedValue(true);
-    jest.spyOn(UserRepository, 'isAdmin').mockResolvedValue(true);
-    jest.spyOn(OrganizationRepository, 'getOrganizationAdminId').mockResolvedValue('adminId');
-
-    const res = mockResponse();
-    const req = {
-      body: {
-        name: 'Valid Name',
-        description: 'Valid Description',
-        organizationId: 'otherOrgId',
-      },
-      userId: 'userId',
-    };
-
-    await ProductControllers.addProduct(req, res);
-
-    expect(ProductRepository.createNewProduct).not.toHaveBeenCalled();
-    expect(res.status).toHaveBeenCalledWith(403);
-    expect(res.send).toHaveBeenCalledWith({
-      message: 'You can not create product for another organization!',
     });
   });
 }

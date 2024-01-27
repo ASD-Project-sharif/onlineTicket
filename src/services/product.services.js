@@ -25,21 +25,9 @@ const isInputDataValid = (req, res) => {
 };
 
 const canUserCreateProduct = async (req, res) => {
-  const organizationExist = await OrganizationRepository.hasOrganizationExist(req.body.organizationId);
-  if (!organizationExist) {
-    res.status(400).send({message: 'organization does not exist!'});
-    return false;
-  }
-
   const isAdmin = await UserRepository.isAdmin(req.userId);
   if (!isAdmin) {
     res.status(403).send({message: 'You do not have the right access!'});
-    return false;
-  }
-
-  const organizationAdminId = await OrganizationRepository.getOrganizationAdminId(req.body.organizationId);
-  if (organizationAdminId !== req.userId) {
-    res.status(403).send({message: 'You can not create product for another organization!'});
     return false;
   }
   return true;
@@ -59,17 +47,25 @@ const canUserEditProduct = async (req, res) => {
   return true;
 };
 
+const getOrganizationId = async (req, res) => {
+  const userId = req.userId;
+  const organizationId = await OrganizationRepository.getOrganizationIdByAgentId(userId);
+  if (!organizationId) {
+    res.status(400).send({message: 'organization does not exist!'});
+    return;
+  }
+  return organizationId;
+};
+
 createProduct = async (req, res) => {
   if (!isInputDataValid(req, res)) {
     return;
   }
+  const organizationId = await getOrganizationId(req, res);
   const canCreateProduct = await canUserCreateProduct(req, res);
-  if (!canCreateProduct) {
+  if (!canCreateProduct || !organizationId) {
     return;
   }
-
-  const userId = req.userId;
-  const organizationId = await OrganizationRepository.getOrganizationIdByAgentId(userId);
 
   const product = {
     name: req.body.name,
