@@ -112,60 +112,6 @@ const canUserEditTicket = async (req, res) => {
 /**
  * @param {Object} req - Express Request object
  * @param {Object} res - Express Response object
- * @return {Promise<void>}
- */
-createTicket = async (req, res) => {
-  if (!isInputDataValid(req, res)) {
-    return;
-  }
-  const canUserCreateTicket = await canUserCreateNewTicket(req, res);
-  if (!canUserCreateTicket) {
-    return;
-  }
-
-  const ticket = {
-    title: req.body.title,
-    description: req.body.description,
-    created_by: req.userId,
-    assignee: await OrganizationRepository.getOrganizationAdminId(req.body.organizationId),
-    organization: req.body.organizationId,
-    type: req.body.type,
-  };
-
-  if (req.body.deadline) {
-    ticket.deadline = new Date(req.body.deadline);
-  }
-  const ticketCreated = await TicketRepository.createNewTicket(ticket);
-  res.send({message: 'Ticket added successfully!', id: ticketCreated._id});
-};
-
-/**
- * @param {Object} req - Express Request object
- * @param {Object} res - Express Response object
- * @return {Promise<void>}
- */
-editTicket = async (req, res) => {
-  if (!isInputDataValid(req, res)) {
-    return;
-  }
-  const canEdit = await canUserEditTicket(req, res);
-  if (!canEdit) {
-    return;
-  }
-
-  const ticket = {
-    title: req.body.title,
-    description: req.body.description,
-    updated_at: TimeServices.now(),
-  };
-
-  await TicketRepository.editTicket(req.params.id, ticket);
-  res.send({message: 'ticket edited successfully'});
-};
-
-/**
- * @param {Object} req - Express Request object
- * @param {Object} res - Express Response object
  * @return {Promise<boolean>}
  */
 async function canUserOpenOrCloseTicket(req, res) {
@@ -185,46 +131,6 @@ async function canUserOpenOrCloseTicket(req, res) {
 
   return true;
 }
-
-/**
- * @param {Object} req - Express Request object
- * @param {Object} res - Express Response object
- * @return {Promise<void>}
- */
-changeTicketStatus = async (req, res) => {
-  const canChange = await canUserOpenOrCloseTicket(req, res);
-  if (!canChange) {
-    return;
-  }
-  const shouldOpen = Boolean(req.body.open);
-  const ticket = {
-    status: shouldOpen ? TicketStatus.IN_PROGRESS : TicketStatus.CLOSED,
-    updated_at: TimeServices.now(),
-  };
-
-  await TicketRepository.editTicket(req.params.id, ticket);
-  res.status(200).send({message: 'Ticket ' + (shouldOpen ? 'Opened' : 'Closed')});
-};
-
-const getTicketsByOrganization = async (req, res) => {
-  const userId = req.userId;
-  const organizationId = await OrganizationRepository.getOrganizationIdByAgentId(userId);
-  const tickets = await getTicketsWithFilterAndSorting(req, res, userId, organizationId);
-  const slicedTickets = await sliceListByPagination(req, res, tickets);
-  res.status(200).send({
-    tickets: slicedTickets,
-    count: tickets.length,
-  });
-};
-const getTicketsByUser = async (req, res) => {
-  const userId = req.userId;
-  const tickets = await getTicketsWithFilterAndSorting(req, res, userId);
-  const slicedTickets = await sliceListByPagination(req, res, tickets);
-  res.status(200).send({
-    tickets: slicedTickets,
-    count: tickets.length,
-  });
-};
 
 const canUserFetchTicket = async (req, res) => {
   const ticketExist = await TicketRepository.hasTicketExist(req.params.id);
@@ -249,20 +155,6 @@ const canUserFetchTicket = async (req, res) => {
     return false;
   }
   return true;
-};
-
-const getTicket = async (req, res) => {
-  const canSeeTicket = await canUserFetchTicket(req, res);
-  if (!canSeeTicket) {
-    return;
-  }
-
-  const ticket = await TicketRepository.getTicketById(req.params.id);
-  const comments = await CommentRepository.getTicketComments(req.params.id);
-  res.status(200).send({
-    ticket: ticket,
-    comments: comments,
-  });
 };
 
 const getTicketsWithFilterAndSorting = async (req, res, userId, organizationId) => {
@@ -452,6 +344,7 @@ changeTicketStatus = async (req, res) => {
 
   await TicketRepository.editTicket(req.params.id, ticket);
   res.status(200).send({message: 'Ticket ' + (shouldOpen ? 'Opened' : 'Closed')});
+  await TicketLogRepository.LogTicket(req.userId, req.params.id, ticket, (shouldOpen ? 'Open' : 'Close') + '  Ticket');
 };
 
 /**
