@@ -1,6 +1,7 @@
 const SuspendedUserRepository = require('../repository/suspendedUser.repository');
 const TicketRepository = require('../repository/ticket.repository');
 const CommentRepository = require('../repository/comment.repository');
+const ProductRepository = require('../repository/product.repository');
 const OrganizationRepository = require('../repository/organization.repository');
 const UserRepository = require('../repository/user.repository');
 const TicketType = require('../models/enums/ticketType.enum');
@@ -71,6 +72,19 @@ const canUserCreateNewTicket = async (req, res) => {
   if (isUserSuspendedInThisOrganization) {
     res.status(403).send({message: 'You are Suspended!'});
     return false;
+  }
+
+  if (req.body.product) {
+    const productExist = await ProductRepository.hasProductExist(req.body.product);
+    if (!productExist) {
+      res.status(400).send({message: 'Product does not exist!'});
+      return false;
+    }
+    const productOrganizationId = await ProductRepository.getProductOrganizationId(req.body.product);
+    if (productOrganizationId !== req.body.organizationId) {
+      res.status(400).send({message: 'Product is not for this organization!'});
+      return false;
+    }
   }
 
   if (await TicketRepository.hasUserReachedToMaximumOpenTicket(req.userId)) {
@@ -275,6 +289,11 @@ createTicket = async (req, res) => {
   if (req.body.deadline) {
     ticket.deadline = new Date(req.body.deadline);
   }
+
+  if (req.body.product) {
+    ticket.product = req.body.product;
+  }
+
   const ticketCreated = await TicketRepository.createNewTicket(ticket);
   res.send({message: 'Ticket added successfully!', id: ticketCreated._id});
 };

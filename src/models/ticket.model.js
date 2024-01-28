@@ -27,6 +27,11 @@ const TicketSchema = new mongoose.Schema({
     ref: 'Organization',
     required: true,
   },
+  product: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Product',
+    required: false,
+  },
   status: {
     type: String,
     enum: Object.values(TicketStatus),
