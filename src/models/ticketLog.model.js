@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const TimeService = require('../services/time.services')
+const TimeService = require('../services/time.services');
 
 const TicketLogSchema = new mongoose.Schema({
   ticket: {
@@ -12,7 +12,7 @@ const TicketLogSchema = new mongoose.Schema({
     trim: true,
   },
   changes: {
-    type: String,
+    type: JSON,
     required: false,
     trim: true,
   },

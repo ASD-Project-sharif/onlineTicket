@@ -2,6 +2,7 @@ const UserRepository = require('../repository/user.repository');
 const OrganizationRepository = require('../repository/organization.repository');
 const TicketRepository = require('../repository/ticket.repository');
 const SuspendedUserRepository = require('../repository/suspendedUser.repository');
+const TicketLogRepository = require('../repository/ticketLog.repository');
 
 const TimeServices = require('../services/time.services');
 const TicketControllers = require('../controllers/ticket.controller');
@@ -14,9 +15,11 @@ jest.mock('../repository/user.repository');
 jest.mock('../repository/organization.repository');
 jest.mock('../repository/ticket.repository');
 jest.mock('../repository/suspendedUser.repository');
+jest.mock('../repository/ticketLog.repository');
 
 beforeEach(() => {
   jest.clearAllMocks();
+  jest.spyOn(TicketLogRepository, 'logTicket').mockImplementation((pass, salt, cb) => {});
 });
 afterEach(() => {
   jest.restoreAllMocks();
