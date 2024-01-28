@@ -194,7 +194,7 @@ function userCanNotEditCommentWhenTicketIsClosed() {
 
     await CommentControllers.editComment({body: commentMockData, userId: 'userId', params: {id: 'commentId'}}, res);
     expect(res.status).toHaveBeenCalledWith(403);
-    expect(res.send).toHaveBeenCalledWith({message: 'you can not edit a comment on closed ticket!'});
+    expect(res.send).toHaveBeenCalledWith({message: 'you can not comment on closed ticket!'});
   });
 }
 
