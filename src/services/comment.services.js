@@ -15,7 +15,7 @@ const isInputDataValid = (req, res) => {
   return true;
 };
 
-const isTicketExistAndOpen = async (req, res, ticketId) => {
+const isTicketExistAndOpenAndUserNotSuspended = async (req, res, ticketId) => {
   const ticketExist = await TicketRepository.hasTicketExist(ticketId);
   if (!ticketExist) {
     res.status(403).send({message: 'Ticket does not exist'});
@@ -25,6 +25,14 @@ const isTicketExistAndOpen = async (req, res, ticketId) => {
   const isTicketOpen = await TicketRepository.isTicketOpen(ticketId);
   if (!isTicketOpen) {
     res.status(403).send({message: 'you can not comment on closed ticket!'});
+    return false;
+  }
+
+  const organizationId = await TicketRepository.getTicketOrganizationId(ticketId);
+  const isUserSuspendedInThisOrganization = await SuspendedUserRepository.isUserSuspended(
+      req.userId, organizationId);
+  if (isUserSuspendedInThisOrganization) {
+    res.status(403).send({message: 'You are Suspended!'});
     return false;
   }
   return true;
@@ -39,17 +47,8 @@ const canUserEditComment = async (req, res) => {
   }
 
   const ticketId = await CommentRepository.getCommentTicketId(commentId);
-  const isTicketOpen = await isTicketExistAndOpen(req, res, ticketId);
-  if (!isTicketOpen) {
-    res.status(403).send({message: 'you can not edit a comment on closed ticket!'});
-    return false;
-  }
-
-  const organizationId = await TicketRepository.getTicketOrganizationId(ticketId);
-  const isUserSuspendedInThisOrganization = await SuspendedUserRepository.isUserSuspended(
-      req.userId, organizationId);
-  if (isUserSuspendedInThisOrganization) {
-    res.status(403).send({message: 'You are Suspended!'});
+  const isTicketOpenAndUserValid = await isTicketExistAndOpenAndUserNotSuspended(req, res, ticketId);
+  if (!isTicketOpenAndUserValid) {
     return false;
   }
 
@@ -64,17 +63,8 @@ const canUserEditComment = async (req, res) => {
 const canUserCreateComment = async (req, res) => {
   const ticketId = req.params.id;
 
-  const isTicketOpen = await isTicketExistAndOpen(req, res, ticketId);
-  if (!isTicketOpen) {
-    res.status(403).send({message: 'you can not comment on closed ticket!'});
-    return false;
-  }
-
-  const organizationId = await TicketRepository.getTicketOrganizationId(ticketId);
-  const isUserSuspendedInThisOrganization =
-      await SuspendedUserRepository.isUserSuspended(req.userId, organizationId);
-  if (isUserSuspendedInThisOrganization) {
-    res.status(403).send({message: 'You are Suspended!'});
+  const isTicketOpenAndUserValid = await isTicketExistAndOpenAndUserNotSuspended(req, res, ticketId);
+  if (!isTicketOpenAndUserValid) {
     return false;
   }
 
