@@ -9,6 +9,8 @@ const TimeServices = require('./time.services');
 const DeadlineStatus = require('../models/enums/deadlineStatus.enum');
 const PaginationServices = require('../services/pagination.services');
 
+const TicketLogRepository = require('../repository/ticketLog.repository');
+
 /**
  * @param {Object} req - Express Request object
  * @param {Object} res - Express Response object
@@ -135,6 +137,8 @@ createTicket = async (req, res) => {
   }
   const ticketCreated = await TicketRepository.createNewTicket(ticket);
   res.send({message: 'Ticket added successfully!', id: ticketCreated._id});
+
+  await TicketLogRepository.LogTicket(req.userId, ticketCreated._id, ticket, 'Add Ticket');
 };
 
 /**
@@ -159,6 +163,8 @@ editTicket = async (req, res) => {
 
   await TicketRepository.editTicket(req.params.id, ticket);
   res.send({message: 'ticket edited successfully'});
+
+  await TicketLogRepository.LogTicket(req.userId, req.params.id, ticket, 'Edit Ticket');
 };
 
 /**
@@ -202,6 +208,8 @@ changeTicketStatus = async (req, res) => {
 
   await TicketRepository.editTicket(req.params.id, ticket);
   res.status(200).send({message: 'Ticket ' + (shouldOpen ? 'Opened' : 'Closed')});
+
+  await TicketLogRepository.LogTicket(req.userId, req.params.id, ticket, (shouldOpen ? 'Open' : 'Close') + '  Ticket');
 };
 
 const getTicketsByOrganization = async (req, res) => {
