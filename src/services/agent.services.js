@@ -32,14 +32,8 @@ addNewAgent = async (req, res) => {
 };
 
 getAgents = async (req, res) => {
-  const isAdmin = await UserRepository.isAdmin(req.userId);
-  if (!isAdmin) {
-    res.status(403).send({message: 'you do not have the right access!'});
-    return;
-  }
-
   const organizationId = await OrganizationRepository.getOrganizationIdByAgentId(req.userId);
-  const agents = await UserRepository.getAgents(organizationId, req.query.pageNumber, req.query.pageSize);
+  const agents = await UserRepository.getAgents(organizationId, req.query.pageNumber, req.query.pageSize, req.userId);
   res.send({agents: agents});
 };
 
