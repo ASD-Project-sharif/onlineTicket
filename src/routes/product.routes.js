@@ -96,19 +96,19 @@ module.exports = function(app) {
   );
 
   app.get(
-      `${API_VERSION}/${API_TAG}/:id`,
+      `${API_VERSION}/${API_TAG}/organization`,
       [
-        authJwt.verifyToken
+         authJwt.verifyToken
       ],
-      ProductControllers.getProduct,
+      ProductControllers.getOrganizationProducts,
   );
 
   app.get(
-      `${API_VERSION}/${API_TAG}/organization`,
+      `${API_VERSION}/${API_TAG}/:id`,
       [
-        // authJwt.verifyToken,
+        // authJwt.verifyToken
       ],
-      ProductControllers.getOrganizationProducts,
+      ProductControllers.getProduct,
   );
 
   /**

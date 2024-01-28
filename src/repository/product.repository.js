@@ -29,7 +29,7 @@ getProductById = async (productId) => {
   return await getPopulatedProductById('Product', productId);
 };
 
-getOrganizationProducts = async () => {
+getOrganizationProducts = async (organizationId) => {
   const query = {};
 
   query.organization = organizationId;
