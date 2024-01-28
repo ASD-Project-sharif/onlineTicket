@@ -3,10 +3,10 @@ const UserRepository = require('../repository/user.repository');
 
 verifyToken = (req, res, next) => {
   let token = req.headers['x-access-token'];
-  token = token.replace('Token ', '');
   if (!token) {
     return res.status(403).send({message: 'No token provided!'});
   }
+  token = token.replace('Token ', '');
 
   jwt.verify(token, process.env.SECRET_KEY, async (err, decoded) => {
     if (err) {

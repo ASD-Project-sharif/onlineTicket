@@ -12,15 +12,6 @@ async function createDocument(modelName, data) {
 }
 
 /**
- * @param {string}modelName
- */
-async function getAllDocuments(modelName) {
-  const Model = mongoose.model(modelName);
-  const documents = Model.find();
-  return documents;
-}
-
-/**
  * @param {string} modelName
  * @param {{}} query
  * @param {{}} options
@@ -129,14 +120,6 @@ async function deleteDocumentById(modelName, id) {
 
 /**
  * @param {string} modelName
- */
-async function countDocuments(modelName) {
-  const Model = mongoose.model(modelName);
-  return Model.estimatedDocumentCount();
-}
-
-/**
- * @param {string} modelName
  * @param {{}} query
  */
 async function countDocumentsByQuery(modelName, query) {
@@ -154,13 +137,23 @@ async function findOneDocument(modelName, query) {
   return document;
 }
 
+/**
+ * @param {string} modelName
+ * @param {{}} query
+ * @param {{}} sort
+ * @return {{}}
+ */
+async function findDocuments(modelName, query, sort) {
+  const Model = mongoose.model(modelName);
+  const documents = await Model.find(query).sort(sort).exec();
+  return documents;
+}
+
 module.exports = {
   createDocument,
-  getAllDocuments,
   getDocumentById,
   updateDocumentById,
   deleteDocumentById,
-  countDocuments,
   findOneDocument,
   countDocumentsByQuery,
   getAllPopulatedDocumentsWithFilterAndSort,
@@ -168,4 +161,5 @@ module.exports = {
   getPopulatedDocumentsByQuery,
   getPopulatedProductById,
   getAllPopulatedProducts,
+  findDocuments,
 };

@@ -1,5 +1,6 @@
 const SuspendedUserRepository = require('../repository/suspendedUser.repository');
 const TicketRepository = require('../repository/ticket.repository');
+const CommentRepository = require('../repository/comment.repository');
 const OrganizationRepository = require('../repository/organization.repository');
 const UserRepository = require('../repository/user.repository');
 const TicketType = require('../models/enums/ticketType.enum');
@@ -234,7 +235,7 @@ const canUserFetchTicket = async (req, res) => {
   if (isNormalUser) {
     const ticketReporterId = await TicketRepository.getTicketReporterId(req.params.id);
     if (ticketReporterId !== req.userId) {
-      res.status(400).send({message: 'this is not your ticket!'});
+      res.status(403).send({message: 'this is not your ticket!'});
       return false;
     }
     return true;
@@ -242,7 +243,7 @@ const canUserFetchTicket = async (req, res) => {
   const userOrganizationId = await OrganizationRepository.getOrganizationIdByAgentId(req.userId);
   const ticketOrganizationId = await TicketRepository.getTicketOrganizationId(req.params.id);
   if (userOrganizationId !== ticketOrganizationId) {
-    res.status(400).send({message: 'this is not your organization ticket!'});
+    res.status(403).send({message: 'this is not your organization ticket!'});
     return false;
   }
   return true;
@@ -255,9 +256,10 @@ const getTicket = async (req, res) => {
   }
 
   const ticket = await TicketRepository.getTicketById(req.params.id);
+  const comments = await CommentRepository.getTicketComments(req.params.id);
   res.status(200).send({
-    ticket,
-    message: 'Ticket returned successfully!',
+    ticket: ticket,
+    comments: comments,
   });
 };
 
