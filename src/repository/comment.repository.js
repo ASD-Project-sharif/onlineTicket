@@ -21,7 +21,18 @@ getCommentTicketId = async (commentId) => {
 };
 
 getTicketComments = async (ticketId) => {
-  return await findDocuments('Comment', {ticket: ticketId}, {created_at: 1}, {});
+  const populate = {
+    path: 'created_by',
+    select: 'username',
+  };
+  return await findDocuments(
+      'Comment',
+      {ticket: ticketId},
+      {created_at: 1},
+      {},
+      null,
+      null,
+      populate);
 };
 
 createNewComment = async (data) => {
