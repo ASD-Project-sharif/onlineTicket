@@ -92,6 +92,30 @@ module.exports = function(app) {
       ProductControllers.editProduct,
   );
 
+  app.get(
+      `${API_VERSION}/${API_TAG}/organization/:organizationName`,
+      [
+        authJwt.verifyToken,
+      ],
+      ProductControllers.getOrganizationProductsByOrganizationName,
+  );
+
+  app.get(
+      `${API_VERSION}/${API_TAG}/organization`,
+      [
+        authJwt.verifyToken,
+      ],
+      ProductControllers.getOrganizationProductsByAgent,
+  );
+
+  app.get(
+      `${API_VERSION}/${API_TAG}/:id`,
+      [
+        // authJwt.verifyToken
+      ],
+      ProductControllers.getProduct,
+  );
+
   /**
    * @swagger
    * /api/v1/product/delete/{id}:

@@ -31,6 +31,19 @@ async function getAllPopulatedDocumentsWithFilterAndSort(modelName, query, optio
 
 /**
  * @param {string} modelName
+ * @param {{}} query
+ * @return {{}}
+ */
+async function getAllPopulatedProducts(modelName, query) {
+  const Model = mongoose.model(modelName);
+  const result = await Model.find(query)
+      .populate('organization', 'name')
+      .lean();
+  return result;
+}
+
+/**
+ * @param {string} modelName
  * @param {*} id
  */
 async function getDocumentById(modelName, id) {
@@ -52,6 +65,19 @@ async function getPopulatedDocumentById(modelName, id) {
       .populate('created_by', 'username')
       .lean();
 
+  return document;
+}
+
+/**
+ * @param {string} modelName
+ * @param  {string} id
+ * @return {{}}
+ */
+async function getPopulatedProductById(modelName, id) {
+  const Model = mongoose.model(modelName);
+  const document = await Model.findById(id)
+      .populate('organization', 'name')
+      .lean();
   return document;
 }
 
@@ -133,5 +159,7 @@ module.exports = {
   getAllPopulatedDocumentsWithFilterAndSort,
   getPopulatedDocumentById,
   getPopulatedDocumentsByQuery,
+  getPopulatedProductById,
+  getAllPopulatedProducts,
   findDocuments,
 };

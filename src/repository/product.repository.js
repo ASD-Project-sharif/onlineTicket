@@ -1,5 +1,6 @@
 const {
   createDocument, getDocumentById, updateDocumentById, deleteDocumentById,
+  getPopulatedProductById, getAllPopulatedProducts,
 } = require('../dataAccess/dataAccess');
 
 createNewProduct = async (data) => {
@@ -24,12 +25,26 @@ getProductOrganizationId = async (productId) => {
   return product.organization._id.toString();
 };
 
+getProductById = async (productId) => {
+  return await getPopulatedProductById('Product', productId);
+};
+
+getOrganizationProducts = async (organizationId) => {
+  const query = {};
+
+  query.organization = organizationId;
+
+  return getAllPopulatedProducts('Product', query);
+};
+
 const ProductRepository = {
   createNewProduct,
   editProduct,
   deleteProduct,
   hasProductExist,
   getProductOrganizationId,
+  getProductById,
+  getOrganizationProducts,
 };
 
 module.exports = ProductRepository;

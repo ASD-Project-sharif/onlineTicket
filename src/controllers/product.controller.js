@@ -11,11 +11,26 @@ editProduct = async (req, res) => {
 deleteProduct = async (req, res) => {
   await ProductServices.deleteProduct(req, res);
 };
+const getProduct = async (req, res) => {
+  await ProductServices.getProduct(req, res);
+};
+
+const getOrganizationProductsByOrganizationName = async (req, res) => {
+  await ProductServices.getOrganizationProductsByOrganizationName(req, res);
+};
+
+const getOrganizationProductsByAgent = async (req, res) => {
+  await ProductServices.getOrganizationProductsByAgent(req, res);
+};
+
 
 const ProductControllers = {
   addProduct,
   editProduct,
+  getProduct,
+  getOrganizationProductsByOrganizationName,
   deleteProduct,
+  getOrganizationProductsByAgent,
 };
 
 module.exports = ProductControllers;
