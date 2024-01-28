@@ -1,6 +1,6 @@
 const {
   createDocument, getDocumentById, updateDocumentById, deleteDocumentById,
-  getPopulatedProductById, getAllPopulatedProducts
+  getPopulatedProductById, getAllPopulatedProducts,
 } = require('../dataAccess/dataAccess');
 
 createNewProduct = async (data) => {
@@ -34,8 +34,7 @@ getOrganizationProducts = async (organizationId) => {
 
   query.organization = organizationId;
 
-  return await getAllPopulatedProducts('Product', query);
-
+  return getAllPopulatedProducts('Product', query);
 };
 
 const ProductRepository = {

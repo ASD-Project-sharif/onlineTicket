@@ -17,11 +17,11 @@ const getProduct = async (req, res) => {
 
 const getOrganizationProductsByOrganizationName = async (req, res) => {
   await ProductServices.getOrganizationProductsByOrganizationName(req, res);
-}
+};
 
 const getOrganizationProductsByAgent = async (req, res) => {
   await ProductServices.getOrganizationProductsByAgent(req, res);
-}
+};
 
 
 const ProductControllers = {

@@ -98,7 +98,7 @@ module.exports = function(app) {
   app.get(
       `${API_VERSION}/${API_TAG}/organization/:organizationName`,
       [
-         authJwt.verifyToken
+        authJwt.verifyToken,
       ],
       ProductControllers.getOrganizationProductsByOrganizationName,
   );
@@ -106,7 +106,7 @@ module.exports = function(app) {
   app.get(
       `${API_VERSION}/${API_TAG}/organization`,
       [
-        authJwt.verifyToken
+        authJwt.verifyToken,
       ],
       ProductControllers.getOrganizationProductsByAgent,
   );

@@ -46,8 +46,8 @@ async function getAllPopulatedDocumentsWithFilterAndSort(modelName, query, optio
 async function getAllPopulatedProducts(modelName, query) {
   const Model = mongoose.model(modelName);
   const result = await Model.find(query)
-                            .populate('organization', 'name')
-                            .lean();
+      .populate('organization', 'name')
+      .lean();
   return result;
 }
 
@@ -85,8 +85,8 @@ async function getPopulatedDocumentById(modelName, id) {
 async function getPopulatedProductById(modelName, id) {
   const Model = mongoose.model(modelName);
   const document = await Model.findById(id)
-                              .populate('organization', 'name')
-                              .lean();
+      .populate('organization', 'name')
+      .lean();
   return document;
 }
 

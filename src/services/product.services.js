@@ -136,7 +136,6 @@ const getProduct = async (req, res) => {
     product,
     message: 'Product returned successfully!',
   });
-
 };
 
 const getOrganizationProductsByOrganizationName = async (req, res) => {
