@@ -42,6 +42,9 @@ module.exports = function(app) {
    *               deadline:
    *                  type: string
    *                  description: New deadline for the ticket
+   *               product:
+   *                 type: string
+   *                 description: id of the product to create ticket for
    *     responses:
    *       '200':
    *         description: Ticket added successfully
