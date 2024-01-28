@@ -37,6 +37,8 @@ describe('Ticket Controllers', () => {
   getUserTicketsTests();
   getOrganizationTicketsTests();
   getTicketTests();
+
+  validUserShouldAssignTicketSuccessfully();
 });
 
 /**
@@ -255,7 +257,6 @@ function getUserTicketsTests() {
   });
 }
 
-
 /**
  * @private
  */
@@ -302,6 +303,37 @@ function getTicketTests() {
     expect(TicketServices.getTicket).toHaveBeenCalledWith(req, res);
     expect(res.send).toHaveBeenCalledWith(mockTicket);
     expect(res.status).not.toHaveBeenCalled();
+  });
+}
+
+/**
+ * @private
+ */
+function validUserShouldAssignTicketSuccessfully() {
+  test('assign ticket', async () => {
+    jest.spyOn(TicketRepository, 'hasTicketExist').mockImplementationOnce((req, res) => true);
+    jest.spyOn(TicketRepository, 'getTicketOrganizationId').mockImplementationOnce((req, res) => 'orgId');
+    jest.spyOn(OrganizationRepository, 'getOrganizationIdByAgentId').mockImplementationOnce((req, res) => 'orgId');
+
+    const now = TimeServices.now();
+    jest.spyOn(TimeServices, 'now').mockImplementation((pass, salt, cb) => now);
+
+    const req = {
+      params: {id: 'ticketId'},
+      userId: 'userId',
+      body: {
+        assignee: 'assigneeId',
+      },
+    };
+    const res = mockResponse();
+
+    await TicketControllers.assignTicket(req, res);
+
+    expect(TicketRepository.editTicket).toHaveBeenCalledWith('ticketId', {
+      assignee: 'assigneeId',
+      updated_at: now,
+    });
+    expect(res.send).toHaveBeenCalledWith({message: 'ticket assigned successfully!'});
   });
 }
 
