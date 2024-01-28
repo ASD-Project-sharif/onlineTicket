@@ -96,7 +96,7 @@ module.exports = function(app) {
   );
 
   app.get(
-      `${API_VERSION}/${API_TAG}/organization`,
+      `${API_VERSION}/${API_TAG}/organization/:organizationName`,
       [
          authJwt.verifyToken
       ],

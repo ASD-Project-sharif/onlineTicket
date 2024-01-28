@@ -140,9 +140,8 @@ const getProduct = async (req, res) => {
 };
 
 const getOrganizationProducts = async (req, res) => {
-  const userId = req.userId;
-  const organizationId = await OrganizationRepository.getOrganizationIdByAgentId(userId);
-  const products = await ProductRepository.getOrganizationProducts(organizationId);
+  const organization = await OrganizationRepository.getOrganizationByName(req.params.organizationName);
+  const products = await ProductRepository.getOrganizationProducts(organization.id);
   const slicedProducts = await sliceListByPagination(req, res, products);
   res.status(200).send({
     products: slicedProducts,
