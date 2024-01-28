@@ -139,9 +139,19 @@ const getProduct = async (req, res) => {
 
 };
 
-const getOrganizationProducts = async (req, res) => {
+const getOrganizationProductsByOrganizationName = async (req, res) => {
   const organization = await OrganizationRepository.getOrganizationByName(req.params.organizationName);
   const products = await ProductRepository.getOrganizationProducts(organization.id);
+  const slicedProducts = await sliceListByPagination(req, res, products);
+  res.status(200).send({
+    products: slicedProducts,
+    count: products.length,
+  });
+};
+
+const getOrganizationProductsByAgent = async (req, res) => {
+  const organizationId = await OrganizationRepository.getOrganizationIdByAgentId(req.userId);
+  const products = await ProductRepository.getOrganizationProducts(organizationId);
   const slicedProducts = await sliceListByPagination(req, res, products);
   res.status(200).send({
     products: slicedProducts,
@@ -161,8 +171,9 @@ const ProductServices = {
   createProduct,
   editProduct,
   deleteProduct,
-  getOrganizationProducts,
+  getOrganizationProductsByOrganizationName,
   getProduct,
+  getOrganizationProductsByAgent,
 };
 
 module.exports = ProductServices;

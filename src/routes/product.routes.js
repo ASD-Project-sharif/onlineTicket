@@ -100,7 +100,15 @@ module.exports = function(app) {
       [
          authJwt.verifyToken
       ],
-      ProductControllers.getOrganizationProducts,
+      ProductControllers.getOrganizationProductsByOrganizationName,
+  );
+
+  app.get(
+      `${API_VERSION}/${API_TAG}/organization`,
+      [
+        authJwt.verifyToken
+      ],
+      ProductControllers.getOrganizationProductsByAgent,
   );
 
   app.get(

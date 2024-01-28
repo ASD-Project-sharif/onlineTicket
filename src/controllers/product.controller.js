@@ -15,8 +15,12 @@ const getProduct = async (req, res) => {
   await ProductServices.getProduct(req, res);
 };
 
-const getOrganizationProducts = async (req, res) => {
-  await ProductServices.getOrganizationProducts(req, res);
+const getOrganizationProductsByOrganizationName = async (req, res) => {
+  await ProductServices.getOrganizationProductsByOrganizationName(req, res);
+}
+
+const getOrganizationProductsByAgent = async (req, res) => {
+  await ProductServices.getOrganizationProductsByAgent(req, res);
 }
 
 
@@ -24,8 +28,9 @@ const ProductControllers = {
   addProduct,
   editProduct,
   getProduct,
-  getOrganizationProducts,
+  getOrganizationProductsByOrganizationName,
   deleteProduct,
+  getOrganizationProductsByAgent,
 };
 
 module.exports = ProductControllers;
