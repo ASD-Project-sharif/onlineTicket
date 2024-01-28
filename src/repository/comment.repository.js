@@ -21,7 +21,7 @@ getCommentTicketId = async (commentId) => {
 };
 
 getTicketComments = async (ticketId) => {
-  return await findDocuments('Comment', {ticket: ticketId}, {created_at: 1});
+  return await findDocuments('Comment', {ticket: ticketId}, {created_at: 1}, {});
 };
 
 createNewComment = async (data) => {

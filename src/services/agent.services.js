@@ -31,8 +31,21 @@ addNewAgent = async (req, res) => {
   res.send({message: 'User was registered successfully!'});
 };
 
+getAgents = async (req, res) => {
+  const isAdmin = await UserRepository.isAdmin(req.userId);
+  if (!isAdmin) {
+    res.status(403).send({message: 'you do not have the right access!'});
+    return;
+  }
+
+  const organizationId = await OrganizationRepository.getOrganizationIdByAgentId(req.userId);
+  const agents = await UserRepository.getAgents(organizationId, req.query.pageNumber, req.query.pageSize);
+  res.send({agents: agents});
+};
+
 const AgentServices = {
   addNewAgent,
+  getAgents,
 };
 
 module.exports = AgentServices;
