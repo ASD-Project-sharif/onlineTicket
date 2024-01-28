@@ -203,46 +203,6 @@ async function canUserOpenOrCloseTicket(req, res) {
   return true;
 }
 
-/**
- * @param {Object} req - Express Request object
- * @param {Object} res - Express Response object
- * @return {Promise<void>}
- */
-changeTicketStatus = async (req, res) => {
-  const canChange = await canUserOpenOrCloseTicket(req, res);
-  if (!canChange) {
-    return;
-  }
-  const shouldOpen = Boolean(req.body.open);
-  const ticket = {
-    status: shouldOpen ? TicketStatus.IN_PROGRESS : TicketStatus.CLOSED,
-    updated_at: TimeServices.now(),
-  };
-
-  await TicketRepository.editTicket(req.params.id, ticket);
-  res.status(200).send({message: 'Ticket ' + (shouldOpen ? 'Opened' : 'Closed')});
-};
-
-const getTicketsByOrganization = async (req, res) => {
-  const userId = req.userId;
-  const organizationId = await OrganizationRepository.getOrganizationIdByAgentId(userId);
-  const tickets = await getTicketsWithFilterAndSorting(req, res, userId, organizationId);
-  const slicedTickets = await sliceListByPagination(req, res, tickets);
-  res.status(200).send({
-    tickets: slicedTickets,
-    count: tickets.length,
-  });
-};
-const getTicketsByUser = async (req, res) => {
-  const userId = req.userId;
-  const tickets = await getTicketsWithFilterAndSorting(req, res, userId);
-  const slicedTickets = await sliceListByPagination(req, res, tickets);
-  res.status(200).send({
-    tickets: slicedTickets,
-    count: tickets.length,
-  });
-};
-
 const canUserFetchTicket = async (req, res) => {
   const ticketExist = await TicketRepository.hasTicketExist(req.params.id);
   if (!ticketExist) {
@@ -266,20 +226,6 @@ const canUserFetchTicket = async (req, res) => {
     return false;
   }
   return true;
-};
-
-const getTicket = async (req, res) => {
-  const canSeeTicket = await canUserFetchTicket(req, res);
-  if (!canSeeTicket) {
-    return;
-  }
-
-  const ticket = await TicketRepository.getTicketById(req.params.id);
-  const comments = await CommentRepository.getTicketComments(req.params.id);
-  res.status(200).send({
-    ticket: ticket,
-    comments: comments,
-  });
 };
 
 const getTicketsWithFilterAndSorting = async (req, res, userId, organizationId) => {
@@ -355,6 +301,175 @@ const sortTicketsByAssigneeAndStatus = (tickets, userId) => {
   return openAssignedTickets.concat(openUnAssignedTickets, closedAssignedTickets, closedUnAssignedTickets);
 };
 
+const canTicketBeAssignedToAssignee = async (req, res) => {
+  if (!req.body.assignee) {
+    res.status(400).send({message: 'assignee is empty!'});
+    return false;
+  }
+  const ticketExist = await TicketRepository.hasTicketExist(req.params.id);
+  if (!ticketExist) {
+    res.status(400).send({message: 'ticket does not exist!'});
+    return false;
+  }
+
+  const assigneeOrganizationId = await OrganizationRepository.getOrganizationIdByAgentId(req.body.assignee);
+  const ticketOrganizationId = await TicketRepository.getTicketOrganizationId(req.params.id);
+
+  if (assigneeOrganizationId !== ticketOrganizationId) {
+    res.status(400).send({message: 'assignee should be in your organization!'});
+    return false;
+  }
+  return true;
+};
+
+/**
+ * @param {Object} req - Express Request object
+ * @param {Object} res - Express Response object
+ * @return {Promise<void>}
+ */
+createTicket = async (req, res) => {
+  if (!isInputDataValid(req, res)) {
+    return;
+  }
+  const canUserCreateTicket = await canUserCreateNewTicket(req, res);
+  if (!canUserCreateTicket) {
+    return;
+  }
+
+  const ticket = {
+    title: req.body.title,
+    description: req.body.description,
+    created_by: req.userId,
+    assignee: await OrganizationRepository.getOrganizationAdminId(req.body.organizationId),
+    organization: req.body.organizationId,
+    type: req.body.type,
+  };
+
+  if (req.body.deadline) {
+    ticket.deadline = new Date(req.body.deadline);
+  }
+  const ticketCreated = await TicketRepository.createNewTicket(ticket);
+  res.send({message: 'Ticket added successfully!', id: ticketCreated._id});
+};
+
+/**
+ * @param {Object} req - Express Request object
+ * @param {Object} res - Express Response object
+ * @return {Promise<void>}
+ */
+editTicket = async (req, res) => {
+  if (!isInputDataValid(req, res)) {
+    return;
+  }
+  const canEdit = await canUserEditTicket(req, res);
+  if (!canEdit) {
+    return;
+  }
+
+  const ticket = {
+    title: req.body.title,
+    description: req.body.description,
+    updated_at: TimeServices.now(),
+  };
+
+  await TicketRepository.editTicket(req.params.id, ticket);
+  res.send({message: 'ticket edited successfully'});
+};
+
+/**
+ * @param {Object} req - Express Request object
+ * @param {Object} res - Express Response object
+ * @return {Promise<void>}
+ */
+assignTicket = async (req, res) => {
+  const canTicketBeAssigned = await canTicketBeAssignedToAssignee(req, res);
+  if (!canTicketBeAssigned) {
+    return;
+  }
+
+  const ticket = {
+    assignee: req.body.assignee,
+    updated_at: TimeServices.now(),
+  };
+  await TicketRepository.editTicket(req.params.id, ticket);
+  res.send({message: 'ticket assigned successfully!'});
+};
+
+/**
+ * @param {Object} req - Express Request object
+ * @param {Object} res - Express Response object
+ * @return {Promise<void>}
+ */
+changeTicketStatus = async (req, res) => {
+  const canChange = await canUserOpenOrCloseTicket(req, res);
+  if (!canChange) {
+    return;
+  }
+  const shouldOpen = Boolean(req.body.open);
+  const ticket = {
+    status: shouldOpen ? TicketStatus.IN_PROGRESS : TicketStatus.CLOSED,
+    updated_at: TimeServices.now(),
+  };
+
+  await TicketRepository.editTicket(req.params.id, ticket);
+  res.status(200).send({message: 'Ticket ' + (shouldOpen ? 'Opened' : 'Closed')});
+};
+
+/**
+ * @param {Object} req - Express Request object
+ * @param {Object} res - Express Response object
+ * @return {Promise<void>}
+ */
+getTicketsByOrganization = async (req, res) => {
+  const userId = req.userId;
+  const organizationId = await OrganizationRepository.getOrganizationIdByAgentId(userId);
+  const tickets = await getTicketsWithFilterAndSorting(req, res, userId, organizationId);
+  const slicedTickets = await sliceListByPagination(req, res, tickets);
+  res.status(200).send({
+    tickets: slicedTickets,
+    count: tickets.length,
+  });
+};
+
+/**
+ * @param {Object} req - Express Request object
+ * @param {Object} res - Express Response object
+ * @return {Promise<void>}
+ */
+getTicketsByUser = async (req, res) => {
+  const userId = req.userId;
+  const tickets = await getTicketsWithFilterAndSorting(req, res, userId);
+  const slicedTickets = await sliceListByPagination(req, res, tickets);
+  res.status(200).send({
+    tickets: slicedTickets,
+    count: tickets.length,
+  });
+};
+
+/**
+ * @param {Object} req - Express Request object
+ * @param {Object} res - Express Response object
+ * @return {Promise<void>}
+ */
+const getTicket = async (req, res) => {
+  const canSeeTicket = await canUserFetchTicket(req, res);
+  if (!canSeeTicket) {
+    return;
+  }
+
+  const ticket = await TicketRepository.getTicketById(req.params.id);
+  const comments = await CommentRepository.getTicketComments(req.params.id);
+  res.status(200).send({
+    ticket: ticket,
+    comments: comments,
+  });
+};
+
+/**
+ * @param {Object} req - Express Request object
+ * @param {Object} res - Express Response object
+ * @return {Promise<void>}
+ */
 const getTicketsByTitle = async (req, res) => {
   const tickets = await TicketRepository.getTicketsByTitle(req.params.ticketTitle);
   res.status(200).send({
@@ -366,6 +481,7 @@ const getTicketsByTitle = async (req, res) => {
 const TicketServices = {
   createTicket,
   editTicket,
+  assignTicket,
   changeTicketStatus,
   getTicketsByOrganization,
   getTicketsByUser,

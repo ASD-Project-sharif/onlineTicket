@@ -149,13 +149,15 @@ async function findOneDocument(modelName, query) {
  */
 async function findDocuments(modelName, query, sort, select, skip, limit, populate) {
   const Model = mongoose.model(modelName);
-  const documents = await Model.find(query)
+  let documents = Model.find(query)
       .sort(sort)
       .select(select)
       .skip(skip)
-      .limit(limit)
-      .populate(populate.path, populate.select)
-      .exec();
+      .limit(limit);
+  if (populate) {
+    documents = documents.populate(populate.path, populate.select);
+  }
+  documents = await documents.exec();
   return documents;
 }
 

@@ -322,4 +322,44 @@ module.exports = function(app) {
       ],
       TicketControllers.getTicketsByTitle,
   );
+
+  /**
+   * @swagger
+   * /api/v1/ticket/assign/{id}:
+   *   post:
+   *     summary: Assign a ticket by ID
+   *     description: Assign a ticket to an agent.
+   *     tags:
+   *       - Ticket
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         description: ID of the ticket to be assigned
+   *         required: true
+   *         schema:
+   *           type: string
+   *     requestBody:
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               assignee:
+   *                 type: string
+   *                 description: id of user to assign
+   *     responses:
+   *       '200':
+   *         description: Ticket assigned successfully
+   *       '400':
+   *         description: Bad request, check the request payload
+   *       '403':
+   *         description: Unauthorized, token is missing/invalid, or you do nor have access to edit
+   */
+  app.post(
+      `${API_VERSION}/${API_TAG}/assign/:id`,
+      [
+        authJwt.verifyToken,
+      ],
+      TicketControllers.assignTicket,
+  );
 };
