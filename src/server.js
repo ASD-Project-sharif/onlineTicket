@@ -61,6 +61,7 @@ function setupRoutes(app) {
   require('./routes/information.routes')(app);
   require('./routes/comment.routes')(app);
   require('./routes/product.routes')(app);
+  require('./routes/agent.routes')(app);
 }
 
 setupDatabase();
