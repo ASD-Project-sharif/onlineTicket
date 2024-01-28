@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const TimeServices = require('../services/time.services');
 
 const SuspendedUSerSchema = new mongoose.Schema({
   user: {
@@ -18,7 +19,7 @@ const SuspendedUSerSchema = new mongoose.Schema({
   },
   created_at: {
     type: Date,
-    default: Date.now,
+    default: TimeServices.now,
     required: true,
   },
 });
