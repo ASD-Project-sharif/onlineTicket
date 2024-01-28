@@ -124,65 +124,6 @@ const canUserEditTicket = async (req, res) => {
 /**
  * @param {Object} req - Express Request object
  * @param {Object} res - Express Response object
- * @return {Promise<void>}
- */
-createTicket = async (req, res) => {
-  if (!isInputDataValid(req, res)) {
-    return;
-  }
-  const canUserCreateTicket = await canUserCreateNewTicket(req, res);
-  if (!canUserCreateTicket) {
-    return;
-  }
-
-  const ticket = {
-    title: req.body.title,
-    description: req.body.description,
-    created_by: req.userId,
-    assignee: await OrganizationRepository.getOrganizationAdminId(req.body.organizationId),
-    organization: req.body.organizationId,
-    type: req.body.type,
-  };
-
-  if (req.body.deadline) {
-    ticket.deadline = new Date(req.body.deadline);
-  }
-
-  if (req.body.product) {
-    ticket.product = req.body.product;
-  }
-
-  const ticketCreated = await TicketRepository.createNewTicket(ticket);
-  res.send({message: 'Ticket added successfully!', id: ticketCreated._id});
-};
-
-/**
- * @param {Object} req - Express Request object
- * @param {Object} res - Express Response object
- * @return {Promise<void>}
- */
-editTicket = async (req, res) => {
-  if (!isInputDataValid(req, res)) {
-    return;
-  }
-  const canEdit = await canUserEditTicket(req, res);
-  if (!canEdit) {
-    return;
-  }
-
-  const ticket = {
-    title: req.body.title,
-    description: req.body.description,
-    updated_at: TimeServices.now(),
-  };
-
-  await TicketRepository.editTicket(req.params.id, ticket);
-  res.send({message: 'ticket edited successfully'});
-};
-
-/**
- * @param {Object} req - Express Request object
- * @param {Object} res - Express Response object
  * @return {Promise<boolean>}
  */
 async function canUserOpenOrCloseTicket(req, res) {
@@ -348,6 +289,11 @@ createTicket = async (req, res) => {
   if (req.body.deadline) {
     ticket.deadline = new Date(req.body.deadline);
   }
+
+  if (req.body.product) {
+    ticket.product = req.body.product;
+  }
+
   const ticketCreated = await TicketRepository.createNewTicket(ticket);
   res.send({message: 'Ticket added successfully!', id: ticketCreated._id});
 };
