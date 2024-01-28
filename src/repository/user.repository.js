@@ -2,6 +2,7 @@ const {
   getDocumentById,
   createDocument,
   findOneDocument,
+  findDocuments,
 } = require('../dataAccess/dataAccess');
 const UserRole = require('../models/enums/userRoles.enum');
 
@@ -38,6 +39,17 @@ getByUsername = async (username) => {
   return await findOneDocument('User', {username: username});
 };
 
+getAgents = async (organizationId, pageNumber, pageSize) => {
+  const query = {
+    organization: organizationId,
+    role: 'agent',
+  };
+  const select = {password: 0};
+  const skipAmount = (pageNumber - 1) * pageSize;
+
+  return await findDocuments('User', query, {}, select, skipAmount, pageSize);
+};
+
 const UserRepository = {
   hasUserExist,
   isNormalUser,
@@ -46,6 +58,7 @@ const UserRepository = {
   isOrganizationUser,
   createNewUser,
   getByUsername,
+  getAgents,
 };
 
 module.exports = UserRepository;

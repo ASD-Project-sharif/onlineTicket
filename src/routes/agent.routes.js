@@ -58,4 +58,40 @@ module.exports = function(app) {
       ],
       AgentControllers.addAgent,
   );
+
+  /**
+   * @swagger
+   * /api/v1/agent:
+   *   get:
+   *     summary: Get Agents
+   *     description: Get Agents of current organization
+   *     tags:
+   *       - Agent
+   *     parameters:
+   *       - in: query
+   *         name: pageSize
+   *         description: Number of tickets per page
+   *         schema:
+   *           type: integer
+   *           minimum: 1
+   *           maximum: 100
+   *       - in: query
+   *         name: pageNumber
+   *         description: Page number
+   *         schema:
+   *           type: integer
+   *           minimum: 1
+   *     responses:
+   *       '200':
+   *         description: Success
+   *       '403':
+   *         description: Unauthorized, token is missing/invalid
+   */
+  app.get(
+      `${API_VERSION}/${API_TAG}`,
+      [
+        authJwt.verifyToken,
+      ],
+      AgentControllers.getAgents,
+  );
 };
