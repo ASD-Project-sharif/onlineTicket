@@ -65,6 +65,7 @@ const canUserFetchProduct = async (req, res) => {
     res.status(400).send({message: 'Product does not exist!'});
     return false;
   }
+  return true;
 };
 
 createProduct = async (req, res) => {
@@ -125,12 +126,12 @@ deleteProduct = async (req, res) => {
   res.send({message: 'Product deleted successfully!'});
 };
 
-const getProduct = (req, res) => {
+const getProduct = async (req, res) => {
   const canSeeProdcut = await canUserFetchProduct(req, res);
   if (!canSeeProdcut) {
     return;
   }
-  const product = await ProductRepository.getProduct(req.params.id);
+  const product = await ProductRepository.getProductById(req.params.id);
   res.status(200).send({
     product,
     message: 'Product returned successfully!',
@@ -138,8 +139,8 @@ const getProduct = (req, res) => {
 
 };
 
-const getOrganizationProducts = (req, res) => {
-  const userId = req.userId;
+const getOrganizationProducts = async (req, res) => {
+  const userId = '659335e3c20910615cbb8275';
   const organizationId = await OrganizationRepository.getOrganizationIdByAgentId(userId);
   const products = await ProductRepository.getOrganizationProducts();
   const slicedProducts = await sliceListByPagination(req, res, products);

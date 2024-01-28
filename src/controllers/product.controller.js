@@ -11,11 +11,11 @@ editProduct = async (req, res) => {
 deleteProduct = async (req, res) => {
   await ProductServices.deleteProduct(req, res);
 };
-getProduct = async (req, res) => {
+const getProduct = async (req, res) => {
   await ProductServices.getProduct(req, res);
 };
 
-getOrganizationProducts = async (req, res) => {
+const getOrganizationProducts = async (req, res) => {
   await ProductServices.getOrganizationProducts(req, res);
 }
 
