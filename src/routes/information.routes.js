@@ -17,8 +17,8 @@ module.exports = function(app) {
    * @swagger
    * /api/v1/information/organization/{id}:
    *   get:
-   *     summary: User Signup
-   *     description: Create a new user account.
+   *     summary: Organization Information
+   *     description: get information of an organization by id
    *     tags:
    *       - Information
    *     parameters:
@@ -34,13 +34,13 @@ module.exports = function(app) {
    *       '400':
    *         description: Bad request, check the request payload
    *       '500':
-   *         description: Internal Server Error, an error occurred while creating the user account
+   *         description: Internal Server Error
    */
   app.get(
-      `${API_VERSION}/${API_TAG}/organization/:name`,
+      `${API_VERSION}/${API_TAG}/organization/:id`,
       [
         authJwt.verifyToken,
       ],
-      InformationControllers.organizationInformationByName,
+      InformationControllers.organizationInformation,
   );
 };
