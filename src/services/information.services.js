@@ -1,5 +1,4 @@
 const OrganizationRepository = require('../repository/organization.repository');
-const UserRepository = require('../repository/user.repository');
 
 getOrganizationInformation = async (req, res) => {
   const organizationExist = await OrganizationRepository.hasOrganizationExist(req.params.id);
