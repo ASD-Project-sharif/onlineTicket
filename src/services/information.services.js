@@ -18,7 +18,6 @@ getOrganizationInformation = async (req, res) => {
 
 
 getOrganizationInformationByUserId = async (req, res) => {
-  const isOrganizationUser = await User
   const organization = await OrganizationRepository.getOrganizationIdByAgentId(req.userId);
   res.status(200).send({
     id: organization._id,

@@ -177,6 +177,28 @@ module.exports = function(app) {
       ProductControllers.getOrganizationProductsByAgent,
   );
 
+  /**
+   * @swagger
+   * /api/v1/product/{id}:
+   *   get:
+   *     summary: Get Product
+   *     description: Get Product with id.
+   *     tags:
+   *       - Product
+   *     parameters:
+   *       - in: query
+   *         name: id
+   *         description: id of Product
+   *         schema:
+   *           type: string
+   *     responses:
+   *       '200':
+   *         description: Success
+   *       '400':
+   *         description: Bad request, check the request payload
+   *       '403':
+   *         description: Unauthorized, token is missing/invalid
+   */
   app.get(
       `${API_VERSION}/${API_TAG}/:id`,
       ProductControllers.getProduct,
