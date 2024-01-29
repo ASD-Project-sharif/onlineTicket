@@ -6,6 +6,8 @@ const TimeServices = require('./time.services');
 
 const TicketStatus = require('../models/enums/ticketStatus.enum');
 
+const TicketLogRepository = require('../repository/ticketLog.repository');
+
 const isInputDataValid = (req, res) => {
   if (req.body.text.length > 1000) {
     res.status(400).send(
@@ -62,7 +64,6 @@ const canUserEditComment = async (req, res) => {
 
 const canUserCreateComment = async (req, res) => {
   const ticketId = req.params.id;
-
   const isTicketOpenAndUserValid = await isTicketExistAndOpenAndUserNotSuspended(req, res, ticketId);
   if (!isTicketOpenAndUserValid) {
     return false;
@@ -101,6 +102,8 @@ createComment = async (req, res) => {
     status: isNormalUser ? TicketStatus.WAITING_FOR_ADMIN : TicketStatus.IN_PROGRESS,
   };
   await TicketRepository.editTicket(req.params.id, ticket);
+  await TicketLogRepository.logTicket(req.userId, req.params.id, {...comment, id: commentCreated._id}, 'Add Comment');
+
   res.send(
       {
         message: 'Comment added successfully',
@@ -123,6 +126,9 @@ editComment = async (req, res) => {
     updated_at: TimeServices.now(),
   };
   const commentUpdated = await CommentRepository.editComment(req.params.id, comment);
+  const ticketId = await CommentRepository.getCommentTicketId(req.params.id);
+  await TicketLogRepository.logTicket(req.userId, ticketId, {...comment, id: req.params.id}, 'Edit Comment');
+
   res.send(
       {
         message: 'Comment edited successfully',

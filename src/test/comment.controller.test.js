@@ -7,15 +7,18 @@ const TimeServices = require('../services/time.services');
 const CommentControllers = require('../controllers/comment.controller');
 
 const TicketStatus = require('../models/enums/ticketStatus.enum');
+const TicketLogRepository = require('../repository/ticketLog.repository');
 
 jest.mock('../repository/user.repository');
 jest.mock('../repository/organization.repository');
 jest.mock('../repository/ticket.repository');
 jest.mock('../repository/comment.repository');
 jest.mock('../repository/suspendedUser.repository');
+jest.mock('../repository/ticketLog.repository');
 
 beforeEach(() => {
   jest.clearAllMocks();
+  jest.spyOn(TicketLogRepository, 'logTicket').mockImplementation((pass, salt, cb) => {});
 });
 afterEach(() => {
   jest.restoreAllMocks();

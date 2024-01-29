@@ -391,4 +391,33 @@ module.exports = function(app) {
       ],
       TicketControllers.assignTicket,
   );
+
+  /**
+   * @swagger
+   * /api/v1/ticket/log/{id}:
+   *   get:
+   *     summary: ticket logs
+   *     description: get logs of a ticket
+   *     tags:
+   *       - Ticket
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         description: ID of the ticket
+   *         required: true
+   *         schema:
+   *           type: string
+   *     responses:
+   *       '200':
+   *         description: Ticket logs fetched successfully
+   *       '403':
+   *         description: Unauthorized, token is missing/invalid, or you do nor have access to get
+   */
+  app.get(
+      `${API_VERSION}/${API_TAG}/log/:id`,
+      [
+        authJwt.verifyToken,
+      ],
+      TicketControllers.getTicketLogs,
+  );
 };
