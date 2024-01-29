@@ -41,5 +41,7 @@ jobs:
           script: |
             cd /root/backend/
             docker pull hosseinaghaei/asd-project-backend:latest
+            docker pull hosseinaghaei/asd-project-backend:latest
+            docker-compose pull onlineTicket
             echo "y" | docker-compose rm -s -v onlineTicket
             docker-compose up -d
