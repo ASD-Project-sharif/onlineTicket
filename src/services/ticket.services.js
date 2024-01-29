@@ -419,7 +419,8 @@ const getTicket = async (req, res) => {
  * @return {Promise<void>}
  */
 const getTicketsByTitle = async (req, res) => {
-  const tickets = await TicketRepository.getTicketsByTitle(req.params.ticketTitle);
+  const organizationId = OrganizationRepository.getOrganizationIdByAgentId(req.userId);
+  const tickets = await TicketRepository.getTicketsByTitle(req.params.title, req.userId, organizationId);
   res.status(200).send({
     tickets,
     message: 'Ticket returened successfully!',
