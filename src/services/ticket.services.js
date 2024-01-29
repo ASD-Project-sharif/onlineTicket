@@ -39,7 +39,7 @@ const isInputDataValid = (req, res) => {
       res.status(400).send({message: 'Invalid deadline format'});
       return false;
     }
-    if (deadline <= TimeServices.now()) {
+    if (deadline <= new Date()) {
       res.status(400).send({message: 'Deadline must be after now!!'});
       return false;
     }
