@@ -40,7 +40,8 @@ jobs:
           command_timeout: 15m
           script: |
             cd /root/backend/
-            echo -e "nameserver 178.22.122.100\nnameserver 185.51.200.2\noptions edns0 trust-ad\nsearch ." | sudo tee /etc/resolv.conf
-            docker-compose pull onlineTicket
+            echo -e "nameserver 78.157.42.101\nnameserver 78.157.42.100\noptions edns0 trust-ad\nsearch ." | sudo tee
+            /etc/resolv.conf
+            docker pull hosseinaghaei/asd-project-backend:latest
             echo "y" | docker-compose rm -s -v onlineTicket
             docker-compose up -d
