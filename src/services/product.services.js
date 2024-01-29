@@ -3,6 +3,7 @@ const UserRepository = require('../repository/user.repository');
 const ProductRepository = require('../repository/product.repository');
 const PaginationServices = require('../services/pagination.services');
 const TimeServices = require('../services/time.services');
+const {INTEGER} = require('sequelize');
 
 /**
  * @param {Object} req - Express Request object
@@ -164,7 +165,7 @@ const sliceListByPagination = async (req, res, list) => {
   if (page.size === undefined || page.number === undefined) {
     return list;
   }
-  return await PaginationServices.sliceListByPagination(page.size, page.number, list);
+  return await PaginationServices.sliceListByPagination(parseInt(page.size), parseInt(page.number), list);
 };
 
 const ProductServices = {
