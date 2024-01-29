@@ -1,4 +1,5 @@
 const OrganizationRepository = require('../repository/organization.repository');
+const UserRepository = require('../repository/user.repository');
 
 getOrganizationInformation = async (req, res) => {
   const organizationExist = await OrganizationRepository.hasOrganizationExist(req.params.id);
@@ -17,6 +18,7 @@ getOrganizationInformation = async (req, res) => {
 
 
 getOrganizationInformationByUserId = async (req, res) => {
+  const isOrganizationUser = await User
   const organization = await OrganizationRepository.getOrganizationIdByAgentId(req.userId);
   res.status(200).send({
     id: organization._id,

@@ -15,8 +15,8 @@ const getProduct = async (req, res) => {
   await ProductServices.getProduct(req, res);
 };
 
-const getOrganizationProductsByOrganizationName = async (req, res) => {
-  await ProductServices.getOrganizationProductsByOrganizationName(req, res);
+const getOrganizationProductsById = async (req, res) => {
+  await ProductServices.getOrganizationProductsById(req, res);
 };
 
 const getOrganizationProductsByAgent = async (req, res) => {
@@ -28,7 +28,7 @@ const ProductControllers = {
   addProduct,
   editProduct,
   getProduct,
-  getOrganizationProductsByOrganizationName,
+  getOrganizationProductsById,
   deleteProduct,
   getOrganizationProductsByAgent,
 };

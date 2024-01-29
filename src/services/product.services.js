@@ -137,9 +137,8 @@ const getProduct = async (req, res) => {
   });
 };
 
-const getOrganizationProductsByOrganizationName = async (req, res) => {
-  const organization = await OrganizationRepository.getOrganizationByName(req.params.organizationName);
-  const products = await ProductRepository.getOrganizationProducts(organization.id);
+const getOrganizationProductsById = async (req, res) => {
+  const products = await ProductRepository.getOrganizationProducts(req.params.id);
   const slicedProducts = await sliceListByPagination(req, res, products);
   res.status(200).send({
     products: slicedProducts,
@@ -169,7 +168,7 @@ const ProductServices = {
   createProduct,
   editProduct,
   deleteProduct,
-  getOrganizationProductsByOrganizationName,
+  getOrganizationProductsById,
   getProduct,
   getOrganizationProductsByAgent,
 };
