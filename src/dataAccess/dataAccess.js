@@ -63,6 +63,7 @@ async function getPopulatedDocumentById(modelName, id) {
       .populate('organization', 'name')
       .populate('assignee', 'username')
       .populate('created_by', 'username')
+      .populate('product', 'name')
       .lean();
 
   return document;
