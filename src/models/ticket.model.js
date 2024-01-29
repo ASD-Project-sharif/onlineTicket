@@ -2,8 +2,6 @@ const mongoose = require('mongoose');
 const TicketType = require('./enums/ticketType.enum');
 const TicketStatus = require('./enums/ticketStatus.enum');
 
-const TimeService = require('../services/time.services');
-
 const TicketSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -46,12 +44,12 @@ const TicketSchema = new mongoose.Schema({
   },
   created_at: {
     type: Date,
-    default: TimeService.now,
+    default: Date.now,
     required: true,
   },
   updated_at: {
     type: Date,
-    default: TimeService.now,
+    default: Date.now,
     required: true,
   },
   deadline: {

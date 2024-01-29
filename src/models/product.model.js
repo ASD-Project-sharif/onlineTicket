@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const TimeService = require('../services/time.services');
 
 const ProductSchema = new mongoose.Schema({
   name: {
@@ -23,12 +22,12 @@ const ProductSchema = new mongoose.Schema({
   },
   created_at: {
     type: Date,
-    default: TimeService.now,
+    default: Date.now,
     required: true,
   },
   updated_at: {
     type: Date,
-    default: TimeService.now,
+    default: Date.now,
     required: true,
   },
 });
