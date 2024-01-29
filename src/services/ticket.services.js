@@ -203,7 +203,7 @@ const sliceListByPagination = async (req, res, list) => {
     size: req.query.pageSize,
     number: req.query.pageNumber,
   };
-  return await PaginationServices.sliceListByPagination(page.size, page.number, list);
+  return await PaginationServices.sliceListByPagination(parseInt(page.size), parseInt(page.number), list);
 };
 
 const calculateDeadlineStatus = (deadline) => {
