@@ -45,6 +45,7 @@ const isInputDataValid = (req, res) => {
       res.status(400).send({message: 'Deadline must be after now!!'});
       return false;
     }
+    req.body.deadline = deadline;
   }
   return true;
 };
