@@ -161,7 +161,7 @@ const sliceListByPagination = async (req, res, list) => {
     size: req.query.pageSize,
     number: req.query.pageNumber,
   };
-  if (page.size === null || page.number === null) {
+  if (page.size === undefined || page.number === undefined) {
     return list;
   }
   return await PaginationServices.sliceListByPagination(page.size, page.number, list);
