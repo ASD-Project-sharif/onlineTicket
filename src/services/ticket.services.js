@@ -35,11 +35,13 @@ const isInputDataValid = (req, res) => {
 
   if (req.body.deadline) {
     const deadline = new Date(req.body.deadline);
+    deadline.setMinutes(deadline.getMinutes() + 210);
+    deadline.setHours(23, 59, 59);
     if (isNaN(deadline.getTime())) {
       res.status(400).send({message: 'Invalid deadline format'});
       return false;
     }
-    if (deadline <= new Date()) {
+    if (deadline <= TimeServices.now) {
       res.status(400).send({message: 'Deadline must be after now!!'});
       return false;
     }
