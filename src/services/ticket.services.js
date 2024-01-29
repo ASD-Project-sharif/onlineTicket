@@ -36,7 +36,7 @@ const isInputDataValid = (req, res) => {
   if (req.body.deadline) {
     const deadline = new Date(req.body.deadline);
     deadline.setMinutes(deadline.getMinutes() + 210);
-    deadline.setUTCHours(23,59,59,999);
+    deadline.setUTCHours(23, 59, 59, 999);
     if (isNaN(deadline.getTime())) {
       res.status(400).send({message: 'Invalid deadline format'});
       return false;
