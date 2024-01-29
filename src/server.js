@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const cookieSession = require('cookie-session');
 const sanitizeUserInput = require('./middlewares/xss.middleware');
 const errorHandler = require('./middlewares/errors.middleware');
 const specs = require('./middlewares/swagger.middleware');
