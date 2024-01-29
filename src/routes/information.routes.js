@@ -43,4 +43,29 @@ module.exports = function(app) {
       ],
       InformationControllers.organizationInformation,
   );
+
+
+  /**
+   * @swagger
+   * /api/v1/information/organization/:
+   *   get:
+   *     summary: Your Organization Information
+   *     description: get information of an organization by userId
+   *     tags:
+   *       - Information
+   *     responses:
+   *       '200':
+   *         description: User account created successfully
+   *       '400':
+   *         description: Bad request, check the request payload
+   *       '500':
+   *         description: Internal Server Error
+   */
+  app.get(
+      `${API_VERSION}/${API_TAG}/organization`,
+      [
+        authJwt.verifyToken,
+      ],
+      InformationControllers.getOrganizationInformationByUserId,
+  );
 };

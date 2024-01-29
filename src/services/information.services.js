@@ -15,8 +15,19 @@ getOrganizationInformation = async (req, res) => {
   });
 };
 
+
+getOrganizationInformationByUserId = async (req, res) => {
+  const organization = await OrganizationRepository.getOrganizationIdByAgentId(req.userId);
+  res.status(200).send({
+    id: organization._id,
+    name: organization.name,
+    description: organization.description,
+  });
+};
+
 const InformationServices = {
   getOrganizationInformation,
+  getOrganizationInformationByUserId,
 };
 
 module.exports = InformationServices;
