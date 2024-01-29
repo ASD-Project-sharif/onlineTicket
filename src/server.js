@@ -31,13 +31,6 @@ function setupUses(app) {
   app.use(sanitizeUserInput);
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
   app.use(express.urlencoded({extended: true}));
-  app.use(
-      cookieSession({
-        name: 'ticket-session',
-        keys: ['COOKIE_SECRET'],
-        httpOnly: true,
-      }),
-  );
 
   const corsOpts = {
     origin: '*',
