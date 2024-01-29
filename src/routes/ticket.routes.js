@@ -345,7 +345,7 @@ module.exports = function(app) {
    *         description: Unauthorized, token is missing/invalid, or you do nor have access to get
    */
   app.get(
-      '/api/v1/ticket/search/:ticketTitle',
+      '/api/v1/ticket/search/:title',
       [
         authJwt.verifyToken,
       ],
