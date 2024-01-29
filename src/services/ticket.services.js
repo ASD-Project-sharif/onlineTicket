@@ -419,7 +419,7 @@ const getTicket = async (req, res) => {
  * @return {Promise<void>}
  */
 const getTicketsByTitle = async (req, res) => {
-  const organizationId = OrganizationRepository.getOrganizationIdByAgentId(req.userId);
+  const organizationId = await OrganizationRepository.getOrganizationIdByAgentId(req.userId);
   const tickets = await TicketRepository.getTicketsByTitle(req.params.title, req.userId, organizationId);
   res.status(200).send({
     tickets,
