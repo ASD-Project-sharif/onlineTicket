@@ -37,6 +37,7 @@ signupOrganization = async (req, res) => {
   const organization = await OrganizationRepository.createNewOrganization(organizationData);
   const organizationUser = {
     username: req.body.username,
+    name: req.body.name,
     email: req.body.email,
     password: PasswordServices.getPasswordHash(req.body.password),
     organization: organization._id,

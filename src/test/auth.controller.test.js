@@ -64,6 +64,7 @@ function validOrganizationShouldSignUpSuccessfully() {
 
         const adminUserMockData = {
           username: 'testadmin',
+          name: 'testadmin',
           email: 'testadmin@example.com',
           password: 'Testpassword1@',
           confirm: 'Testpassword1@',
