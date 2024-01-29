@@ -104,7 +104,7 @@ function userCanNotCreateTicketWithDeadlineBeforeNow() {
   test('ticket deadline',
       async () => {
         const deadlineMock = TimeServices.now();
-        deadlineMock.setHours(deadlineMock.getHours() - 2);
+        deadlineMock.setHours(deadlineMock.getHours() - 30);
 
         const ticketMockData = {
           type: 'bug',
