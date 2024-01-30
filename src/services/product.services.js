@@ -3,7 +3,6 @@ const UserRepository = require('../repository/user.repository');
 const ProductRepository = require('../repository/product.repository');
 const PaginationServices = require('../services/pagination.services');
 const TimeServices = require('../services/time.services');
-const {INTEGER} = require('sequelize');
 
 /**
  * @param {Object} req - Express Request object
