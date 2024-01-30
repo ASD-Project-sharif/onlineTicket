@@ -1,11 +1,19 @@
 const mongoose = require('mongoose');
-
 const TimeService = require('../services/time.services');
 
-const CommentSchema = new mongoose.Schema({
-  text: {
+const TicketLogSchema = new mongoose.Schema({
+  ticket: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Ticket',
+  },
+  description: {
     type: String,
     required: true,
+    trim: true,
+  },
+  changes: {
+    type: JSON,
+    required: false,
     trim: true,
   },
   created_by: {
@@ -13,22 +21,12 @@ const CommentSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
-  ticket: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Ticket',
-    required: true,
-  },
   created_at: {
     type: Date,
-    default: TimeService.now,
     required: true,
-  },
-  updated_at: {
-    type: Date,
     default: TimeService.now,
-    required: true,
   },
 });
 
-const Comment = mongoose.model('Comment', CommentSchema);
-module.exports = Comment;
+const TicketLog = mongoose.model('TicketLog', TicketLogSchema);
+module.exports = TicketLog;

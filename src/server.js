@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const cookieSession = require('cookie-session');
 const sanitizeUserInput = require('./middlewares/xss.middleware');
 const errorHandler = require('./middlewares/errors.middleware');
 const specs = require('./middlewares/swagger.middleware');
@@ -31,13 +30,6 @@ function setupUses(app) {
   app.use(sanitizeUserInput);
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
   app.use(express.urlencoded({extended: true}));
-  app.use(
-      cookieSession({
-        name: 'ticket-session',
-        keys: ['COOKIE_SECRET'],
-        httpOnly: true,
-      }),
-  );
 
   const corsOpts = {
     origin: '*',

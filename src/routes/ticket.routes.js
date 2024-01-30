@@ -204,6 +204,8 @@ module.exports = function(app) {
    *     responses:
    *       '200':
    *         description: Success
+   *       '400':
+   *         description: Bad request, check the request payload
    *       '403':
    *         description: Unauthorized, token is missing/invalid
    */
@@ -275,6 +277,8 @@ module.exports = function(app) {
    *     responses:
    *       '200':
    *         description: Success
+   *       '400':
+   *         description: Bad request, check the request payload
    *       '403':
    *         description: Unauthorized, token is missing/invalid
    */
@@ -304,6 +308,8 @@ module.exports = function(app) {
    *     responses:
    *       '200':
    *         description: Ticket fetched successfully
+   *       '400':
+   *         description: Bad request, check the request payload
    *       '403':
    *         description: Unauthorized, token is missing/invalid, or you do nor have access to edit
    */
@@ -315,8 +321,31 @@ module.exports = function(app) {
       TicketControllers.getTicket,
   );
 
+  /**
+   * @swagger
+   * /api/v1/ticket/search/{title}:
+   *   get:
+   *     summary: search tickets
+   *     description: search for tickets with matched title
+   *     tags:
+   *       - Ticket
+   *     parameters:
+   *       - in: path
+   *         name: title
+   *         description: title of ticket
+   *         required: true
+   *         schema:
+   *           type: string
+   *     responses:
+   *       '200':
+   *         description: Ticket(s) fetched successfully
+   *       '400':
+   *         description: Bad request, check the request payload
+   *       '403':
+   *         description: Unauthorized, token is missing/invalid, or you do nor have access to get
+   */
   app.get(
-      '/api/v1/ticket/search/:ticketTitle',
+      '/api/v1/ticket/search/:title',
       [
         authJwt.verifyToken,
       ],
@@ -361,5 +390,34 @@ module.exports = function(app) {
         authJwt.verifyToken,
       ],
       TicketControllers.assignTicket,
+  );
+
+  /**
+   * @swagger
+   * /api/v1/ticket/log/{id}:
+   *   get:
+   *     summary: ticket logs
+   *     description: get logs of a ticket
+   *     tags:
+   *       - Ticket
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         description: ID of the ticket
+   *         required: true
+   *         schema:
+   *           type: string
+   *     responses:
+   *       '200':
+   *         description: Ticket logs fetched successfully
+   *       '403':
+   *         description: Unauthorized, token is missing/invalid, or you do nor have access to get
+   */
+  app.get(
+      `${API_VERSION}/${API_TAG}/log/:id`,
+      [
+        authJwt.verifyToken,
+      ],
+      TicketControllers.getTicketLogs,
   );
 };

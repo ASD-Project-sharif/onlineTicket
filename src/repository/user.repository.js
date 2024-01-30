@@ -39,14 +39,13 @@ getByUsername = async (username) => {
   return await findOneDocument('User', {username: username});
 };
 
-getAgents = async (organizationId, pageNumber, pageSize, userId) => {
+getAgents = async (organizationId, pageNumber, pageSize) => {
   const query = {
     organization: organizationId,
     role: {$in: ['agent', 'admin']},
-    _id: {$ne: userId},
   };
   const select = {password: 0};
-  const skipAmount = (pageNumber - 1) * pageSize;
+  const skipAmount = pageNumber ? (pageNumber - 1) * pageSize : 0;
 
   return await findDocuments('User', query, {}, select, skipAmount, pageSize);
 };

@@ -4,13 +4,14 @@ organizationInformation = async (req, res) => {
   await InformationServices.getOrganizationInformation(req, res);
 };
 
-organizationInformationByName = async (req, res) => {
-  await InformationServices.getOrganizationInformationByName(req, res);
+
+getOrganizationInformationByUserId = async (req, res) => {
+  await InformationServices.getOrganizationInformationByUserId(req, res);
 };
 
 const InformationControllers = {
   organizationInformation,
-  organizationInformationByName,
+  getOrganizationInformationByUserId,
 };
 
 module.exports = InformationControllers;

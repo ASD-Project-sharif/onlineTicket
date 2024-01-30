@@ -3,6 +3,7 @@ const UserRepository = require('../repository/user.repository');
 const ProductRepository = require('../repository/product.repository');
 const PaginationServices = require('../services/pagination.services');
 const TimeServices = require('../services/time.services');
+const {INTEGER} = require('sequelize');
 
 /**
  * @param {Object} req - Express Request object
@@ -137,9 +138,8 @@ const getProduct = async (req, res) => {
   });
 };
 
-const getOrganizationProductsByOrganizationName = async (req, res) => {
-  const organization = await OrganizationRepository.getOrganizationByName(req.params.organizationName);
-  const products = await ProductRepository.getOrganizationProducts(organization.id);
+const getOrganizationProductsById = async (req, res) => {
+  const products = await ProductRepository.getOrganizationProducts(req.params.id);
   const slicedProducts = await sliceListByPagination(req, res, products);
   res.status(200).send({
     products: slicedProducts,
@@ -162,14 +162,17 @@ const sliceListByPagination = async (req, res, list) => {
     size: req.query.pageSize,
     number: req.query.pageNumber,
   };
-  return await PaginationServices.sliceListByPagination(page.size, page.number, list);
+  if (page.size === undefined || page.number === undefined) {
+    return list;
+  }
+  return await PaginationServices.sliceListByPagination(parseInt(page.size), parseInt(page.number), list);
 };
 
 const ProductServices = {
   createProduct,
   editProduct,
   deleteProduct,
-  getOrganizationProductsByOrganizationName,
+  getOrganizationProductsById,
   getProduct,
   getOrganizationProductsByAgent,
 };

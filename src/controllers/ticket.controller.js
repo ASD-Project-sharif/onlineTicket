@@ -1,4 +1,5 @@
 const TicketServices = require('../services/ticket.services');
+const LogServices = require('../services/log.services');
 
 addTicket = async (req, res) => {
   await TicketServices.createTicket(req, res);
@@ -32,6 +33,11 @@ const assignTicket = async (req, res) => {
   await TicketServices.assignTicket(req, res);
 };
 
+
+const getTicketLogs = async (req, res) => {
+  await LogServices.getTicketLogs(req, res);
+};
+
 const TicketControllers = {
   addTicket,
   editTicket,
@@ -41,6 +47,7 @@ const TicketControllers = {
   getTicket,
   getTicketsByTitle,
   assignTicket,
+  getTicketLogs,
 };
 
 module.exports = TicketControllers;

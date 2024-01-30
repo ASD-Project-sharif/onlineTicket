@@ -10,6 +10,8 @@ const TimeServices = require('./time.services');
 const DeadlineStatus = require('../models/enums/deadlineStatus.enum');
 const PaginationServices = require('../services/pagination.services');
 
+const TicketLogRepository = require('../repository/ticketLog.repository');
+
 /**
  * @param {Object} req - Express Request object
  * @param {Object} res - Express Response object
@@ -35,6 +37,8 @@ const isInputDataValid = (req, res) => {
 
   if (req.body.deadline) {
     const deadline = new Date(req.body.deadline);
+    deadline.setMinutes(deadline.getMinutes() + 210);
+    deadline.setUTCHours(23, 59, 59, 999);
     if (isNaN(deadline.getTime())) {
       res.status(400).send({message: 'Invalid deadline format'});
       return false;
@@ -43,6 +47,7 @@ const isInputDataValid = (req, res) => {
       res.status(400).send({message: 'Deadline must be after now!!'});
       return false;
     }
+    req.body.deadline = deadline;
   }
   return true;
 };
@@ -198,7 +203,7 @@ const sliceListByPagination = async (req, res, list) => {
     size: req.query.pageSize,
     number: req.query.pageNumber,
   };
-  return await PaginationServices.sliceListByPagination(page.size, page.number, list);
+  return await PaginationServices.sliceListByPagination(parseInt(page.size), parseInt(page.number), list);
 };
 
 const calculateDeadlineStatus = (deadline) => {
@@ -295,6 +300,8 @@ createTicket = async (req, res) => {
   }
 
   const ticketCreated = await TicketRepository.createNewTicket(ticket);
+  await TicketLogRepository.logTicket(req.userId, ticketCreated._id, ticket, 'Add Ticket');
+
   res.send({message: 'Ticket added successfully!', id: ticketCreated._id});
 };
 
@@ -319,6 +326,8 @@ editTicket = async (req, res) => {
   };
 
   await TicketRepository.editTicket(req.params.id, ticket);
+  await TicketLogRepository.logTicket(req.userId, req.params.id, ticket, 'Edit Ticket');
+
   res.send({message: 'ticket edited successfully'});
 };
 
@@ -338,6 +347,8 @@ assignTicket = async (req, res) => {
     updated_at: TimeServices.now(),
   };
   await TicketRepository.editTicket(req.params.id, ticket);
+  await TicketLogRepository.logTicket(req.userId, req.params.id, ticket, 'Assign Ticket');
+
   res.send({message: 'ticket assigned successfully!'});
 };
 
@@ -358,6 +369,8 @@ changeTicketStatus = async (req, res) => {
   };
 
   await TicketRepository.editTicket(req.params.id, ticket);
+  await TicketLogRepository.logTicket(req.userId, req.params.id, ticket, (shouldOpen ? 'Open' : 'Close') + '  Ticket');
+
   res.status(200).send({message: 'Ticket ' + (shouldOpen ? 'Opened' : 'Closed')});
 };
 
@@ -405,9 +418,11 @@ const getTicket = async (req, res) => {
 
   const ticket = await TicketRepository.getTicketById(req.params.id);
   const comments = await CommentRepository.getTicketComments(req.params.id);
+  const isUserSuspended = await SuspendedUserRepository.isUserSuspended(req.userId);
   res.status(200).send({
     ticket: ticket,
     comments: comments,
+    ban: isUserSuspended,
   });
 };
 
@@ -417,7 +432,8 @@ const getTicket = async (req, res) => {
  * @return {Promise<void>}
  */
 const getTicketsByTitle = async (req, res) => {
-  const tickets = await TicketRepository.getTicketsByTitle(req.params.ticketTitle);
+  const organizationId = await OrganizationRepository.getOrganizationIdByAgentId(req.userId);
+  const tickets = await TicketRepository.getTicketsByTitle(req.params.title, organizationId);
   res.status(200).send({
     tickets,
     message: 'Ticket returened successfully!',
