@@ -418,7 +418,7 @@ const getTicket = async (req, res) => {
 
   const ticket = await TicketRepository.getTicketById(req.params.id);
   const comments = await CommentRepository.getTicketComments(req.params.id);
-  const isUserSuspended = await SuspendedUserRepository.isUserSuspended(req.userId, ticket.organization._id);
+  const isUserSuspended = await SuspendedUserRepository.isUserSuspended(ticket.created_by._id, ticket.organization._id);
   res.status(200).send({
     ticket: ticket,
     comments: comments,
