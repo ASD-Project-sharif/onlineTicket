@@ -17,7 +17,8 @@ getOrganizationInformation = async (req, res) => {
 
 
 getOrganizationInformationByUserId = async (req, res) => {
-  const organization = await OrganizationRepository.getOrganizationIdByAgentId(req.userId);
+  const organizationId = await OrganizationRepository.getOrganizationIdByAgentId(req.userId);
+  const organization = await OrganizationRepository.getOrganization(organizationId);
   res.status(200).send({
     id: organization._id,
     name: organization.name,
